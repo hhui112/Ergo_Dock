@@ -108,12 +108,7 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
 // I2C??? MFP_CTR 腿玩输出 拉高
 void x_io_init(void)
 {
-	io_cfg_output(IIC_SCL_PIN); 
-	io_cfg_output(IIC_SDA_PIN); 
-	io_cfg_opendrain(IIC_SCL_PIN);//设置为开漏输出
-	io_cfg_opendrain(IIC_SDA_PIN);//设置为开漏输出
-	
-	
+
 	io_cfg_output(UART_CTR); 		// 
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
 }
