@@ -32,6 +32,14 @@
 #define VALVE_CTR_PIN  			PA13   //气阀控制引脚
 #define EXPUMPCRT_CTR_PIN  	PA14   //抽气阀
 
+typedef enum
+{
+  none,
+	blue = 1,
+	green = 2,
+	red = 3,
+}m_color_t;
+
 void x_driver_init(void);
 void x_rtc_set(uint16_t year,uint8_t Month,uint8_t Day,uint8_t Hour,uint8_t Minute,uint8_t Second,uint8_t Week);
 void x_pump_pwmset(uint8_t set_value);
