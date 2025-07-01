@@ -74,27 +74,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	
 }
 
-void prepare_mfp_NORMAL_KET(uint32_t keys) 
-{
-		static uint8_t uartTxbuff[50];
-		memset(uartTxbuff,0,sizeof(uartTxbuff));
-		int i = 0;
-		uartTxbuff[i++] = 0x05;
-		uartTxbuff[i++] = 0x01;
-		uartTxbuff[i++] = (keys) & 0xFF;        
-		uartTxbuff[i++] = (keys >> 8) & 0xFF;
-		uartTxbuff[i++] = (keys >> 16) & 0xFF;
-		uartTxbuff[i++] = (keys >> 24) & 0xFF;  
-		uartTxbuff[i++] = 0x00;
-		uartTxbuff[i++] = syncCalcCheckSum(uartTxbuff,i);	
-		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
-	
-		if (!mfp_send_request(uartTxbuff, i, 1))
-    {
-        LOG_E("MFP QUERE ERR! \r\n");
-    }
-}	
-
 void x_uart1_cmdHandle(void)
 {
 		prepare_mfp_NORMAL_KET(KEY_M1_OUT); 
