@@ -47,4 +47,6 @@ void x_valve_pwmset(uint8_t set_value);
 void x_expump_pwmset(uint8_t set_value);
 void x_rtc_get(void);
 void x_rtc_init(void);
+void app_led_reset_all(void);          
+void app_led_set(uint8_t num,m_color_t color);          //num:µÆºÅ£¨ff È«ÁÁ£© 
 #endif

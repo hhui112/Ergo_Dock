@@ -152,18 +152,27 @@ void x_io_init(void)
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
 }
 
+void app_led_reset_all(void)          
+{
+		uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
+		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
+		uint8_t Led_red_pin  = LED_Red_all_PIN ;
+    for (uint8_t i = 0; i < 4; i++) {
+      io_write_pin(Led_blue_pin[i], 1);
+    }
+    io_write_pin(Led_Green_pin[0], 1);
+    io_write_pin(Led_Green_pin[1], 1);
+    io_write_pin(Led_red_pin, 1);
+
+}
+
 void app_led_set(uint8_t num,m_color_t color)          //num:灯号（ff 全亮） 
 {
 	  uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
 		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
 		uint8_t Led_red_pin  = LED_Red_all_PIN ;
 	
-		for (uint8_t i = 0; i < 4; i++) {
-      io_write_pin(Led_blue_pin[i], 1);
-    }
-    io_write_pin(Led_Green_pin[0], 1);
-    io_write_pin(Led_Green_pin[1], 1);
-    io_write_pin(Led_red_pin, 1);
+		app_led_reset_all();
 		
 		switch(color)
 		{
@@ -190,6 +199,7 @@ void app_led_set(uint8_t num,m_color_t color)          //num:灯号（ff 全亮）
 		}
 		
 }
+
 
 // 上升沿 打鼾
 void x_exti_init(void)
