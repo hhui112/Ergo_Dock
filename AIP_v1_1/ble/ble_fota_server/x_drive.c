@@ -60,9 +60,9 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
     TIM_OC_InitTypeDef sConfig = {0};
 
 
-		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//气泵
-		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//加热布
-    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//气泵
+//		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//气泵
+//		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//加热布
+//    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//气泵
 
 		LOG_I("PWM_IO OK ");
     /*##-1- Configure the TIM peripheral #######################################*/
@@ -108,7 +108,43 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
 // I2C??? MFP_CTR 腿玩输出 拉高
 void x_io_init(void)
 {
-
+		///////////////LED//////////////////
+	io_cfg_output(LED_Blue_0_PIN);
+	io_cfg_pushpull(LED_Blue_0_PIN);
+	
+	io_cfg_output(LED_Blue_1_PIN);
+	io_cfg_pushpull(LED_Blue_1_PIN);
+	
+	io_cfg_output(LED_Blue_2_PIN);
+	io_cfg_pushpull(LED_Blue_2_PIN);
+	
+	io_cfg_output(LED_Blue_3_PIN);
+	io_cfg_pushpull(LED_Blue_3_PIN);
+	
+	io_cfg_output(LED_Green_1_PIN);
+	io_cfg_pushpull(LED_Green_1_PIN);
+	
+	io_cfg_output(LED_Green_3_PIN);
+	io_cfg_pushpull(LED_Green_3_PIN);
+	
+	io_cfg_output(LED_Red_all_PIN);
+	io_cfg_pushpull(LED_Red_all_PIN);
+	
+	io_write_pin(LED_Blue_0_PIN,0);
+	io_write_pin(LED_Blue_1_PIN,0);
+	io_write_pin(LED_Blue_2_PIN,0);
+	io_write_pin(LED_Blue_3_PIN,0);
+	io_write_pin(LED_Green_1_PIN,1);
+	io_write_pin(LED_Green_3_PIN,1);
+	io_write_pin(LED_Red_all_PIN,1);
+	
+    ///////////////KEY//////////////////
+	io_cfg_input(KEY1_PIN);   
+	io_pull_write(KEY1_PIN,IO_PULL_UP);
+	
+	io_cfg_input(KEY1_PIN);   
+	io_pull_write(KEY1_PIN,IO_PULL_UP);
+		///////////////MFP_CTRL//////////////////
 	io_cfg_output(UART_CTR); 		// 
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
 }
