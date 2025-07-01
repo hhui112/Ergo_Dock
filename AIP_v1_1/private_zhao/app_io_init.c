@@ -177,13 +177,6 @@ void driver_init(void)
 //	io_write_pin(PB07,0);  //蜂鸣器
 	//////////////模拟I2C初始化////////////////////
 	//PB03:I2C_SCL   PB04:I2C_SDA
-	io_cfg_output(IIC_SDA_PIN); 
-	io_cfg_output(IIC_SCL_PIN); 
-
-
-	io_cfg_opendrain(IIC_SDA_PIN);//设置为开漏输出
-	io_cfg_opendrain(IIC_SCL_PIN);//设置为开漏输出
-
 
 	///////////////PWM//////////////////
 	Basic_PWM_Output_Cfg();
