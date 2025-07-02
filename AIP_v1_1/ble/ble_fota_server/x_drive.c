@@ -60,9 +60,9 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
     TIM_OC_InitTypeDef sConfig = {0};
 
 
-		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//气泵
-		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//加热布
-    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//气泵
+//		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//气泵
+//		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//加热布
+//    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//气泵
 
 		LOG_I("PWM_IO OK ");
     /*##-1- Configure the TIM peripheral #######################################*/
@@ -108,15 +108,98 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
 // I2C??? MFP_CTR 腿玩输出 拉高
 void x_io_init(void)
 {
-	io_cfg_output(IIC_SCL_PIN); 
-	io_cfg_output(IIC_SDA_PIN); 
-	io_cfg_opendrain(IIC_SCL_PIN);//设置为开漏输出
-	io_cfg_opendrain(IIC_SDA_PIN);//设置为开漏输出
+		///////////////LED//////////////////
+	io_cfg_output(LED_Blue_0_PIN);
+	io_cfg_pushpull(LED_Blue_0_PIN);
 	
+	io_cfg_output(LED_Blue_1_PIN);
+	io_cfg_pushpull(LED_Blue_1_PIN);
 	
+	io_cfg_output(LED_Blue_2_PIN);
+	io_cfg_pushpull(LED_Blue_2_PIN);
+	
+	io_cfg_output(LED_Blue_3_PIN);
+	io_cfg_pushpull(LED_Blue_3_PIN);
+	
+	io_cfg_output(LED_Green_1_PIN);
+	io_cfg_pushpull(LED_Green_1_PIN);
+	
+	io_cfg_output(LED_Green_3_PIN);
+	io_cfg_pushpull(LED_Green_3_PIN);
+	
+	io_cfg_output(LED_Red_all_PIN);
+	io_cfg_pushpull(LED_Red_all_PIN);
+	
+	io_write_pin(LED_Blue_0_PIN,1);
+	io_write_pin(LED_Blue_1_PIN,1);
+	io_write_pin(LED_Blue_2_PIN,1);
+	io_write_pin(LED_Blue_3_PIN,1);
+	io_write_pin(LED_Green_1_PIN,1);
+	io_write_pin(LED_Green_3_PIN,1);
+	io_write_pin(LED_Red_all_PIN,1);
+	
+    ///////////////KEY//////////////////
+	io_cfg_input(KEY1_PIN);   
+	io_pull_write(KEY1_PIN,IO_PULL_UP);
+	
+	io_cfg_input(KEY2_PIN);   
+	io_pull_write(KEY2_PIN,IO_PULL_UP);
+	
+	io_cfg_input(KEY3_PIN);   
+	io_pull_write(KEY3_PIN,IO_PULL_UP);
+		///////////////MFP_CTRL//////////////////
 	io_cfg_output(UART_CTR); 		// 
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
 }
+
+void app_led_reset_all(void)          
+{
+		uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
+		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
+		uint8_t Led_red_pin  = LED_Red_all_PIN ;
+    for (uint8_t i = 0; i < 4; i++) {
+      io_write_pin(Led_blue_pin[i], 1);
+    }
+    io_write_pin(Led_Green_pin[0], 1);
+    io_write_pin(Led_Green_pin[1], 1);
+    io_write_pin(Led_red_pin, 1);
+
+}
+
+void app_led_set(uint8_t num,m_color_t color)          //num:灯号（ff 全亮） 
+{
+	  uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
+		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
+		uint8_t Led_red_pin  = LED_Red_all_PIN ;
+	
+		app_led_reset_all();
+		
+		switch(color)
+		{
+		  case blue: if(num < 4)  io_write_pin(Led_blue_pin[num],0);
+			        else if(num == 0xff) {
+							  for (uint8_t i = 0; i < 4; i++) {
+                  io_write_pin(Led_blue_pin[i], 0);
+                }
+							}
+				break; 
+			case green:if (num == 1) {
+                io_write_pin(Led_Green_pin[0], 0);
+             } else if (num == 3) {
+                io_write_pin(Led_Green_pin[1], 0);
+             } else if (num == 0xFF) {
+                io_write_pin(Led_Green_pin[0], 0);
+                io_write_pin(Led_Green_pin[1], 0);
+             }
+				break;
+		  case red:io_write_pin(Led_red_pin, 0);
+				break;
+			default:
+				break;
+		}
+		
+}
+
 
 // 上升沿 打鼾
 void x_exti_init(void)
@@ -181,8 +264,6 @@ void x_rtc_get(void)
 void x_driver_init(void)
 {
 	x_io_init();  // MFP_DE、(灯)
-	// x_Basic_PWM_Output_Cfg();	// 无用
-	// x_Basic_Timer_Cfg();
 	x_exti_init();
 	x_rtc_init();
 }

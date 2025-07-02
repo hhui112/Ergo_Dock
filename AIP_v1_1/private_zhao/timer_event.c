@@ -19,31 +19,31 @@
 
 
 
-#define BLE_SEND_SYN_LEN  41//À¶ÑÀ·¢ËÍÍ¬²½Êı¾İ³¤¶È
-#define BLE_AIRBAG_SEND_SYN_LEN 11//ÆøÄÒ¿ØÖÆÀ¶ÑÀ·¢ËÍÍ¬²½Êı¾İ³¤¶È
-#define temp_default  42//Ä¬ÈÏÉèÖÃÎÂ¶È  µ¥Î»¶È
-#define time_default  20*60//Ä¬ÈÏ¶¨Ê±  µ¥Î»Ãë
-#define protect_I  2000  //¹ıÁ÷±£»¤µçÁ÷ÉèÖÃ
+#define BLE_SEND_SYN_LEN  41//è“ç‰™å‘é€åŒæ­¥æ•°æ®é•¿åº¦
+#define BLE_AIRBAG_SEND_SYN_LEN 11//æ°”å›Šæ§åˆ¶è“ç‰™å‘é€åŒæ­¥æ•°æ®é•¿åº¦
+#define temp_default  42//é»˜è®¤è®¾ç½®æ¸©åº¦  å•ä½åº¦
+#define time_default  20*60//é»˜è®¤å®šæ—¶  å•ä½ç§’
+#define protect_I  2000  //è¿‡æµä¿æŠ¤ç”µæµè®¾ç½®
 
 
 
-#define snore_timevoer_def 5*60 //÷ıÉùÅĞ¶Ï5·ÖÖÓÄÚÎŞ÷ıÉùÅĞ¶ÏÎª²»´ò÷ı
+#define snore_timevoer_def 5*60 //é¼¾å£°åˆ¤æ–­5åˆ†é’Ÿå†…æ— é¼¾å£°åˆ¤æ–­ä¸ºä¸æ‰“é¼¾
 
 
 
 sleepposture_def  sleepposture;
 airbag_ctrbase_def airbag_ctrbase;
 
-uint16_t airpreee_LD=200;//×Ô¶¯³äÆøÄ¿±êÆøÑ¹ÏÂÎó²î
-uint16_t airpreee_HD=200;//×Ô¶¯·ÅÆøÄ¿±êÆøÑ¹ÉÏÎó²î
-uint16_t airpreee_set=2000;//¿ØÖÆ±äÁ¿ÉèÖÃÄ¿±êÆøÑ¹
+uint16_t airpreee_LD=200;//è‡ªåŠ¨å……æ°”ç›®æ ‡æ°”å‹ä¸‹è¯¯å·®
+uint16_t airpreee_HD=200;//è‡ªåŠ¨æ”¾æ°”ç›®æ ‡æ°”å‹ä¸Šè¯¯å·®
+uint16_t airpreee_set=2000;//æ§åˆ¶å˜é‡è®¾ç½®ç›®æ ‡æ°”å‹
 uint8_t pump_PWMset=255;
 
 //uint8_t vidoehead[32]={0};
 //uint16_t length_video1,length_video_i,add_video1;
-uint16_t snore_timevoer=snore_timevoer_def;//Í£Ö¹´ò÷ı³¬Ê±¼ÆÊ±Æ÷
+uint16_t snore_timevoer=snore_timevoer_def;//åœæ­¢æ‰“é¼¾è¶…æ—¶è®¡æ—¶å™¨
 
-ble_data_init ble_data_receive;//¶¨ÒåÀ¶ÑÀ½ÓÊÕÊı¾İ»º´æ
+ble_data_init ble_data_receive;//å®šä¹‰è“ç‰™æ¥æ”¶æ•°æ®ç¼“å­˜
 extern  uint8_t recv_flag;
 extern  ADC_HandleTypeDef hadc;
 
@@ -80,7 +80,7 @@ unsigned  char set_parameter[100]=
 
 //state_flag motor_state;
 
-airbag_parameter_def *airbagsetfile=(airbag_parameter_def *)(&set_parameter[50]);//ÆøÄÒ¿ØÖÆ¹¦ÄÜÉèÖÃÎÄ¼ş£¬Ò²ÊÇAPPÉÏĞĞÎÄ¼ş  50¸ö×Ö½Ú
+airbag_parameter_def *airbagsetfile=(airbag_parameter_def *)(&set_parameter[50]);//æ°”å›Šæ§åˆ¶åŠŸèƒ½è®¾ç½®æ–‡ä»¶ï¼Œä¹Ÿæ˜¯APPä¸Šè¡Œæ–‡ä»¶  50ä¸ªå­—èŠ‚
 
 
 
@@ -107,11 +107,11 @@ void ls_even_timer_init(void)
 
 
 
-void parameter_init(void)//²ÎÊı³õÊ¼»¯
+void parameter_init(void)//å‚æ•°åˆå§‹åŒ–
 {
 	
 }
-//ÆøÄÒ¿ØÖÆº¯Êı,10ms½øÈëÒ»´Î£¬¶Ô¿ØÖÆ×´Ì¬¸üĞÂ
+//æ°”å›Šæ§åˆ¶å‡½æ•°,10msè¿›å…¥ä¸€æ¬¡ï¼Œå¯¹æ§åˆ¶çŠ¶æ€æ›´æ–°
 void airbag_ctr(void)
 {
 
@@ -119,21 +119,21 @@ void airbag_ctr(void)
 	
 	switch(airbag_ctrbase)
 	{
-		case air_outstop://Í£Ö¹·ÅÆø
+		case air_outstop://åœæ­¢æ”¾æ°”
 			          
-								airbagsetfile->flag &=~0X02;//Í£Ö¹·ÅÆø±êÖ¾
-		            airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø±êÖ¾
+								airbagsetfile->flag &=~0X02;//åœæ­¢æ”¾æ°”æ ‡å¿—
+		            airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”æ ‡å¿—
 								if(LSGPTIMA->CCR1>0)
 								{
 									valve_pwmnow=LSGPTIMA->CCR1;
-									if(valve_pwmnow>160)//PWMÖµ´óÓÚ160Ê±£¬PWMÖµÖ±½ÓÉèÖÃÎª160£¬È»ºó´Ó160Öğ½¥±äĞ¡
+									if(valve_pwmnow>160)//PWMå€¼å¤§äº160æ—¶ï¼ŒPWMå€¼ç›´æ¥è®¾ç½®ä¸º160ï¼Œç„¶åä»160é€æ¸å˜å°
 										valve_pwmnow=160;
 									airbag_ctrbase=base_state1;
 								}
 								else
 									airbag_ctrbase=base_state2;
 								break;
-		case base_state1://Æø·§PWMÖµÖğ½¥±äĞ¡£¬Ö±µ½0
+		case base_state1://æ°”é˜€PWMå€¼é€æ¸å˜å°ï¼Œç›´åˆ°0
 								if(valve_pwmnow>0)
 									valve_pwmnow --;
 								x_valve_pwmset(valve_pwmnow);
@@ -141,16 +141,16 @@ void airbag_ctr(void)
 								{
 									airbag_ctrbase=base_state2;
 
-								  airbagsetfile->flag &=~0X02;//Í£Ö¹·ÅÆø±êÖ¾
-									//airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø±êÖ¾
+								  airbagsetfile->flag &=~0X02;//åœæ­¢æ”¾æ°”æ ‡å¿—
+									//airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”æ ‡å¿—
 								}
 								break;
-		case base_state2://Æø·§¹Ø±Õ½áÊø
+		case base_state2://æ°”é˜€å…³é—­ç»“æŸ
 			         break;
-		case air_outstart://¿ªÊ¼·ÅÆø
+		case air_outstart://å¼€å§‹æ”¾æ°”
 
-								airbagsetfile->flag |=0X02;//¿ªÊ¼·ÅÆø±êÖ¾
-		            airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø±êÖ¾
+								airbagsetfile->flag |=0X02;//å¼€å§‹æ”¾æ°”æ ‡å¿—
+		            airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”æ ‡å¿—
 								if(LSGPTIMA->CCR1<255)
 								{
 									valve_pwmnow=LSGPTIMA->CCR1;
@@ -158,10 +158,10 @@ void airbag_ctr(void)
 										valve_pwmnow=128;
 									airbag_ctrbase=base_state3;
 								}
-								else//Æø·§ÒÑ¾­ÍêÈ«´ò¿ª
+								else//æ°”é˜€å·²ç»å®Œå…¨æ‰“å¼€
 								{
 									airbag_ctrbase=air_outing;
-									airbagsetfile->flag |=0X02;//¿ªÊ¼·ÅÆø±êÖ¾
+									airbagsetfile->flag |=0X02;//å¼€å§‹æ”¾æ°”æ ‡å¿—
 								}
 								break;
 		case base_state3:
@@ -172,12 +172,12 @@ void airbag_ctr(void)
 								{
 									airbag_ctrbase=air_outing;
 
-									airbagsetfile->flag |=0X02;//¿ªÊ¼·ÅÆø±êÖ¾
+									airbagsetfile->flag |=0X02;//å¼€å§‹æ”¾æ°”æ ‡å¿—
 								}
 								break;
-		case air_outing://Æø·§´ò¿ª½áÊø		
+		case air_outing://æ°”é˜€æ‰“å¼€ç»“æŸ		
 		           break;
-		case air_inputstart://¿ªÊ¼³äÆø
+		case air_inputstart://å¼€å§‹å……æ°”
 
 
 								if(LSGPTIMA->CCR1>0)
@@ -190,29 +190,29 @@ void airbag_ctr(void)
 								else
 									airbag_ctrbase=base_state6;
 								break;
-		case base_state5://Æø·§PWMÖµÖğ½¥±äĞ¡£¬Ö±µ½0
+		case base_state5://æ°”é˜€PWMå€¼é€æ¸å˜å°ï¼Œç›´åˆ°0
 								if(valve_pwmnow>0)
 									valve_pwmnow--;
 								x_valve_pwmset(valve_pwmnow);
 								if(valve_pwmnow==0)
 								{
 									airbag_ctrbase=base_state6;
-								  //airbagsetfile->flag |=0X02;//´ò¿ª·ÅÆø±êÖ¾
-									airbagsetfile->flag &=~0X02;//Í£Ö¹·ÅÆø±êÖ¾
+								  //airbagsetfile->flag |=0X02;//æ‰“å¼€æ”¾æ°”æ ‡å¿—
+									airbagsetfile->flag &=~0X02;//åœæ­¢æ”¾æ°”æ ‡å¿—
 								}
 								break;
-		case base_state6://Æø·§¹Ø±Õ½áÊø
+		case base_state6://æ°”é˜€å…³é—­ç»“æŸ
 
-		            airbagsetfile->flag |=0X01;//´ò¿ª³äÆø±êÖ¾
+		            airbagsetfile->flag |=0X01;//æ‰“å¼€å……æ°”æ ‡å¿—
 								airbag_ctrbase=air_inputing;
 
 								break;
-		case air_inputing://¿ªÊ¼³äÆø½ø¶ÈÍê³É
+		case air_inputing://å¼€å§‹å……æ°”è¿›åº¦å®Œæˆ
 		            break;
-		case air_inputstop://Í£Ö¹³äÆø
+		case air_inputstop://åœæ­¢å……æ°”
 
 
-		            airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø±êÖ¾
+		            airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”æ ‡å¿—
 		            if(LSGPTIMA->CCR1>0)
 								{
 									valve_pwmnow=LSGPTIMA->CCR1;
@@ -231,16 +231,16 @@ void airbag_ctr(void)
 								{
 									airbag_ctrbase=base_state9;
 
-									airbagsetfile->flag &=~0X02;//Í£Ö¹·ÅÆø±êÖ¾
+									airbagsetfile->flag &=~0X02;//åœæ­¢æ”¾æ°”æ ‡å¿—
 								}
 								break;		
-		case base_state9://Í£Ö¹³äÆø½ø¶ÈÍê³É	
+		case base_state9://åœæ­¢å……æ°”è¿›åº¦å®Œæˆ	
 		            break;														
 		default:
 
 		            x_valve_pwmset(0);
-		            airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø±êÖ¾
-		            airbagsetfile->flag &=~0X02;//Í£Ö¹·ÅÆø±êÖ¾
+		            airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”æ ‡å¿—
+		            airbagsetfile->flag &=~0X02;//åœæ­¢æ”¾æ°”æ ‡å¿—
 		            airbag_ctrbase=base_state9;
 		            break;
 	}
@@ -250,7 +250,7 @@ void airbag_ctr(void)
 
 static void ls_5ms_timer_cb(void *param)
 {
-//	switch(GetKey())//¿ª¹Ø°´¼üÉ¨Ãè
+//	switch(GetKey())//å¼€å…³æŒ‰é”®æ‰«æ
 //	{
 //		case 0X81:
 //			if(g_sysparam_st.timer>500)
@@ -274,17 +274,17 @@ static void ls_5ms_timer_cb(void *param)
 }
 void pump_control(void)
 {
-	static uint8_t opentime=0; // ¿ª30s Í£10s
+	static uint8_t opentime=0; // å¼€30s åœ10s
 
-	if((airbagsetfile->flag&0X01)==0x01)//Æø±Ã´ò¿ª±êÖ¾
+	if((airbagsetfile->flag&0X01)==0x01)//æ°”æ³µæ‰“å¼€æ ‡å¿—
 	{
 //		if(opentime==0)
 //		{
-//		  x_pump_pwmset(pump_PWMset);//´ò¿ª³äÆø±Ã
+//		  x_pump_pwmset(pump_PWMset);//æ‰“å¼€å……æ°”æ³µ
 //		}
 //		else if(opentime==30)
 //		{
-//			x_pump_pwmset(0);//¹Ø±ÕÆø±Ã
+//			x_pump_pwmset(0);//å…³é—­æ°”æ³µ
 //		}
 //		
 //		if(opentime<40)
@@ -292,12 +292,12 @@ void pump_control(void)
 //		else
 //			opentime=0;
 		
-		x_pump_pwmset(pump_PWMset);//´ò¿ª³äÆø±Ã
+		x_pump_pwmset(pump_PWMset);//æ‰“å¼€å……æ°”æ³µ
 	}
 	else//
 	{
 		opentime=0;
-		x_pump_pwmset(0);//¹Ø±ÕÆø±Ã
+		x_pump_pwmset(0);//å…³é—­æ°”æ³µ
 	}
 	
 	if(g_sysparam_st.airpump.aspirator_onff == 1)
@@ -315,7 +315,7 @@ static void ls_10ms_timer_cb(void *param)
 	float value;
 	g_sysparam_st.timer++;
 	//x_ai_timer10ms();
-	//airbag_ctr();//ÆøÄÒ¿ØÖÆ½ø¶Èº¯ÊıÂÖÑ¯
+	//airbag_ctr();//æ°”å›Šæ§åˆ¶è¿›åº¦å‡½æ•°è½®è¯¢
 
  if(xTimer_10ms_inst)
  {
@@ -326,15 +326,15 @@ static void ls_10ms_timer_cb(void *param)
 	// x_report_time_10ms();
 }
 
-//¸ù¾İË¯×ËĞŞ¸ÄÆøÑ¹¿ØÖÆ²ÎÊı
+//æ ¹æ®ç¡å§¿ä¿®æ”¹æ°”å‹æ§åˆ¶å‚æ•°
 void shuizi_canshu(uint8_t posture_per)
 {
-	if(posture_per==0)//Æ½ÌÉ
+	if(posture_per==0)//å¹³èºº
 	{
 		airpreee_set=pingtang_pressset;
 
 	}
-	else if(posture_per==1)//²àÌÉ
+	else if(posture_per==1)//ä¾§èºº
 	{
 		airpreee_set=cetang_pressset;
 	}
@@ -346,17 +346,16 @@ static void ls_100ms_timer_cb(void *param)
 	float variate;
 	uint8_t i;
 	
-	///////////¿´ÃÅ¹·Î¹¹·///////////
+	///////////çœ‹é—¨ç‹—å–‚ç‹—///////////
 	 HAL_IWDG_Refresh();
 
 
-	//////////////////////////////////Í¨¹ıÆøÑ¹±ä»¯¼ÆËãË¯×Ë//////////////////////////////////////
-	// 	getwfData();
+	//////////////////////////////////é€šè¿‡æ°”å‹å˜åŒ–è®¡ç®—ç¡å§¿//////////////////////////////////////
 
-	///////////´®¿Ú´òÓ¡ÆøÑ¹ÊµÊ±Êı¾İ	////////////////////
+	///////////ä¸²å£æ‰“å°æ°”å‹å®æ—¶æ•°æ®	////////////////////
 	// x_uart_realtimeprint();
 
-	SnoringIntervention_run();		//´ò÷ı¸ÉÔ¤ 100msµ÷ÓÃÒ»´Î
+	SnoringIntervention_run();		//æ‰“é¼¾å¹²é¢„ 100msè°ƒç”¨ä¸€æ¬¡
 
 	if(xTimer_100ms_inst)
 	{
@@ -372,7 +371,7 @@ static void ls_100ms_timer_cb(void *param)
 static void ls_1000ms_timer_cb(void *param)
 {
 	if(snore_timevoer<=snore_timevoer_def)
-     snore_timevoer++;//÷ıÉùÊ¶±ğ¼ÆÊ±
+     snore_timevoer++;//é¼¾å£°è¯†åˆ«è®¡æ—¶
 	
 	if(snore_timevoer>=snore_timevoer_def)
 	{
@@ -383,29 +382,29 @@ static void ls_1000ms_timer_cb(void *param)
 
 
 	
-	if(airbagsetfile->flag&0X80)//ÊÖ¶¯Ä£Ê½ÏÂ
+	if(airbagsetfile->flag&0X80)//æ‰‹åŠ¨æ¨¡å¼ä¸‹
 	{
-		//ÆøÑ¹¹ı´ó±£»¤
+		//æ°”å‹è¿‡å¤§ä¿æŠ¤
 		if(airbagsetfile->airpressure>17000)
 			{
-				airbag_ctrbase=air_outstart;//¿ªÊ¼·ÅÆø
+				airbag_ctrbase=air_outstart;//å¼€å§‹æ”¾æ°”
 			}
 		else if(airbagsetfile->airpressure>8000)
 			{
 				x_pump_pwmset(0);
 				x_valve_pwmset(0);
-				airbagsetfile->flag &=~0X01;//¹Ø±Õ³äÆø
+				airbagsetfile->flag &=~0X01;//å…³é—­å……æ°”
 				airbag_ctrbase=air_inputstop;
 			}
 	}
-	else//×Ô¶¯Ä£Ê½ÏÂ
+	else//è‡ªåŠ¨æ¨¡å¼ä¸‹
 	{
 	
 	}
 
-////////////////ÎÂ¶È¿ØÖÆÂß¼­/////////////////////////	
+////////////////æ¸©åº¦æ§åˆ¶é€»è¾‘/////////////////////////	
 
-	//////////////////Ñ¹µç¾²ÒôÆø±Ã¿ØÖÆ/////////////////////	
+	//////////////////å‹ç”µé™éŸ³æ°”æ³µæ§åˆ¶/////////////////////	
 	pump_control();
 
 	x_rtc_get();
