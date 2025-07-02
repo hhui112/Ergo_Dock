@@ -13,7 +13,7 @@
 #include "sleep_posture.h"
 #include "heat_control.h"
 #include "g.h"
-
+#include "app_key.h"
 
 
 
@@ -321,7 +321,7 @@ static void ls_10ms_timer_cb(void *param)
  {
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
-	//control_timer10ms();
+	control_timer10ms();
 	x_uart_10ms();
 	// x_report_time_10ms();
 }

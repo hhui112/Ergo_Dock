@@ -27,6 +27,7 @@
 #define KEY1_PIN            PA14
 #define KEY2_PIN            PA15
 #define KEY3_PIN            PA12
+#define KEY4_PIN            PA13
 
 #define PUMPCRT_CTR_PIN  		PA12   //气泵控制引脚
 #define VALVE_CTR_PIN  			PA13   //气阀控制引脚
