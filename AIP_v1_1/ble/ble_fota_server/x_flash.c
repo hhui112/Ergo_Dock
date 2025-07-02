@@ -39,7 +39,7 @@ void x_flash_load(void)
 	}
 	else
 	{
-		adaptivecontrol_default();
+//		adaptivecontrol_default();
 		LOG_I("flsh_read FAIL");
 	}
 	x_flash_static_Init();

@@ -185,7 +185,7 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
 								//LOG_I("APP_DATA");
 								memcpy(&ble_data_receive.ble_data_receive[0],&evt->server_write_req.value[0],evt->server_write_req.length);
 								ble_data_receive.lengh=evt->server_write_req.length;
-								x_ble_com_handle((uint8_t*)&evt->server_write_req.value[0],evt->server_write_req.length);
+//								x_ble_com_handle((uint8_t*)&evt->server_write_req.value[0],evt->server_write_req.length);
 							}
         }
         else
