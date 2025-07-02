@@ -74,32 +74,86 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	
 }
 
-void prepare_mfp_NORMAL_KET(uint32_t keys) 
-{
-		static uint8_t uartTxbuff[50];
-		memset(uartTxbuff,0,sizeof(uartTxbuff));
-		int i = 0;
-		uartTxbuff[i++] = 0x05;
-		uartTxbuff[i++] = 0x01;
-		uartTxbuff[i++] = (keys) & 0xFF;        
-		uartTxbuff[i++] = (keys >> 8) & 0xFF;
-		uartTxbuff[i++] = (keys >> 16) & 0xFF;
-		uartTxbuff[i++] = (keys >> 24) & 0xFF;  
-		uartTxbuff[i++] = 0x00;
-		uartTxbuff[i++] = syncCalcCheckSum(uartTxbuff,i);	
-		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
-	
-		if (!mfp_send_request(uartTxbuff, i, 1))
-    {
-        LOG_E("MFP QUERE ERR! \r\n");
-    }
-}	
+void offline_voice_wake_up(void){
+	LOG_I("offline_voice_wake_up 8s \r\n");
+} 
 
-void x_uart1_cmdHandle(void)
+void uart1_cmdHandle(void)
 {
-		prepare_mfp_NORMAL_KET(KEY_M1_OUT); 
+		prepare_mfp_NORMAL_KET(KEY_M1_IN,3); 
 }
-
+void uart2_cmdHandle(void)
+{
+		if(uart2_data_pack.rxbuf[0] != 0xa5 || uart2_data_pack.rxbuf[1]!=0xfa) return;
+		if(uart2_data_pack.rxbuf[3] == 0x81 && uart2_data_pack.rxbuf[3]<= 0xF0 && uart2_data_pack.rxbuf[3] != 0x82)	// 指令码：语音芯片发送操作
+		{
+			// 离线语音使能
+			switch (uart2_data_pack.rxbuf[6]) 
+			{
+					case 0x21:		// Hello Ergo
+							offline_voice_wake_up(); // 实际唤醒15s 灯8s
+							break;
+					case 0x22:		// Hello Bed
+							offline_voice_wake_up(); 
+							break;
+					case 0x23:		// STOP
+							mfp_tx_queue_clear();
+							prepare_mfp_NORMAL_KET(KEY_MOTOR_STOP,3); 
+							break;
+					case 0x24:		// All Up
+							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),33); 	//  头脚抬升6s
+							break;
+					case 0x25:		// Zero G
+							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3); 
+							break;
+					case 0x26:		// Flat Preset
+							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
+							break;				
+					case 0x27:		// Favorite preset
+					 
+							break;
+					case 0x28:		// Tv preset
+							prepare_mfp_NORMAL_KET(KEY_MEMORY3,3); 
+							break;
+					case 0x29:		// Raise-head
+							prepare_mfp_NORMAL_KET(KEY_M1_OUT,15); // 头抬升3s
+							break;
+					case 0x2A:		// Lower-head
+							prepare_mfp_NORMAL_KET(KEY_M1_IN,15);
+							break;
+					case 0x2B:		// Raise-foot
+							prepare_mfp_NORMAL_KET(KEY_M2_OUT,15);
+							break;
+					case 0x2C:		// Lower foot
+							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
+							break;	
+					case 0x2D:		// Massage Low
+				
+							break;
+					case 0x2E:		// Massage Medium
+					 
+							break;
+					case 0x2F:		// Massage High
+					 
+							break;
+					case 0x30:		// MASSAGE OFF
+				
+							break;
+					case 0x31:		// LIGHT OFF
+							prepare_mfp_NORMAL_KET(KEY_UBB,3);
+							break;
+					case 0x32:		// LIGHT On
+							prepare_mfp_NORMAL_KET(KEY_UBB,3);
+							break;
+					default:
+							LOG_I("Invalid command \r\n");
+			}
+		}else if(uart2_data_pack.rxbuf[3] == 0x82){
+			if(uart2_data_pack.rxbuf[6] == 0x22){
+					// 离线语音关闭
+			}
+		}
+}
 
 unsigned char rxCalcCheckSum()
 {
@@ -128,7 +182,7 @@ void x_uart1_dateReceiveHandle(void)
         if (uart1_data_pack.rx.Syncdata.data[uart1_data_pack.rx.Syncdata.length] == rxCalcCheckSum())
         {
             // LOG_I("Crc ok!\r\n");
-						// x_uart1_cmdHandle();
+						// uart1_cmdHandle();
 						mfp_tx_task(); 				// 队列发送
         }
 
@@ -152,6 +206,8 @@ void x_uart2_dateReceiveHandle(void)
         if (uart2_data_pack.rxbuf[0] == 0xA5 && uart2_data_pack.rxbuf[7] == 0xFB)
         {
             LOG_I("uart2 valid frame received\n");
+						uart2_cmdHandle();
+					
             // x_uart_Internalparameterprint();
         }
         else
@@ -412,7 +468,7 @@ void x_uart_Internalparameterprint(void)		// uart_Snoring_event_send   算求了 反
 
 void x_uart_init(void)
 {
-	// x_uart1_init();
+	x_uart1_init();
 	x_uart2_init();
 	//x_uart3_init();
 }

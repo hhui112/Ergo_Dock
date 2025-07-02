@@ -85,3 +85,14 @@ void x_flash_run(void)
 	old_snoreIntervention_enable = g_sysparam_st.snoreIntervention.enable;
 	old_ai_adj_strength =  g_sysparam_st.ai_adj_strength;
 }
+
+
+void flash_run(void)
+{
+
+	if(old_snoreIntervention_enable != g_sysparam_st.snoreIntervention.enable)
+	{
+		x_flash_save();
+	}
+	old_snoreIntervention_enable = g_sysparam_st.snoreIntervention.enable;
+}
