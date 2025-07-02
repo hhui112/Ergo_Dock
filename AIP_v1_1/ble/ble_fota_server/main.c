@@ -337,7 +337,7 @@ int main()
     dev_manager_init(dev_manager_callback);//设备管理初始化并注册回调
     gap_manager_init(gap_manager_callback);//gap初始化与回调注册
     gatt_manager_init(gatt_manager_callback);//gatt初始化与回调注册
-		x_SnoringInterventionInit();
+		SnoringInterventionInit();
 		ble_loop();//循环处理ble事件
 	
 	/*

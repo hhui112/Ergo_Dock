@@ -1,6 +1,5 @@
 #include "mfp_queue.h"
 #include "x_uart.h"
-#include <string.h>
 
 // 队列实现（循环队列FIFO）
 static mfp_tx_request_t tx_queue[MFP_TX_QUEUE_MAX_ITEMS];
@@ -62,6 +61,52 @@ void mfp_tx_task(void)
             head = (head + 1) % MFP_TX_QUEUE_MAX_ITEMS;
             count--;
         }
+    }
+}
+
+
+void prepare_mfp_NORMAL_KET(uint32_t keys,uint8_t repeat) 
+{
+		static uint8_t uartTxbuff[20];
+		memset(uartTxbuff,0,sizeof(uartTxbuff));
+		int i = 0;
+		uartTxbuff[i++] = 0x05;
+		uartTxbuff[i++] = 0x01;
+		uartTxbuff[i++] = (keys) & 0xFF;        
+		uartTxbuff[i++] = (keys >> 8) & 0xFF;
+		uartTxbuff[i++] = (keys >> 16) & 0xFF;
+		uartTxbuff[i++] = (keys >> 24) & 0xFF;  
+		uartTxbuff[i++] = 0x00;
+		uartTxbuff[i++] = syncCalcCheckSum(uartTxbuff,i);	
+		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
+	
+		if (!mfp_send_request(uartTxbuff, i, repeat))
+    {
+        LOG_E("MFP QUERE ERR! \r\n");
+    }
+}	
+
+
+void prepare_mfp_SOFT_START(uint32_t keys,uint8_t pwm, uint8_t tmr,uint8_t repeat) 
+{
+		static uint8_t uartTxbuff[20];
+		memset(uartTxbuff,0,sizeof(uartTxbuff));
+		int i = 0;
+		uartTxbuff[i++] = 0x07;
+		uartTxbuff[i++] = 0x01;
+		uartTxbuff[i++] = (keys) & 0xFF;        
+		uartTxbuff[i++] = (keys >> 8) & 0xFF;
+		uartTxbuff[i++] = (keys >> 16) & 0xFF;
+		uartTxbuff[i++] = (keys >> 24) & 0xFF;  
+		uartTxbuff[i++] = 0x00;
+		uartTxbuff[i++] = pwm;
+		uartTxbuff[i++] = tmr;
+		uartTxbuff[i++] = syncCalcCheckSum(uartTxbuff,i);	
+		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
+	
+		if (!mfp_send_request(uartTxbuff, i, repeat))
+    {
+        LOG_E("MFP QUERE ERR! \r\n");
     }
 }
 
