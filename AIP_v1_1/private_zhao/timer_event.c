@@ -89,16 +89,16 @@ airbag_parameter_def *airbagsetfile=(airbag_parameter_def *)(&set_parameter[50])
 
 void ls_even_timer_init(void)
 {
-	/*
+	
 	xTimer_5ms_inst = builtin_timer_create(ls_5ms_timer_cb);
 	builtin_timer_start(xTimer_5ms_inst, 5, NULL);
-*/
+
 	xTimer_10ms_inst = builtin_timer_create(ls_10ms_timer_cb);
 	builtin_timer_start(xTimer_10ms_inst, 10, NULL);	
-/*
+
 	xTimer_100ms_inst = builtin_timer_create(ls_100ms_timer_cb);
 	builtin_timer_start(xTimer_100ms_inst, 100, NULL);
-	
+/*
 	xTimer_1000ms_inst = builtin_timer_create(ls_1000ms_timer_cb);
 	builtin_timer_start(xTimer_1000ms_inst, 1000, NULL);
 	*/
@@ -263,9 +263,10 @@ static void ls_5ms_timer_cb(void *param)
 //		default:break;
 //	}
 	
-	OKIN_ai_run();
-	x_flash_run();
-	x_SnoringIntervention_run();
+	//OKIN_ai_run();
+	// x_flash_run();
+	flash_run();
+	// SnoringIntervention_run();
  if(xTimer_5ms_inst)
  {
     builtin_timer_start(xTimer_5ms_inst, 5, NULL); 
@@ -320,7 +321,6 @@ static void ls_10ms_timer_cb(void *param)
  {
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
-	x_snoreInterven_10ms();
 	//control_timer10ms();
 	x_uart_10ms();
 	// x_report_time_10ms();
@@ -351,11 +351,12 @@ static void ls_100ms_timer_cb(void *param)
 
 
 	//////////////////////////////////通过气压变化计算睡姿//////////////////////////////////////
-	getwfData();
+	// getwfData();
 
 	///////////串口打印气压实时数据	////////////////////
-	x_uart_realtimeprint();
+	// x_uart_realtimeprint();
 
+	SnoringIntervention_run();		//打鼾干预 100ms调用一次
 
 	if(xTimer_100ms_inst)
 	{

@@ -43,4 +43,9 @@ bool mfp_tx_queue_is_empty(void);
  */
 void mfp_tx_task(void);
 
+
+void prepare_mfp_NORMAL_KET(uint32_t keys,uint8_t repeat);		/* 普通键值入队 */
+void prepare_mfp_SOFT_START(uint32_t keys,uint8_t pwm, uint8_t tmr,uint8_t repeat); /* 缓启动键值入队*/
+
+	
 #endif

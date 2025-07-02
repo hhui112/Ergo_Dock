@@ -306,7 +306,7 @@ void departuredetection(void)
 		time_s = 0;
 		adjust_pressure_stop();
 		adjust_pressure(FLATPRESSURE,TOLERANCE);
-		x_SnoringInterventStateClear();
+		SnoringInterventStateClear();
 		departuretrigger_s = 1;
 		//´¥·¢·ÅÆø
 	}
@@ -462,7 +462,7 @@ void app_flatten(void)
 {
 	adjust_pressure_stop();
 	
-	x_SnoringInterventStateClear();
+	SnoringInterventStateClear();
 	StretchingModeStop();
 	g_sysparam_st.ai_adj = 0;
 	adjust_pressure(FLATPRESSURE,TOLERANCE);
