@@ -1450,6 +1450,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\mfp_queue.c</FilePath>
             </File>
+            <File>
+              <FileName>app_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_key.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1884,16 +1889,6 @@
               <FileName>app_io_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\private_zhao\app_io_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>WF_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\WF_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>wfsensor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\wfsensor.c</FilePath>
             </File>
             <File>
               <FileName>sleep_posture.c</FileName>
@@ -3392,6 +3387,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\mfp_queue.c</FilePath>
             </File>
+            <File>
+              <FileName>app_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_key.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3826,16 +3826,6 @@
               <FileName>app_io_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\private_zhao\app_io_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>WF_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\WF_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>wfsensor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\wfsensor.c</FilePath>
             </File>
             <File>
               <FileName>sleep_posture.c</FileName>
@@ -5334,6 +5324,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\mfp_queue.c</FilePath>
             </File>
+            <File>
+              <FileName>app_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_key.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5768,16 +5763,6 @@
               <FileName>app_io_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\private_zhao\app_io_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>WF_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\WF_i2c.c</FilePath>
-            </File>
-            <File>
-              <FileName>wfsensor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\private_zhao\wfsensor.c</FilePath>
             </File>
             <File>
               <FileName>sleep_posture.c</FileName>
