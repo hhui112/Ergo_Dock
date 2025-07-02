@@ -243,8 +243,8 @@ void x_uart3_dateReceiveHandle(void)
 			g_sysparam_st.ci1302.snorevolume = uart3_data_pack.rxbuf[6]<<8|uart3_data_pack.rxbuf[7];
 			g_sysparam_st.ci1302.snoreState = uart3_data_pack.rxbuf[8];
 			g_sysparam_st.sf.snorevolume = g_sysparam_st.ci1302.snorevolume;
-			// LOG_I("uart3 rece\n");
-			x_uart_Internalparameterprint();
+			LOG_I("uart3 rece\n");
+			// x_uart_Internalparameterprint();
 		}
 		uart3_data_pack.rxindex = 0;
 		memset(uart3_data_pack.rxbuf,0,sizeof(uart3_data_pack.rxbuf));
