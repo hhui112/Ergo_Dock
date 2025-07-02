@@ -7,7 +7,7 @@
 #include "g.h"
 #include "app_key.h"
 
-static uint8_t m_button_list[] = {KEY3_PIN};
+static uint8_t m_button_list[] = {KEY3_PIN ,KEY4_PIN};
 
 static uint8_t current_key = 0;
 #define DEBOUNCE_MAX_COUNT      3
@@ -62,7 +62,7 @@ uint8_t app_slide_key_get(void)               //»¬¶¯°´¼ü
 		  return 0;
 }
 
-#define BUTTON_NUM    1
+#define BUTTON_NUM    2
 uint8_t app_touch_key_get(void)               //´¥¿Ø°´¼ü
 {
 	  uint8_t ret = 0;
@@ -70,7 +70,7 @@ uint8_t app_touch_key_get(void)               //´¥¿Ø°´¼ü
 	  uint8_t code_mask = 1;
     const uint8_t ButtonPosTable[BUTTON_NUM] =
 //	|    0     |    S1    |    S2    |    S3    |    S4    |    S5    |    S6    |    S7    |
-	  {  app_key_num3 };
+	  {  app_key_num3 ,app_key_num4};
     for(uint8_t i=0;i<BUTTON_NUM;i++){
         if((current_key & code_mask) != 0) {
             ret |= ButtonPosTable[i];

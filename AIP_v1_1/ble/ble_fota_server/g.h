@@ -17,7 +17,7 @@
 #include "x_uart.h"
 #include "ls_hal_rtc.h"
 #include "x_sleep_report.h"
-
+#include "app_key.h"
 
 
 #define VERSION  105

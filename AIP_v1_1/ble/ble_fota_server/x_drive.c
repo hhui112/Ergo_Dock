@@ -147,6 +147,10 @@ void x_io_init(void)
 	
 	io_cfg_input(KEY3_PIN);   
 	io_pull_write(KEY3_PIN,IO_PULL_UP);
+	
+	io_cfg_input(KEY4_PIN);   
+	io_pull_write(KEY4_PIN,IO_PULL_UP);
+	
 		///////////////MFP_CTRL//////////////////
 	io_cfg_output(UART_CTR); 		// 
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
