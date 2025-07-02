@@ -321,6 +321,7 @@ static void ls_10ms_timer_cb(void *param)
  {
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
+  on_key_10ms_handle();
 	control_timer10ms();
 	x_uart_10ms();
 	// x_report_time_10ms();
