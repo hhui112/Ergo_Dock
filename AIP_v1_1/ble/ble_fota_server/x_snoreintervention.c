@@ -2,12 +2,11 @@
 #include "x_snoreintervention.h"
 #include "g.h"
 
-#define SNORETIMER  (5*60)			//(15*60) 5分钟触发一次打鼾干预检查
-#define SNORELIMITPA  (2500)
+#define SNORETIMER     10   		// (5*60)			//(15*60) 5分钟触发一次打鼾干预检查
 #define SI_TH					(5)				// 干预阈值
 #define SI_PWM				(0x80)
 #define SI_TMR				(0x50)
-
+#define UP_HOLD_TIMES	 30				// (30*60)
 
 // 气囊压力读取函数，这里使用当前压力值作为返回值，模拟实际读取
 int read_air_cushion_pressure(void) 
@@ -47,7 +46,7 @@ void determine_intervention(void)
 
 void SnoringInterventionInit(void)
 {
-	g_sysparam_st.snoreIntervention.trigTimer = SNORETIMER*100;	// 5分钟
+	g_sysparam_st.snoreIntervention.trigTimer = SNORETIMER*10;	// 5分钟
 	g_sysparam_st.snoreIntervention.snoreIntervention_pwm = SI_PWM;
 	g_sysparam_st.snoreIntervention.snoreIntervention_tmr = SI_TMR;
 	g_sysparam_st.snoreIntervention.snoreIntervention_threshold = SI_TH;
@@ -70,7 +69,7 @@ void SnoringIntervention_run(void) /* 50-100ms进入一次 */
         if (!g_sysparam_st.snoreIntervention.is_intervening && g_sysparam_st.snoreIntervention.triggered_flag)
         {
             LOG_I("打鼾干预开始：缓启动抬升\r\n");
-            // prepare_mfp_SOFT_START(KEY_MEMORY4, g_sysparam_st.snoreIntervention.snoreIntervention_pwm, g_sysparam_st.snoreIntervention.snoreIntervention_tmr);
+            prepare_mfp_SOFT_START(KEY_MEMORY4, g_sysparam_st.snoreIntervention.snoreIntervention_pwm, g_sysparam_st.snoreIntervention.snoreIntervention_tmr,3);  //KEY_MEMORY4 
             g_sysparam_st.snoreIntervention.triggered_time_s = g_sysparam_st.timer;
             g_sysparam_st.snoreIntervention.is_intervening = true;
         }
@@ -78,10 +77,10 @@ void SnoringIntervention_run(void) /* 50-100ms进入一次 */
 
     if (g_sysparam_st.snoreIntervention.is_intervening)
     {
-        if (g_sysparam_st.timer - g_sysparam_st.snoreIntervention.triggered_time_s >= 30 * 60 * 100) // 30分钟
+        if (g_sysparam_st.timer - g_sysparam_st.snoreIntervention.triggered_time_s >= UP_HOLD_TIMES * 10) // 30分钟
         {
             LOG_I("打鼾干预结束：缓启动下降\r\n");
-			// prepare_mfp_SOFT_START(KEY_MEMORY4,g_sysparam_st.snoreIntervention.snoreIntervention_pwm,g_sysparam_st.snoreIntervention.snoreIntervention_tmr);
+			prepare_mfp_SOFT_START(KEY_ALLFATE,g_sysparam_st.snoreIntervention.snoreIntervention_pwm,g_sysparam_st.snoreIntervention.snoreIntervention_tmr,3);
 			g_sysparam_st.snoreIntervention.is_intervening = false;
 		}
     }
