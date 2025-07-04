@@ -19,7 +19,9 @@ void offline_voice_wake_off(void){
 void offline_voice_dataHandle(uint8_t cmd)
 {
 	/* 2¡¢¸ù¾İÃüÁîÅĞ¶ÏÖ¸Áî */
+		if(cmd == 0x21 || cmd == 0x22) return;
 		app_ReceiveCommand_LedOn();
+
 			switch (cmd) 
 			{
 					case 0x21:
