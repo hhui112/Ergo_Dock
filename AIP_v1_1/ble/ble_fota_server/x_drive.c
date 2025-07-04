@@ -150,60 +150,25 @@ void x_io_init(void)
 	
 	io_cfg_input(KEY4_PIN);   
 	io_pull_write(KEY4_PIN,IO_PULL_UP);
+    ///////////////CHARGE//////////////////	
+	io_cfg_input(CHARGE_ABNORMAL_PIN);   
+	io_pull_write(CHARGE_ABNORMAL_PIN,IO_PULL_DOWN);
 	
+	io_cfg_input(CHARGE_NORMAL_PIN);   
+	io_pull_write(CHARGE_NORMAL_PIN,IO_PULL_DOWN);
+		
 		///////////////MFP_CTRL//////////////////
 	io_cfg_output(UART_CTR); 		// 
 	io_write_pin(UART_CTR,1);		//拉高 接收模式
 }
 
-void app_led_reset_all(void)          
+uint8_t on_WirelessCharege_status_get(void)
 {
-		uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
-		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
-		uint8_t Led_red_pin  = LED_Red_all_PIN ;
-    for (uint8_t i = 0; i < 4; i++) {
-      io_write_pin(Led_blue_pin[i], 1);
-    }
-    io_write_pin(Led_Green_pin[0], 1);
-    io_write_pin(Led_Green_pin[1], 1);
-    io_write_pin(Led_red_pin, 1);
-
+    if(io_read_pin(CHARGE_ABNORMAL_PIN)) 
+		  return 0;
+		else if(io_read_pin(CHARGE_NORMAL_PIN)) 
+		  return 1;
 }
-
-void app_led_set(uint8_t num,m_color_t color)          //num:灯号（ff 全亮） 
-{
-	  uint8_t Led_blue_pin[4]  = {LED_Blue_0_PIN ,LED_Blue_1_PIN ,LED_Blue_2_PIN ,LED_Blue_3_PIN};
-		uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,                LED_Green_3_PIN };
-		uint8_t Led_red_pin  = LED_Red_all_PIN ;
-	
-		app_led_reset_all();
-		
-		switch(color)
-		{
-		  case blue: if(num < 4)  io_write_pin(Led_blue_pin[num],0);
-			        else if(num == 0xff) {
-							  for (uint8_t i = 0; i < 4; i++) {
-                  io_write_pin(Led_blue_pin[i], 0);
-                }
-							}
-				break; 
-			case green:if (num == 1) {
-                io_write_pin(Led_Green_pin[0], 0);
-             } else if (num == 3) {
-                io_write_pin(Led_Green_pin[1], 0);
-             } else if (num == 0xFF) {
-                io_write_pin(Led_Green_pin[0], 0);
-                io_write_pin(Led_Green_pin[1], 0);
-             }
-				break;
-		  case red:io_write_pin(Led_red_pin, 0);
-				break;
-			default:
-				break;
-		}
-		
-}
-
 
 // 上升沿 打鼾
 void x_exti_init(void)
