@@ -14,6 +14,9 @@
 #define UART_RX3_PIN  			PA09
 #define SNORE_OUT_PIN  			PA06   //÷ýÉù¼ì²âÐ¾Æ¬ Âö³åÊä³ö
 
+#define CHARGE_ABNORMAL_PIN PB07		// ÎÞÏß³äÐ¾Æ¬Êä³ö
+#define CHARGE_NORMAL_PIN 	PB08
+
 #define LED_Blue_0_PIN      PB15           
 #define LED_Blue_1_PIN      PA00  
 #define LED_Blue_2_PIN      PA02  
@@ -33,14 +36,6 @@
 #define VALVE_CTR_PIN  			PA13   //Æø·§¿ØÖÆÒý½Å
 #define EXPUMPCRT_CTR_PIN  	PA14   //³éÆø·§
 
-typedef enum
-{
-  none,
-	blue = 1,
-	green = 2,
-	red = 3,
-}m_color_t;
-
 void x_driver_init(void);
 void x_rtc_set(uint16_t year,uint8_t Month,uint8_t Day,uint8_t Hour,uint8_t Minute,uint8_t Second,uint8_t Week);
 void x_pump_pwmset(uint8_t set_value);
@@ -48,6 +43,5 @@ void x_valve_pwmset(uint8_t set_value);
 void x_expump_pwmset(uint8_t set_value);
 void x_rtc_get(void);
 void x_rtc_init(void);
-void app_led_reset_all(void);          
-void app_led_set(uint8_t num,m_color_t color);          //num:µÆºÅ£¨ff È«ÁÁ£© 
+uint8_t on_WirelessCharege_status_get(void);
 #endif

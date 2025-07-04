@@ -98,10 +98,10 @@ void ls_even_timer_init(void)
 
 	xTimer_100ms_inst = builtin_timer_create(ls_100ms_timer_cb);
 	builtin_timer_start(xTimer_100ms_inst, 100, NULL);
-/*
+
 	xTimer_1000ms_inst = builtin_timer_create(ls_1000ms_timer_cb);
 	builtin_timer_start(xTimer_1000ms_inst, 1000, NULL);
-	*/
+
 	
 }
 
@@ -322,6 +322,7 @@ static void ls_10ms_timer_cb(void *param)
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
   on_key_10ms_handle();
+	on_led_10ms_handle();
 	control_timer10ms();
 	x_uart_10ms();
 	// x_report_time_10ms();
@@ -371,43 +372,8 @@ static void ls_100ms_timer_cb(void *param)
 
 static void ls_1000ms_timer_cb(void *param)
 {
-	if(snore_timevoer<=snore_timevoer_def)
-     snore_timevoer++;//鼾声识别计时
+	control_timer1000ms();
 	
-	if(snore_timevoer>=snore_timevoer_def)
-	{
-		g_sysparam_st.sf.snoreState=0;
-	}
-	else
-		g_sysparam_st.sf.snoreState=1;
-
-
-	
-	if(airbagsetfile->flag&0X80)//手动模式下
-	{
-		//气压过大保护
-		if(airbagsetfile->airpressure>17000)
-			{
-				airbag_ctrbase=air_outstart;//开始放气
-			}
-		else if(airbagsetfile->airpressure>8000)
-			{
-				x_pump_pwmset(0);
-				x_valve_pwmset(0);
-				airbagsetfile->flag &=~0X01;//关闭充气
-				airbag_ctrbase=air_inputstop;
-			}
-	}
-	else//自动模式下
-	{
-	
-	}
-
-////////////////温度控制逻辑/////////////////////////	
-
-	//////////////////压电静音气泵控制/////////////////////	
-	pump_control();
-
 	x_rtc_get();
 ///////////////////////////////////////	
 		//ls_uart_realtimeprint();
