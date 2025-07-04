@@ -12,6 +12,7 @@ static const uint8_t Led_Green_pin[2] = {                LED_Green_1_PIN,       
 static const uint8_t Led_red_pin  = LED_Red_all_PIN ;
 		
 static bool led_flash_on_active = false;
+static bool BLEPairing_led_on_active = false;
 static uint8_t m_flash_times = 0;
 uint8_t m_flash_ledlist[MAX_COUNT] = {0};
 uint8_t led_flash_num = 0;
@@ -22,28 +23,32 @@ void app_led_reset_all(void)
       io_write_pin(Led_blue_pin[i], 1);
     }
     io_write_pin(Led_Green_pin[0], 1);
-    io_write_pin(Led_Green_pin[1], 1);
     io_write_pin(Led_red_pin, 1);
 
 }
 
 void BLEPairing_led_reset(void)
 {
+	  BLEPairing_led_on_active = false; 
     io_write_pin(Led_blue_pin[3], 1);
+	  io_write_pin(Led_Green_pin[1], 1);
 }
 
 void BLEPairing_led_set(void)
 {
+	  BLEPairing_led_on_active = true;
     io_write_pin(Led_blue_pin[3], 0);
 }
 
 void app_led_set(uint8_t num,m_color_t color)          //Ãÿ∂®µ∆≥£¡¡ µ∆∫≈£∫num£®ff »´¡¡£© —’…´£∫color
 {
-		app_led_reset_all();
-		
+	  if(num != 3)
+		  app_led_reset_all();
+		else 
+		  BLEPairing_led_reset();
 		switch(color)
 		{
-		  case blue: if(num < 3)  io_write_pin(Led_blue_pin[num],0);
+		  case blue: if(num < 4)  io_write_pin(Led_blue_pin[num],0);
 			           else if(num == 0xff) {
 							     for (uint8_t i = 0; i < 3; i++) {
                     io_write_pin(Led_blue_pin[i], 0);
@@ -88,6 +93,12 @@ bool on_led_flash_isActive(void)
 {
 	  return (m_flash_times > 0)?true:false;
 }
+
+bool on_BLEPairing_led_isActive(void)
+{
+	  return BLEPairing_led_on_active ;
+}
+
 //”Ô“Ùµ∆ªΩ–—8s¿∂µ∆
 void app_Receive_Wakeup_LedOn(void)
 {
