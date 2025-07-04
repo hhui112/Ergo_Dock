@@ -101,9 +101,7 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <bSchkAxf>0</bSchkAxf>
-        <bTchkAxf>0</bTchkAxf>
-        <nTsel>4</nTsel>
+        <nTsel>3</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -130,7 +128,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>/</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -148,7 +146,24 @@
           <Name></Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>337</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>402905510</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\main.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\ble_fota_server\../../main.c\337</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -158,22 +173,87 @@
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>chargeAbnormal_timeout</ItemText>
+          <ItemText>g_sysparam_st,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>WirelessCharge_flag</ItemText>
+          <ItemText>airpressup</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>m_flash_ledlist</ItemText>
+          <ItemText>threshold_move</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>led_off_count</ItemText>
+          <ItemText>threshold_position</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>threshold_left</ItemText>
+        </Ww>
+        <Ww>
+          <count>6</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>step_judge_left,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>7</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>current_size_left</ItemText>
+        </Ww>
+        <Ww>
+          <count>8</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>pressure_left</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judger,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>judger</ItemText>
+        </Ww>
+        <Ww>
+          <count>11</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>departuretrigger_s</ItemText>
+        </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>blebuff</ItemText>
+        </Ww>
+        <Ww>
+          <count>13</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>lastqiya_s,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>14</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>departuretrigger_s</ItemText>
+        </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>uart1_data_pack</ItemText>
+        </Ww>
+        <Ww>
+          <count>16</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>uart3_data_pack</ItemText>
+        </Ww>
+        <Ww>
+          <count>17</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>report</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -190,7 +270,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>0</aSer1>
         <aSer2>0</aSer2>
@@ -309,8 +389,6 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <bSchkAxf>0</bSchkAxf>
-        <bTchkAxf>0</bTchkAxf>
         <nTsel>0</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
@@ -474,8 +552,6 @@
         <sRunDeb>0</sRunDeb>
         <sLrtime>0</sLrtime>
         <bEvRecOn>1</bEvRecOn>
-        <bSchkAxf>0</bSchkAxf>
-        <bTchkAxf>0</bTchkAxf>
         <nTsel>0</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
@@ -3001,7 +3077,7 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>203</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\g.c</PathWithFileName>
@@ -3148,8 +3224,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\app_led.c</PathWithFileName>
-      <FilenameWithoutPath>app_led.c</FilenameWithoutPath>
+      <PathWithFileName>..\..\offline_voice.c</PathWithFileName>
+      <FilenameWithoutPath>offline_voice.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

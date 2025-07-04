@@ -184,9 +184,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
-            <RvdsMve>0</RvdsMve>
-            <RvdsCdeCp>0</RvdsCdeCp>
-            <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
@@ -327,7 +324,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>5</v6Lang>
             <v6LangP>4</v6LangP>
@@ -353,7 +349,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>4</ClangAsOpt>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls>--cpreproc --cpreproc_opts=-DLE501X --diag_suppress=1</MiscControls>
               <Define></Define>
@@ -1460,9 +1456,9 @@
               <FilePath>..\..\app_key.c</FilePath>
             </File>
             <File>
-              <FileName>app_led.c</FileName>
+              <FileName>offline_voice.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\app_led.c</FilePath>
+              <FilePath>..\..\offline_voice.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1962,8 +1958,8 @@
         <TargetCommonOption>
           <Device>ARMCM0</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.Cortex_DFP.1.1.0</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>ARM.CMSIS.5.6.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000-0x10007FFF) IRAM2(0x2007C000-0x20083FFF) IROM(0-0x7FFFF) CLOCK(12000000) CPUTYPE("Cortex-M3")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -2130,9 +2126,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
-            <RvdsMve>0</RvdsMve>
-            <RvdsCdeCp>0</RvdsCdeCp>
-            <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>0</StupSel>
@@ -2273,7 +2266,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -2299,7 +2291,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>4</ClangAsOpt>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -3406,9 +3398,9 @@
               <FilePath>..\..\app_key.c</FilePath>
             </File>
             <File>
-              <FileName>app_led.c</FileName>
+              <FileName>offline_voice.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\app_led.c</FilePath>
+              <FilePath>..\..\offline_voice.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3908,8 +3900,8 @@
         <TargetCommonOption>
           <Device>ARMCM0</Device>
           <Vendor>ARM</Vendor>
-          <PackID>ARM.Cortex_DFP.1.1.0</PackID>
-          <PackURL>https://www.keil.com/pack/</PackURL>
+          <PackID>ARM.CMSIS.5.6.0</PackID>
+          <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x10000000-0x10007FFF) IRAM2(0x2007C000-0x20083FFF) IROM(0-0x7FFFF) CLOCK(12000000) CPUTYPE("Cortex-M3")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
@@ -4076,9 +4068,6 @@
             <hadXRAM>0</hadXRAM>
             <uocXRam>0</uocXRam>
             <RvdsVP>0</RvdsVP>
-            <RvdsMve>0</RvdsMve>
-            <RvdsCdeCp>0</RvdsCdeCp>
-            <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>0</StupSel>
@@ -4219,7 +4208,6 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -4245,7 +4233,7 @@
             <NoWarn>0</NoWarn>
             <uSurpInc>0</uSurpInc>
             <useXO>0</useXO>
-            <ClangAsOpt>4</ClangAsOpt>
+            <uClangAs>0</uClangAs>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define></Define>
@@ -5352,9 +5340,9 @@
               <FilePath>..\..\app_key.c</FilePath>
             </File>
             <File>
-              <FileName>app_led.c</FileName>
+              <FileName>offline_voice.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\app_led.c</FilePath>
+              <FilePath>..\..\offline_voice.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5852,14 +5840,5 @@
     <components/>
     <files/>
   </RTE>
-
-  <LayerInfo>
-    <Layers>
-      <Layer>
-        <LayName>ble_fota_server</LayName>
-        <LayPrjMark>1</LayPrjMark>
-      </Layer>
-    </Layers>
-  </LayerInfo>
 
 </Project>
