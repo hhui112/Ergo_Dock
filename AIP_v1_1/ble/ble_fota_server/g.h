@@ -83,6 +83,10 @@ enum stretchState
 #define		KEY_EXTMEMORY1				    0x40000000	
 #define		KEY_EXTMEMORY2					0x80000000	
 
+#define		KEY_MASSAGE_LOW						0x00080000	
+#define		KEY_MASSAGE_MEDIUM				0x00100000
+#define		KEY_MASSAGE_HIGH					0x00200000
+
 // 缓启动控制按键键值
 #define		KEY_HEAD_LIFT					0x00008000	// 头部抬升
 #define		KEY_HEAD_LOWER					0x08000000	// 头部放下

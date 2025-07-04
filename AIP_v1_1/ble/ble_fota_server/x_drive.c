@@ -30,6 +30,7 @@ void io_exti_callback(uint8_t pin,exti_edge_t edge)
     case SNORE_OUT_PIN:			
 			g_sysparam_st.sf.snoreNub++;
 			snore_timevoer=0;
+			LOG_I("snoreNub++ \r\n ");
         break;
     default:
         break;

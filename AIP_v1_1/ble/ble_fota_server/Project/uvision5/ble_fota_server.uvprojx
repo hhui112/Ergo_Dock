@@ -1455,6 +1455,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\app_key.c</FilePath>
             </File>
+            <File>
+              <FileName>offline_voice.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\offline_voice.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3392,6 +3397,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\app_key.c</FilePath>
             </File>
+            <File>
+              <FileName>offline_voice.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\offline_voice.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5328,6 +5338,11 @@
               <FileName>app_key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\app_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>offline_voice.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\offline_voice.c</FilePath>
             </File>
           </Files>
         </Group>
