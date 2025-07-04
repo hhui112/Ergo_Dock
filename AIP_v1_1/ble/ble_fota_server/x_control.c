@@ -7,30 +7,6 @@ static bool keys_ignore = false;
 static uint8_t led_off_count = 0;
 static uint8_t led_off_pin = 0;
 
-offline_voice_ctrl_t g_offline_voice = {
-    .enabled = false,
-    .wake_word = 0,
-};
-
-void check_offline_voice_keys(void)
-{
-    uint8_t key1 = io_read_pin(KEY1_PIN);
-    uint8_t key2 = io_read_pin(KEY2_PIN);
-
-    if (key1 == 1 && key2 == 1)
-    {
-        g_offline_voice.enabled = false;  
-    }
-    else
-    {
-//        g_offline_voice.enabled = true;   
-//        if (key1 == 0)
-//            g_offline_voice.wake_word = Hello_Ergo; // 1=Hello Ergo
-//        else if (key2 == 0)
-//            g_offline_voice.wake_word = Hello_Bed; // 2=Hello Bed
-    }
-} 
-
 void control_timer10ms(void)
 {
 	  static uint8_t last_key = 0;
@@ -41,7 +17,14 @@ void control_timer10ms(void)
 		} else if(last_key == key && key != 0) {
 		  if(key_repeat < UINT16_MAX) 
 				key_repeat ++;
-			if(key_repeat == 500) {
+			if(key_repeat == 300 && key == app_key_num4) {
+			  keys_ignore = true;
+				if(!on_BLEPairing_led_isActive())
+				  BLEPairing_led_set();
+        else
+				  BLEPairing_led_reset();
+			}
+			if(key_repeat == 500 && key == app_key_num3) {
 			  app_led_flash_set();
 				keys_ignore = true;
 				g_sysparam_st.AntiSnore_intensity = 0;
