@@ -39,11 +39,12 @@ void BLEPairing_led_set(void)
 
 void app_led_set(uint8_t num,m_color_t color)          //特定灯常亮 灯号：num（ff 全亮） 颜色：color
 {
-		app_led_reset_all();
+	  if(num != 3)
+		  app_led_reset_all();
 		
 		switch(color)
 		{
-		  case blue: if(num < 3)  io_write_pin(Led_blue_pin[num],0);
+		  case blue: if(num < 4)  io_write_pin(Led_blue_pin[num],0);
 			           else if(num == 0xff) {
 							     for (uint8_t i = 0; i < 3; i++) {
                     io_write_pin(Led_blue_pin[i], 0);
