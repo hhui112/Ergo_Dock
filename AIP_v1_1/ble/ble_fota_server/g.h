@@ -18,7 +18,7 @@
 #include "ls_hal_rtc.h"
 #include "x_sleep_report.h"
 #include "app_key.h"
-
+#include "app_led.h"
 
 #define VERSION  105
 
@@ -310,6 +310,7 @@ typedef struct
 	CI1302_t  ci1302;
 	calendar_cal_t calendar_cal;
 	calendar_time_t calendar_time;
+	uint8_t       AntiSnore_intensity;
 }sysparam_st;//系统参数
 
 
