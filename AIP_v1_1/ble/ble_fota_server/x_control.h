@@ -2,10 +2,9 @@
 #define _X_CONTROL_H
 #include "stdint.h"
 #include "stdbool.h"
-typedef struct {
-    bool enabled;           // en = 1 
-    uint8_t wake_word;      // 1=Hello Ergo, 2=Hello Bed
-} offline_voice_ctrl_t;
+
+#define 		Hello_Ergo 		1
+#define 		Hello_Bed 		2
 
 void control_timer10ms(void);
 void on_led_timeout_set(uint8_t led_num,uint8_t time_out);
@@ -16,6 +15,7 @@ void x_control_init(void);
 void StretchingModeStop(void);
 void StretchingModeStart(void);
 
+void check_offline_voice_keys(void);
 
 void app_airpump_inflate_on(void);
 

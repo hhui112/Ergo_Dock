@@ -43,7 +43,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	if(huart == &UART_Server1_Config)
 	{
 		HAL_UART_Receive_IT(&UART_Server1_Config, &rx1_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
-
+		 // LOG_I("UART1 Rx interrupt entered rx2_t_data = %x",rx1_t_data);
 		if(uart1_data_pack.rxindex <RXBUFF_LEN)
 		{
 			uart1_data_pack.rx.rawData[uart1_data_pack.rxindex++] = rx1_t_data;
@@ -64,7 +64,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 
 	if(huart == &UART_Server3_Config)
 	{
-		LOG_I("UART3 Rx interrupt entered");
+		// LOG_I("UART3 Rx interrupt entered");
 		HAL_UART_Receive_IT(&UART_Server3_Config, &rx3_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
 		if(uart3_data_pack.rxindex <RXBUFF_LEN)
 		{
@@ -75,91 +75,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	
 }
 
-void offline_voice_wake_up(void){
-	LOG_I("offline_voice_wake_up 8s \r\n");
-} 
-
 void uart1_cmdHandle(void)
 {
-		prepare_mfp_NORMAL_KET(KEY_M1_IN,3); 
+		// 读取UBB值
+		g_sysparam_st.ubb = uart1_data_pack.rx.rawData[11];
+		
 }
 void uart2_cmdHandle(void)
 {
-		/* 1、如果离线语音没有使能：直接退出 */
-	
-	
-		/* 2、将指令码传入离线语音处理函数 */
-	 offline_voice_cmdHandle(uart2_data_pack.rxbuf[6]);
-	/*
-		if(uart2_data_pack.rxbuf[3] == 0x81 && uart2_data_pack.rxbuf[3]<= 0xF0 && uart2_data_pack.rxbuf[3] != 0x82)	// 指令码：语音芯片发送操作
-		{
-			// 离线语音使能
-			switch (uart2_data_pack.rxbuf[6]) 
-			{
-					case 0x21:		// Hello Ergo
-							offline_voice_wake_up(); // 实际唤醒15s 灯8s
-							break;
-					case 0x22:		// Hello Bed
-							offline_voice_wake_up(); 
-							break;
-					case 0x23:		// STOP
-							mfp_tx_queue_clear();
-							prepare_mfp_NORMAL_KET(KEY_MOTOR_STOP,3); 
-							break;
-					case 0x24:		// All Up
-							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),33); 	//  头脚抬升6s
-							break;
-					case 0x25:		// Zero G
-							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3); 
-							break;
-					case 0x26:		// Flat Preset
-							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
-							break;				
-					case 0x27:		// Favorite preset
-					 
-							break;
-					case 0x28:		// Tv preset
-							prepare_mfp_NORMAL_KET(KEY_MEMORY3,3); 
-							break;
-					case 0x29:		// Raise-head
-							prepare_mfp_NORMAL_KET(KEY_M1_OUT,15); // 头抬升3s
-							break;
-					case 0x2A:		// Lower-head
-							prepare_mfp_NORMAL_KET(KEY_M1_IN,15);
-							break;
-					case 0x2B:		// Raise-foot
-							prepare_mfp_NORMAL_KET(KEY_M2_OUT,15);
-							break;
-					case 0x2C:		// Lower foot
-							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
-							break;	
-					case 0x2D:		// Massage Low
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_LOW,3);
-							break;
-					case 0x2E:		// Massage Medium
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_MEDIUM,3);
-							break;
-					case 0x2F:		// Massage High
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_HIGH,3);
-							break;
-					case 0x30:		// MASSAGE OFF   
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
-							break;
-					case 0x31:		// LIGHT OFF
-							prepare_mfp_NORMAL_KET(KEY_UBB,3);
-							break;
-					case 0x32:		// LIGHT On
-							prepare_mfp_NORMAL_KET(KEY_UBB,3);
-							break;
-					default:
-							LOG_I("Invalid command \r\n");
-			}
-		}else if(uart2_data_pack.rxbuf[3] == 0x82){
-			if(uart2_data_pack.rxbuf[6] == 0x22){
-					// 离线语音关闭
-			}
-		}
-		*/
+		offline_voice_Handle(uart2_data_pack.rxbuf[3],uart2_data_pack.rxbuf[6]);
 }
 
 unsigned char rxCalcCheckSum()
@@ -189,7 +113,7 @@ void x_uart1_dateReceiveHandle(void)
         if (uart1_data_pack.rx.Syncdata.data[uart1_data_pack.rx.Syncdata.length] == rxCalcCheckSum())
         {
             // LOG_I("Crc ok!\r\n");
-						// uart1_cmdHandle();
+						uart1_cmdHandle();		// 解析mfp数据
 						mfp_tx_task(); 				// 队列发送
         }
 
@@ -212,7 +136,7 @@ void x_uart2_dateReceiveHandle(void)
         // 帧头是0xA5，帧尾是0xFB
         if (uart2_data_pack.rxbuf[0] == 0xA5 && uart2_data_pack.rxbuf[7] == 0xFB)
         {
-            LOG_I("uart2 valid frame received\n");
+            // LOG_I("uart2 valid frame received\n");
 						uart2_cmdHandle();
 					
             // x_uart_Internalparameterprint();
@@ -480,5 +404,5 @@ void x_uart_init(void)
 {
 	x_uart1_init();
 	x_uart2_init();
-	x_uart3_init();
+	// x_uart3_init();
 }

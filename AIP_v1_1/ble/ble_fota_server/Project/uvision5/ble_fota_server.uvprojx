@@ -1460,6 +1460,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\offline_voice.c</FilePath>
             </File>
+            <File>
+              <FileName>app_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3402,6 +3407,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\offline_voice.c</FilePath>
             </File>
+            <File>
+              <FileName>app_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5343,6 +5353,11 @@
               <FileName>offline_voice.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\offline_voice.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led.c</FilePath>
             </File>
           </Files>
         </Group>

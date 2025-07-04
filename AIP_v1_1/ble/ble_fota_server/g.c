@@ -43,7 +43,12 @@ static uint16_t crcTb[] = {
 
 sysparam_st g_sysparam_st;
 
-
+offline_voice_ctrl_t g_offline_voice = {
+		.key_enable = false,
+    .enabled = false,
+    .wake_word = 0,
+		.ubb_enable = false
+};
 
 
 uint16_t Modbus_Crc_Compute(const uint8_t *buf, uint16_t bufLen) 
