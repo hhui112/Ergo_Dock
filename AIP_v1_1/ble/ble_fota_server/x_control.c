@@ -7,10 +7,6 @@ static bool keys_ignore = false;
 static uint8_t led_off_count = 0;
 static uint8_t led_off_pin = 0;
 
-offline_voice_ctrl_t g_offline_voice = {
-    .enabled = false,
-    .wake_word = 0,
-};
 
 void check_offline_voice_keys(void)
 {
@@ -19,16 +15,21 @@ void check_offline_voice_keys(void)
 
     if (key1 == 1 && key2 == 1)
     {
-        g_offline_voice.enabled = false;  
+        g_offline_voice.key_enable = false;  
     }
     else
     {
-//        g_offline_voice.enabled = true;   
-//        if (key1 == 0)
-//            g_offline_voice.wake_word = Hello_Ergo; // 1=Hello Ergo
-//        else if (key2 == 0)
-//            g_offline_voice.wake_word = Hello_Bed; // 2=Hello Bed
+        g_offline_voice.key_enable = true;   
+        if (key1 == 0)
+            g_offline_voice.wake_word = Hello_Ergo; // 1=Hello Ergo
+        else if (key2 == 0)
+            g_offline_voice.wake_word = Hello_Bed; // 2=Hello Bed
     }
+		if(g_sysparam_st.ubb == 1){
+			g_offline_voice.ubb_enable = true;		// light_on
+		}else{
+			g_offline_voice.ubb_enable = false;		// litht off
+		}
 } 
 
 void control_timer10ms(void)

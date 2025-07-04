@@ -203,6 +203,16 @@ typedef struct
 	uint32_t check_timerout;  // 串口接收数据超时次数
 }MFPDatacheck_t;
 
+
+// 离线语音
+typedef struct {
+		bool key_enable;
+    bool enabled;           // en = 1 
+    uint8_t wake_word;      // 1=Hello Ergo, 2=Hello Bed
+		bool ubb_enable; 				// litht_on = 1
+} offline_voice_ctrl_t;
+
+
 // 打鼾干预
 
 typedef struct
@@ -311,6 +321,7 @@ typedef struct
 	calendar_cal_t calendar_cal;
 	calendar_time_t calendar_time;
 	uint8_t       AntiSnore_intensity;
+	uint8_t 			ubb;		// 床底灯状态
 }sysparam_st;//系统参数
 
 
@@ -340,5 +351,6 @@ extern uint32_t x_time_RTC_ToUTC(void);
 extern int in_state;           //在离枕状态 0离床 1在床
 extern uint16_t Modbus_Crc_Compute(const uint8_t *buf, uint16_t bufLen);
 extern sysparam_st g_sysparam_st;
+extern offline_voice_ctrl_t g_offline_voice;
 extern uint8_t syncCalcCheckSum(const uint8_t *data, uint8_t len);
 #endif
