@@ -1,6 +1,7 @@
 #include "x_uart.h"
 #include "mfp_queue.h"
 #include "g.h"
+#include "offline_voice.h"
 
 uint8_t s_tx_busy;
 uint8_t rx1_t_data,rx2_t_data,rx3_t_data;
@@ -63,7 +64,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 
 	if(huart == &UART_Server3_Config)
 	{
-		// LOG_I("UART3 Rx interrupt entered");
+		LOG_I("UART3 Rx interrupt entered");
 		HAL_UART_Receive_IT(&UART_Server3_Config, &rx3_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
 		if(uart3_data_pack.rxindex <RXBUFF_LEN)
 		{
@@ -84,7 +85,12 @@ void uart1_cmdHandle(void)
 }
 void uart2_cmdHandle(void)
 {
-		if(uart2_data_pack.rxbuf[0] != 0xa5 || uart2_data_pack.rxbuf[1]!=0xfa) return;
+		/* 1、如果离线语音没有使能：直接退出 */
+	
+	
+		/* 2、将指令码传入离线语音处理函数 */
+	 offline_voice_cmdHandle(uart2_data_pack.rxbuf[6]);
+	/*
 		if(uart2_data_pack.rxbuf[3] == 0x81 && uart2_data_pack.rxbuf[3]<= 0xF0 && uart2_data_pack.rxbuf[3] != 0x82)	// 指令码：语音芯片发送操作
 		{
 			// 离线语音使能
@@ -128,16 +134,16 @@ void uart2_cmdHandle(void)
 							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
 							break;	
 					case 0x2D:		// Massage Low
-				
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_LOW,3);
 							break;
 					case 0x2E:		// Massage Medium
-					 
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_MEDIUM,3);
 							break;
 					case 0x2F:		// Massage High
-					 
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_HIGH,3);
 							break;
-					case 0x30:		// MASSAGE OFF
-				
+					case 0x30:		// MASSAGE OFF   
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
 							break;
 					case 0x31:		// LIGHT OFF
 							prepare_mfp_NORMAL_KET(KEY_UBB,3);
@@ -153,6 +159,7 @@ void uart2_cmdHandle(void)
 					// 离线语音关闭
 			}
 		}
+		*/
 }
 
 unsigned char rxCalcCheckSum()
@@ -243,7 +250,10 @@ void x_uart3_dateReceiveHandle(void)
 			g_sysparam_st.ci1302.snorevolume = uart3_data_pack.rxbuf[6]<<8|uart3_data_pack.rxbuf[7];
 			g_sysparam_st.ci1302.snoreState = uart3_data_pack.rxbuf[8];
 			g_sysparam_st.sf.snorevolume = g_sysparam_st.ci1302.snorevolume;
-			LOG_I("uart3 rece\n");
+			LOG_I("UART3接收: version=0x%04X, snorevolume=%u, snoreState=%u\n", 
+													g_sysparam_st.ci1302.version, 
+													g_sysparam_st.ci1302.snorevolume, 
+													g_sysparam_st.ci1302.snoreState);
 			// x_uart_Internalparameterprint();
 		}
 		uart3_data_pack.rxindex = 0;
@@ -470,5 +480,5 @@ void x_uart_init(void)
 {
 	x_uart1_init();
 	x_uart2_init();
-	//x_uart3_init();
+	x_uart3_init();
 }
