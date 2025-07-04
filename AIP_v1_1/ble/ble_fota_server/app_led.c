@@ -22,7 +22,6 @@ void app_led_reset_all(void)
       io_write_pin(Led_blue_pin[i], 1);
     }
     io_write_pin(Led_Green_pin[0], 1);
-    io_write_pin(Led_Green_pin[1], 1);
     io_write_pin(Led_red_pin, 1);
 
 }
@@ -30,6 +29,7 @@ void app_led_reset_all(void)
 void BLEPairing_led_reset(void)
 {
     io_write_pin(Led_blue_pin[3], 1);
+	  io_write_pin(Led_Green_pin[1], 1);
 }
 
 void BLEPairing_led_set(void)
@@ -41,7 +41,8 @@ void app_led_set(uint8_t num,m_color_t color)          //Ãÿ∂®µ∆≥£¡¡ µ∆∫≈£∫num£®f
 {
 	  if(num != 3)
 		  app_led_reset_all();
-		
+		else 
+		  BLEPairing_led_reset();
 		switch(color)
 		{
 		  case blue: if(num < 4)  io_write_pin(Led_blue_pin[num],0);
