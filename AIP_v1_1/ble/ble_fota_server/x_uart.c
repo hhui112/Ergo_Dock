@@ -174,10 +174,12 @@ void x_uart3_dateReceiveHandle(void)
 			g_sysparam_st.ci1302.snorevolume = uart3_data_pack.rxbuf[6]<<8|uart3_data_pack.rxbuf[7];
 			g_sysparam_st.ci1302.snoreState = uart3_data_pack.rxbuf[8];
 			g_sysparam_st.sf.snorevolume = g_sysparam_st.ci1302.snorevolume;
-			LOG_I("UART3½ÓÊÕ: version=0x%04X, snorevolume=%u, snoreState=%u\n", 
-													g_sysparam_st.ci1302.version, 
-													g_sysparam_st.ci1302.snorevolume, 
-													g_sysparam_st.ci1302.snoreState);
+			if(g_sysparam_st.ci1302.snoreState == 1 && g_sysparam_st.snoreIntervention.enable){
+					g_sysparam_st.sf.snorevolume_acc += g_sysparam_st.ci1302.snorevolume;
+					g_sysparam_st.sf.snorevolume_cnt++;  
+			}
+			// LOG_I("AntiSnore_intensity =%d, snorevolume_acc = %d, snorevolume_cnt = %d \r\n",g_sysparam_st.AntiSnore_intensity, g_sysparam_st.sf.snorevolume_acc,g_sysparam_st.sf.snorevolume_cnt);
+			// LOG_I("UART3: version=0x%04X, snorevolume=%u, snoreState=%u\n", g_sysparam_st.ci1302.version, g_sysparam_st.ci1302.snorevolume, g_sysparam_st.ci1302.snoreState);
 			// x_uart_Internalparameterprint();
 		}
 		uart3_data_pack.rxindex = 0;
@@ -404,5 +406,5 @@ void x_uart_init(void)
 {
 	x_uart1_init();
 	x_uart2_init();
-	// x_uart3_init();
+	x_uart3_init();
 }

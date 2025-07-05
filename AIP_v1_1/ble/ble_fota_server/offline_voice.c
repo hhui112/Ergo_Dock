@@ -36,7 +36,7 @@ void offline_voice_dataHandle(uint8_t cmd)
 							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  Í·½ÅÌ§Éý6s
 							break;
 					case 0x25:		// Zero G
-							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3); 
+							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3);
 							break;
 					case 0x26:		// Flat Preset
 							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 

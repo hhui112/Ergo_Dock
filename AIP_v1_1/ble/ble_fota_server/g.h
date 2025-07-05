@@ -230,14 +230,13 @@ typedef struct
 	uint16_t limit_pa;  			//打鼾最高气压
 	
 	bool enable ;							//0关闭 1开启
-	
-
 	uint32_t triggered_time_s;                 // 干预触发时间
-    bool     is_intervening;                        // 打鼾干预中
-    bool     triggered_flag;                        // 需要干预
+  bool     is_intervening;                        // 打鼾干预中
+  bool     triggered_flag;                        // 需要干预
 	uint8_t snoreIntervention_pwm;                   // 缓启动速度
-  	uint8_t snoreIntervention_tmr;                   // 缓启动时间 
+  uint8_t snoreIntervention_tmr;                   // 缓启动时间 
 	uint8_t snoreIntervention_threshold;            // 打鼾次数阈值
+	uint8_t       AntiSnore_intensity;
 	
 }snoreIntervention_t;
 
@@ -299,6 +298,10 @@ typedef struct
 	uint16_t    ThresholdMove;	//体动阈值	
 	uint8_t stabilize;					//气压稳定
 
+	uint32_t snorevolume_acc;     // 累积音量
+	uint32_t snorevolume_cnt;     // 次数
+	uint32_t snorevolume_avg;     // 平均音量
+	
 }x_sf_st;//系统参数
 
 
