@@ -3,6 +3,9 @@
 #include "stdint.h"
 #include "stdbool.h"
 
+#define 		Hello_Ergo 		1
+#define 		Hello_Bed 		2
+
 void control_timer10ms(void);
 void on_led_timeout_set(uint8_t led_num,uint8_t time_out);
 void control_timer1000ms(void);
@@ -12,6 +15,7 @@ void x_control_init(void);
 void StretchingModeStop(void);
 void StretchingModeStart(void);
 
+void check_offline_voice_keys(void);
 
 void app_airpump_inflate_on(void);
 

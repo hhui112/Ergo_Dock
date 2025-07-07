@@ -203,6 +203,16 @@ typedef struct
 	uint32_t check_timerout;  // 串口接收数据超时次数
 }MFPDatacheck_t;
 
+
+// 离线语音
+typedef struct {
+		bool key_enable;
+    bool enabled;           // en = 1 
+    uint8_t wake_word;      // 1=Hello Ergo, 2=Hello Bed
+		bool ubb_enable; 				// litht_on = 1
+} offline_voice_ctrl_t;
+
+
 // 打鼾干预
 
 typedef struct
@@ -220,14 +230,13 @@ typedef struct
 	uint16_t limit_pa;  			//打鼾最高气压
 	
 	bool enable ;							//0关闭 1开启
-	
-
 	uint32_t triggered_time_s;                 // 干预触发时间
-    bool     is_intervening;                        // 打鼾干预中
-    bool     triggered_flag;                        // 需要干预
+  bool     is_intervening;                        // 打鼾干预中
+  bool     triggered_flag;                        // 需要干预
 	uint8_t snoreIntervention_pwm;                   // 缓启动速度
-  	uint8_t snoreIntervention_tmr;                   // 缓启动时间 
+  uint8_t snoreIntervention_tmr;                   // 缓启动时间 
 	uint8_t snoreIntervention_threshold;            // 打鼾次数阈值
+	uint8_t       AntiSnore_intensity;
 	
 }snoreIntervention_t;
 
@@ -289,6 +298,10 @@ typedef struct
 	uint16_t    ThresholdMove;	//体动阈值	
 	uint8_t stabilize;					//气压稳定
 
+	uint32_t snorevolume_acc;     // 累积音量
+	uint32_t snorevolume_cnt;     // 次数
+	uint32_t snorevolume_avg;     // 平均音量
+	
 }x_sf_st;//系统参数
 
 
@@ -311,6 +324,7 @@ typedef struct
 	calendar_cal_t calendar_cal;
 	calendar_time_t calendar_time;
 	uint8_t       AntiSnore_intensity;
+	uint8_t 			ubb;		// 床底灯状态
 }sysparam_st;//系统参数
 
 
@@ -340,5 +354,6 @@ extern uint32_t x_time_RTC_ToUTC(void);
 extern int in_state;           //在离枕状态 0离床 1在床
 extern uint16_t Modbus_Crc_Compute(const uint8_t *buf, uint16_t bufLen);
 extern sysparam_st g_sysparam_st;
+extern offline_voice_ctrl_t g_offline_voice;
 extern uint8_t syncCalcCheckSum(const uint8_t *data, uint8_t len);
 #endif

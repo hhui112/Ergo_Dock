@@ -358,7 +358,6 @@ static void ls_100ms_timer_cb(void *param)
 	// x_uart_realtimeprint();
 
 	SnoringIntervention_run();		//打鼾干预 100ms调用一次
-
 	if(xTimer_100ms_inst)
 	{
 		builtin_timer_start(xTimer_100ms_inst, 100, NULL); 
