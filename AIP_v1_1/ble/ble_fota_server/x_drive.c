@@ -169,6 +169,8 @@ uint8_t on_WirelessCharege_status_get(void)
 		  return 0;
 		else if(io_read_pin(CHARGE_NORMAL_PIN)) 
 		  return 1;
+		
+		return 0xff;
 }
 
 // ÉÏÉıÑØ ´ò÷ı

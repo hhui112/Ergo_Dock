@@ -62,7 +62,7 @@ void control_timer1000ms(void)
 		    app_led_set(0xFF,red);
 		    chargeAbnormal_timeout = 30;
 		  }
-		  else if(on_WirelessCharege_status_get()) 
+		  else if(on_WirelessCharege_status_get() == 1) 
 		  {
 			  chargeAbnormal_flag = false;
 		    app_led_set(1,green);
