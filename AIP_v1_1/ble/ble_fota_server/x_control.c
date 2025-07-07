@@ -92,6 +92,13 @@ void control_timer1000ms(void)
 		    app_led_set(1,green);
 			  chargeAbnormal_timeout = 0;
 		  }
+			else if(on_WirelessCharege_status_get() == 0xff)
+			{
+				app_led_reset_all();
+			  chargeAbnormal_flag = false;
+			  chargeAbnormal_timeout = 0;
+			}
+			
 		  if(chargeAbnormal_timeout > 0) chargeAbnormal_timeout --;  
 		  if(chargeAbnormal_timeout == 0 && chargeAbnormal_flag) {
 		  //30s计时结束后 业务逻辑待定 清楚红灯
