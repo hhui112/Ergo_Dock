@@ -7,6 +7,30 @@ static bool keys_ignore = false;
 static uint8_t led_off_count = 0;
 static uint8_t led_off_pin = 0;
 
+void check_offline_voice_keys(void)
+{
+    uint8_t key1 = io_read_pin(KEY1_PIN);
+    uint8_t key2 = io_read_pin(KEY2_PIN);
+
+    if (key1 == 1 && key2 == 1)
+    {
+        g_offline_voice.key_enable = false;  
+    }
+    else
+    {
+        g_offline_voice.key_enable = true;   
+        if (key1 == 0)
+            g_offline_voice.wake_word = Hello_Ergo; // 1=Hello Ergo
+        else if (key2 == 0)
+            g_offline_voice.wake_word = Hello_Bed; // 2=Hello Bed
+    }
+		if(g_sysparam_st.ubb == 1){
+			g_offline_voice.ubb_enable = true;		// light_on
+		}else{
+			g_offline_voice.ubb_enable = false;		// litht off
+		}
+} 
+
 void control_timer10ms(void)
 {
 	  static uint8_t last_key = 0;
@@ -28,7 +52,7 @@ void control_timer10ms(void)
 			  app_led_flash_set();
 				keys_ignore = true;
 				g_sysparam_st.AntiSnore_intensity = 0;
-				//¹Ø±Õ
+				//å…³é—­
 			}
 		}else if(last_key != 0 && key == 0) {
 			LOG_I("key %x released",last_key);
@@ -70,7 +94,7 @@ void control_timer1000ms(void)
 		  }
 		  if(chargeAbnormal_timeout > 0) chargeAbnormal_timeout --;  
 		  if(chargeAbnormal_timeout == 0 && chargeAbnormal_flag) {
-		  //30s¼ÆÊ±½áÊøºó ÒµÎñÂß¼­´ı¶¨ Çå³şºìµÆ
+		  //30sè®¡æ—¶ç»“æŸå ä¸šåŠ¡é€»è¾‘å¾…å®š æ¸…æ¥šçº¢ç¯
 			  app_led_reset_all();
 		  }				
 		}
