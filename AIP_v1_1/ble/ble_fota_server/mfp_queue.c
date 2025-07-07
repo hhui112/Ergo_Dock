@@ -50,7 +50,7 @@ void mfp_tx_task(void)
     if (req->repeat > 0)
     {
 				io_write_pin(UART_CTR,0);	
-				HAL_UART_Transmit(&UART_Server1_Config, req->data, req->len, 1000);  // 发数据
+				HAL_UART_Transmit(&UART_Server1_Config, req->data, req->len, 10);  // 发数据
 				io_write_pin(UART_CTR,1);	
 			
         req->repeat--;

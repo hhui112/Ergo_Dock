@@ -54,7 +54,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	if(huart == &UART_Server2_Config)
 	{
 		HAL_UART_Receive_IT(&UART_Server2_Config, &rx2_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
-		 LOG_I("UART2 Rx interrupt entered rx2_t_data = %x",rx2_t_data);
+		 // LOG_I("UART2 Rx interrupt entered rx2_t_data = %x",rx2_t_data);
 		if(uart2_data_pack.rxindex <RXBUFF_LEN)
 		{
 			uart2_data_pack.rxbuf[uart2_data_pack.rxindex++] = rx2_t_data;
@@ -78,7 +78,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 void uart1_cmdHandle(void)
 {
 		// 读取UBB值
-		g_sysparam_st.ubb = uart1_data_pack.rx.rawData[11];
+		g_sysparam_st.ubb = uart1_data_pack.rx.rawData[11]& 0x01;
 		
 }
 void uart2_cmdHandle(void)
@@ -174,10 +174,12 @@ void x_uart3_dateReceiveHandle(void)
 			g_sysparam_st.ci1302.snorevolume = uart3_data_pack.rxbuf[6]<<8|uart3_data_pack.rxbuf[7];
 			g_sysparam_st.ci1302.snoreState = uart3_data_pack.rxbuf[8];
 			g_sysparam_st.sf.snorevolume = g_sysparam_st.ci1302.snorevolume;
-			LOG_I("UART3接收: version=0x%04X, snorevolume=%u, snoreState=%u\n", 
-													g_sysparam_st.ci1302.version, 
-													g_sysparam_st.ci1302.snorevolume, 
-													g_sysparam_st.ci1302.snoreState);
+			if(g_sysparam_st.ci1302.snoreState == 1 && g_sysparam_st.snoreIntervention.enable){
+					g_sysparam_st.sf.snorevolume_acc += g_sysparam_st.ci1302.snorevolume;
+					g_sysparam_st.sf.snorevolume_cnt++;  
+			}
+			// LOG_I("AntiSnore_intensity =%d, snorevolume_acc = %d, snorevolume_cnt = %d \r\n",g_sysparam_st.AntiSnore_intensity, g_sysparam_st.sf.snorevolume_acc,g_sysparam_st.sf.snorevolume_cnt);
+			// LOG_I("UART3: version=0x%04X, snorevolume=%u, snoreState=%u\n", g_sysparam_st.ci1302.version, g_sysparam_st.ci1302.snorevolume, g_sysparam_st.ci1302.snoreState);
 			// x_uart_Internalparameterprint();
 		}
 		uart3_data_pack.rxindex = 0;
@@ -404,5 +406,5 @@ void x_uart_init(void)
 {
 	x_uart1_init();
 	x_uart2_init();
-	// x_uart3_init();
+	x_uart3_init();
 }

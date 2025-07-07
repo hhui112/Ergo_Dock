@@ -19,7 +19,9 @@ void offline_voice_wake_off(void){
 void offline_voice_dataHandle(uint8_t cmd)
 {
 	/* 2、根据命令判断指令 */
+		if(cmd == 0x21 || cmd == 0x22) return;
 		app_ReceiveCommand_LedOn();
+
 			switch (cmd) 
 			{
 					case 0x21:
@@ -28,13 +30,13 @@ void offline_voice_dataHandle(uint8_t cmd)
 							break;
 					case 0x23:		// STOP
 							mfp_tx_queue_clear();
-							prepare_mfp_NORMAL_KET(KEY_MOTOR_STOP,3); 
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,1); 
 							break;
 					case 0x24:		// All Up
 							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  头脚抬升6s
 							break;
 					case 0x25:		// Zero G
-							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3); 
+							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3);
 							break;
 					case 0x26:		// Flat Preset
 							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
@@ -70,11 +72,13 @@ void offline_voice_dataHandle(uint8_t cmd)
 							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
 							break;
 					case 0x31:		// LIGHT OFF
-						if(g_offline_voice.ubb_enable == true)  prepare_mfp_NORMAL_KET(KEY_UBB,3);
+							if(g_offline_voice.ubb_enable == true)  prepare_mfp_NORMAL_KET(KEY_UBB,3);
+							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
 							break;
 					case 0x32:		// LIGHT On
-							if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBB关闭时候才开启   状态不用保存(MFP状态一直回传的)
-							break;
+							 if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBB关闭时候才开启   状态不用保存(MFP状态一直回传的)
+							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
+					break;
 					default:
 							LOG_I("Invalid command \r\n");
 		}
