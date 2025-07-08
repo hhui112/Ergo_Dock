@@ -10,6 +10,7 @@
 void control_timer10ms(void);
 void on_led_timeout_set(uint8_t led_num,uint8_t time_out);
 void control_timer1000ms(void);
+void app_ReceiveCommand_LedEnable(void);
 void adjust_pressure(int target_pa,int tolerance);
 void adjust_pressure_Overchargedischarge(int target_pa,uint32_t overvlue,int tolerance) ;
 void x_control_init(void);

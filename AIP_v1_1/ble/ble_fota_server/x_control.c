@@ -6,6 +6,7 @@ static uint8_t chargeAbnormal_timeout = 0;
 static bool keys_ignore = false;
 static uint8_t led_off_count = 0;
 static uint8_t led_off_pin = 0;
+static bool ReceiveCommand_flag = false;
 
 void check_offline_voice_keys(void)
 {
@@ -76,6 +77,10 @@ void on_led_timeout_set(uint8_t led_pin,uint8_t time_out)
     led_off_count = time_out;
 }
 
+void app_ReceiveCommand_LedEnable(void)
+{
+    ReceiveCommand_flag = true;
+}
 void control_timer1000ms(void)
 {
 	  if(g_sysparam_st.AntiSnore_intensity == 0 && !on_led_flash_isActive())
@@ -110,6 +115,11 @@ void control_timer1000ms(void)
 		  led_off_count --;
 			if(led_off_count == 0 ) {
 		    io_write_pin(led_off_pin ,1);
+				if(ReceiveCommand_flag) {
+					ReceiveCommand_flag = false;
+				  app_Receive_Wakeup_LedOn();
+				}
+					
 		  } 
 		}
 			
