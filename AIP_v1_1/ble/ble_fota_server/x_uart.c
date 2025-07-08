@@ -64,7 +64,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 
 	if(huart == &UART_Server3_Config)
 	{
-		// LOG_I("UART3 Rx interrupt entered");
+//		 LOG_I("UART3 Rx interrupt entered");
 		HAL_UART_Receive_IT(&UART_Server3_Config, &rx3_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
 		if(uart3_data_pack.rxindex <RXBUFF_LEN)
 		{

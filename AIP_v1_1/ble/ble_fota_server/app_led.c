@@ -112,10 +112,11 @@ void app_NotReceive_LedFlash(void)
 	  led_flash_num = 1;
     m_flash_times = 2 * 2;
 }
-//ÓïÒôµÆÁÁÆğ3sÂÌµÆ
+//ÓïÒôµÆÁÁÆğ3sÂÌµÆ + 8sÀ¶µÆ
 void app_ReceiveCommand_LedOn(void)
 {
 	  on_led_period_set(3,green,3);
+	  app_ReceiveCommand_LedEnable();
 }
 //
 void on_led_10ms_handle(void)
