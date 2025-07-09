@@ -4,8 +4,8 @@
 
 #define SNORETIMER     2*60   		// (5*60)			//(15*60) 5分钟触发一次打鼾干预检查
 #define SI_TH					(1)				// 干预阈值
-#define SI_PWM				(0x80)
-#define SI_TMR				(0x10)
+#define SI_PWM				(0x32)
+#define SI_TMR				(0x40)
 #define UP_HOLD_TIMES	 30*60				// (30*60)
 
 // 读：干预强度和使能
