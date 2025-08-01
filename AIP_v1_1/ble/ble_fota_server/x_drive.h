@@ -17,9 +17,9 @@
 #define CHARGE_ABNORMAL_PIN PB07		// ÎÞÏß³äÐ¾Æ¬Êä³ö
 #define CHARGE_NORMAL_PIN 	PB08
 
-#define LED_Blue_0_PIN      PB15           
+#define LED_Blue_0_PIN      PA02           
 #define LED_Blue_1_PIN      PA00  
-#define LED_Blue_2_PIN      PA02  
+#define LED_Blue_2_PIN      PB15  
 #define LED_Blue_3_PIN      PB09
 
 #define LED_Green_1_PIN     PA01           

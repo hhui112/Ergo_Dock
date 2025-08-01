@@ -81,6 +81,7 @@ void prepare_mfp_NORMAL_KET(uint32_t keys,uint8_t repeat)
 		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
 	
 		if (!mfp_send_request(uartTxbuff, i, repeat))
+			
     {
         LOG_E("MFP QUERE ERR! \r\n");
     }

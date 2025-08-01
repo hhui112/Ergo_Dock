@@ -20,4 +20,6 @@ bool on_BLEPairing_led_isActive(void);
 void app_Receive_Wakeup_LedOn(void);
 void app_NotReceive_LedFlash(void);
 void app_ReceiveCommand_LedOn(void);
+void app_Receive_Wakeup_LedOn_5s(void);
+
 #endif

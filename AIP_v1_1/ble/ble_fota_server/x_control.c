@@ -117,7 +117,7 @@ void control_timer1000ms(void)
 		    io_write_pin(led_off_pin ,1);
 				if(ReceiveCommand_flag) {
 					ReceiveCommand_flag = false;
-				  app_Receive_Wakeup_LedOn();
+				  app_Receive_Wakeup_LedOn_5s();
 				}
 					
 		  } 

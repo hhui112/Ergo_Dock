@@ -104,6 +104,12 @@ void app_Receive_Wakeup_LedOn(void)
 {
     on_led_period_set(3,blue,8);
 }
+//”Ô“Ùµ∆¬Ãµ∆¡¡3s∫Û ¿∂µ∆‘Ÿ¡¡5s
+void app_Receive_Wakeup_LedOn_5s(void)
+{
+    on_led_period_set(3,blue,5);
+}
+
 //”Ô“Ùµ∆…¡À∏2¥Œ¿∂µ∆
 void app_NotReceive_LedFlash(void)
 {
@@ -112,7 +118,7 @@ void app_NotReceive_LedFlash(void)
 	  led_flash_num = 1;
     m_flash_times = 2 * 2;
 }
-//”Ô“Ùµ∆¡¡∆3s¬Ãµ∆ + 8s¿∂µ∆
+//”Ô“Ùµ∆¡¡∆3s¬Ãµ∆ + 5s¿∂µ∆
 void app_ReceiveCommand_LedOn(void)
 {
 	  on_led_period_set(3,green,3);

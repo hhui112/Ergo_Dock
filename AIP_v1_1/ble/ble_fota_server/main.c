@@ -339,6 +339,7 @@ int main()
     gatt_manager_init(gatt_manager_callback);//gatt初始化与回调注册
 		SnoringInterventionInit();
 		ble_loop();//循环处理ble事件
+
 	
 	/*
 		x_uart_init(); 

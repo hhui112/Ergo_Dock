@@ -45,7 +45,7 @@ void on_key_10ms_handle(void)                //触控按键获取并消抖
     static int8_t stop_key = 0;
     for(idx = 0;idx < sizeof(m_button_list)/sizeof(uint8_t); idx++ ) {
         if(!io_read_pin(m_button_list[idx])) {
-            key |= (uint16_t)1u << idx;
+            key |= (uint16_t)1u << idx;     // 每个bit表示每个按键的按下状态 按下记为1
             key_nums ++;
         }
     }
@@ -70,7 +70,7 @@ uint8_t app_touch_key_get(void)               //触控按键
 	  uint8_t code_mask = 1;
     const uint8_t ButtonPosTable[BUTTON_NUM] =
 //	|    0     |    S1    |    S2    |    S3    |    S4    |    S5    |    S6    |    S7    |
-	  {  app_key_num3 ,app_key_num4};
+	  {  app_key_num3 ,app_key_num4};						// 将物理按键映射到逻辑按键上
     for(uint8_t i=0;i<BUTTON_NUM;i++){
         if((current_key & code_mask) != 0) {
             ret |= ButtonPosTable[i];

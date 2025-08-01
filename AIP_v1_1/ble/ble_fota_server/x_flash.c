@@ -6,8 +6,8 @@
 
 static uint8_t 			old_ai_adj;
 static uint8_t 			old_ai_adj_strength;
-static uint16_t 		old_adjPa;       				//自适应气压
-static uint8_t 			old_snoreIntervention_enable;	//打鼾使能标志位
+static uint16_t 		old_adjPa;       				//????????
+static uint8_t 			old_snoreIntervention_enable;	//?????????λ
 
 void x_flash_static_Init(void);
 
@@ -27,7 +27,7 @@ void x_flash_load(void)
 	
 	memcpy(&flash_save_data,p,sizeof(flash_save_data));
 	
-	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRC校验
+	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRCУ??
 	
 	if(crc_t == flash_save_data.crc)
 	{
@@ -53,7 +53,7 @@ void x_flash_save(void)
 	flash_save_data.ai_adj =g_sysparam_st.ai_adj;
 	flash_save_data.ai_adj_strength = g_sysparam_st.ai_adj_strength;
 	flash_save_data.adjPa = g_sysparam_st.airpump.adjPa;
-	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRC校验
+	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRCУ??
 	flash_save_data.crc = crc_t;
 	set_savetoflash((uint8_t*)&flash_save_data,sizeof(flash_save_data));
 }

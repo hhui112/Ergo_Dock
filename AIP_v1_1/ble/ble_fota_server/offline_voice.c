@@ -19,9 +19,12 @@ void offline_voice_wake_off(void){
 void offline_voice_dataHandle(uint8_t cmd)
 {
 	/* 2、根据命令判断指令 */
-		if(cmd == 0x21 || cmd == 0x22) return;
-		app_ReceiveCommand_LedOn();
-
+		if(cmd == 0x21 || cmd == 0x22){
+				app_Receive_Wakeup_LedOn();	// 蓝继续亮8s
+				return;
+		}
+		app_ReceiveCommand_LedOn();	// 绿亮3 蓝亮5s
+		g_sysparam_st.snoreIntervention.is_intervening = false;
 			switch (cmd) 
 			{
 					case 0x21:
@@ -34,12 +37,15 @@ void offline_voice_dataHandle(uint8_t cmd)
 							break;
 					case 0x24:		// All Up
 							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  头脚抬升6s
+							// prepare_mfp_SOFT_START(KEY_MEMORY4, 0x32, 0x10,3);  //KEY_MEMORY4 
+							//app_Receive_Wakeup_LedOn();
 							break;
 					case 0x25:		// Zero G
-							prepare_mfp_NORMAL_KET(KEY_FLAT_ZEROG,3);
+							prepare_mfp_NORMAL_KET(KEY_ZEROG,3);
 							break;
 					case 0x26:		// Flat Preset
 							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
+							// prepare_mfp_SOFT_START(KEY_ALLFATE,0x32,0x20,3);
 							break;				
 					case 0x27:		// Favorite preset  // 音乐位置
 							prepare_mfp_NORMAL_KET(KEY_MEMORY5,3); 
@@ -97,7 +103,10 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 		check_offline_voice_keys();
 	
 		/* 1、如果按键离线语音没有使能：直接退出 */
-    if(g_offline_voice.key_enable == false) return;
+    if(g_offline_voice.key_enable == false){
+			state = VOICE_STATE_DISABLED;		// 需要重新唤醒
+			return;
+		}
 	
 		LOG_I( "key_enable = %d, wake_word = %d,cmd = %x ,ubb = %d",g_offline_voice.key_enable,g_offline_voice.wake_word ,data,g_offline_voice.ubb_enable);
 
@@ -116,6 +125,7 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 		
         case VOICE_STATE_ACTIVE:
             if(cmd == 0x81) {
+
                 offline_voice_dataHandle(data);		/* 2.1、语音芯片发送操作： 将指令码传入离线语音处理函数 */
                 state = VOICE_STATE_ACTIVE;
             } 

@@ -6,7 +6,7 @@
 #include "ls_hal_uart.h"
 #include "ls_ble.h"
 #include "fota_svc_server.h"
-#define ADV_NAME   "iPillow:"
+#define ADV_NAME   "Ergo_dock:"
 #define ADV_NAME_LEN   (sizeof(ADV_NAME)-1)
 #define UART_SVC_RX_MAX_LEN (USER_MAX_MTU - 3)
 #define UART_SVC_TX_MAX_LEN (USER_MAX_MTU - 3)
