@@ -176,26 +176,26 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
     break;
     case SERVER_WRITE_REQ:
         //LOG_I("write req");
-        if (evt->server_write_req.svc == &ls_uart_server_svc_env)
+        if (evt->server_write_req.svc == &ls_uart_server_svc_env)	// 串口透传服务
         {
            // ls_uart_server_write_req_ind(evt->server_write_req.att_idx, con_idx, evt->server_write_req.length, evt->server_write_req.value);//蓝牙下行数据透传给串口
 					LOG_I("srv0020");
 							if(evt->server_write_req.length<=50&&evt->server_write_req.length>=5)
 							{
-								//LOG_I("APP_DATA");
+								LOG_I("APP_DATA");
 								memcpy(&ble_data_receive.ble_data_receive[0],&evt->server_write_req.value[0],evt->server_write_req.length);
 								ble_data_receive.lengh=evt->server_write_req.length;
-//								x_ble_com_handle((uint8_t*)&evt->server_write_req.value[0],evt->server_write_req.length);
+								x_ble_com_handle((uint8_t*)&evt->server_write_req.value[0],evt->server_write_req.length);
 							}
         }
         else
         {
-            ls_ota_server_write_req_ind(&evt->server_write_req, con_idx);
+            ls_ota_server_write_req_ind(&evt->server_write_req, con_idx);	// ota服务
         }
     break;
     case SERVER_NOTIFICATION_DONE:
         uart_server_ntf_done = true;
-        LOG_I("ntf done");
+        // LOG_I("ntf done");
     break;
     case SERVER_INDICATION_DONE:
         LOG_I("ind done");

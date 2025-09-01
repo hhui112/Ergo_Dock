@@ -15,7 +15,8 @@ void check_offline_voice_keys(void)
 
     if (key1 == 1 && key2 == 1)
     {
-        g_offline_voice.key_enable = false;  
+        g_offline_voice.key_enable = false; 
+				g_offline_voice.wake_word	= 0;	
     }
     else
     {
@@ -61,7 +62,8 @@ void control_timer10ms(void)
 				chargeAbnormal_flag = false;
 				g_sysparam_st.AntiSnore_intensity = (g_sysparam_st.AntiSnore_intensity < 3)? g_sysparam_st.AntiSnore_intensity + 1:1;
 				uint8_t led_num = g_sysparam_st.AntiSnore_intensity - 1;
-				app_led_set(led_num,blue);
+				// app_led_set(led_num,blue);
+				app_key_blue_10s(led_num); // 调整为短按触发后指示灯亮10秒自动熄灭
 			}
 		}else {
 		  key_repeat = 0;
@@ -69,6 +71,8 @@ void control_timer10ms(void)
 		}
 	
 	  last_key = key;
+		
+		check_offline_voice_keys();
 }
 
 void on_led_timeout_set(uint8_t led_pin,uint8_t time_out)
@@ -83,33 +87,55 @@ void app_ReceiveCommand_LedEnable(void)
 }
 void control_timer1000ms(void)
 {
-	  if(g_sysparam_st.AntiSnore_intensity == 0 && !on_led_flash_isActive())
+	static uint8_t last_charge_status = 0xff;
+	uint8_t current_charge_status = on_WirelessCharege_status_get();
+	static uint8_t charge_green_timeout = 0;	// 绿灯倒计时15s
+	
+	  // if(g_sysparam_st.AntiSnore_intensity == 0 && !on_led_flash_isActive())
+	  if(!on_led_flash_isActive())		// 不在闪烁中
 		{
-      if(!on_WirelessCharege_status_get() && !chargeAbnormal_flag)
+      if(!current_charge_status && !chargeAbnormal_flag)	// 充电异常
 		  {
 			  chargeAbnormal_flag = true;
 		    app_led_set(0xFF,red);
 		    chargeAbnormal_timeout = 30;
 		  }
-		  else if(on_WirelessCharege_status_get() == 1) 
+		  else if(current_charge_status == 1) 	// 正常充电
 		  {
-			  chargeAbnormal_flag = false;
-		    app_led_set(1,green);
-			  chargeAbnormal_timeout = 0;
+				if (last_charge_status != 1)
+				{
+						app_led_set(1, green);
+						charge_green_timeout = 15;
+				}
+				chargeAbnormal_flag = false;
+				chargeAbnormal_timeout = 0;
 		  }
-			else if(on_WirelessCharege_status_get() == 0xff)
+			else if(current_charge_status == 0xff)	// 没充电
 			{
-				app_led_reset_all();
-			  chargeAbnormal_flag = false;
-			  chargeAbnormal_timeout = 0;
+					// app_led_reset_all();
+					io_write_pin(LED_Red_all_PIN, 1);
+					io_write_pin(LED_Green_1_PIN, 1);
+					chargeAbnormal_flag = false;
+					chargeAbnormal_timeout = 0;
+					charge_green_timeout = 0;
 			}
 			
 		  if(chargeAbnormal_timeout > 0) chargeAbnormal_timeout --;  
 		  if(chargeAbnormal_timeout == 0 && chargeAbnormal_flag) {
 		  //30s计时结束后 业务逻辑待定 清楚红灯
 			  app_led_reset_all();
-		  }				
+		  }			
+        if (charge_green_timeout > 0)
+        {
+            charge_green_timeout--;
+            if (charge_green_timeout == 0)
+            {
+                io_write_pin(LED_Green_1_PIN, 1);
+            }
+        }				
 		}
+		
+		
     if(led_off_count > 0) 
 		{
 		  led_off_count --;
@@ -122,5 +148,6 @@ void control_timer1000ms(void)
 					
 		  } 
 		}
-			
+		 last_charge_status = current_charge_status;
+		// LOG_I("cur_s = %d , Lst_s = %d, g_timeout = %d \n",current_charge_status,last_charge_status,charge_green_timeout);
 }

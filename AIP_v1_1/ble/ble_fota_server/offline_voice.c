@@ -25,6 +25,7 @@ void offline_voice_dataHandle(uint8_t cmd)
 		}
 		app_ReceiveCommand_LedOn();	// 绿亮3 蓝亮5s
 		g_sysparam_st.snoreIntervention.is_intervening = false;
+		g_sysparam_st.snoreIntervention.triggered_flag = false;
 			switch (cmd) 
 			{
 					case 0x21:
@@ -65,14 +66,14 @@ void offline_voice_dataHandle(uint8_t cmd)
 					case 0x2C:		// Lower foot
 							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
 							break;	
-					case 0x2D:		// Massage Low
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_LOW,3);
+					case 0x2D:		// Massage On  (massageAll 开启头脚按摩)
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
 							break;
-					case 0x2E:		// Massage Medium
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_MEDIUM,3);
+					case 0x2E:		// Massage Up 头脚按摩增强
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_FEET|KEY_MASSAGE_HEAD,3);
 							break;
-					case 0x2F:		// Massage High
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_HIGH,3);
+					case 0x2F:		// Massage Down
+							prepare_mfp_NORMAL_KET(KEY_MASSAGE_HEAD_MINUS|KEY_MASSAGE_FEET_MIUNS,3);
 							break;
 					case 0x30:		// MASSAGE OFF   
 							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
@@ -84,7 +85,26 @@ void offline_voice_dataHandle(uint8_t cmd)
 					case 0x32:		// LIGHT On
 							 if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBB关闭时候才开启   状态不用保存(MFP状态一直回传的)
 							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
-					break;
+							break;
+					case 0x33:		// GOOD NIGHT
+							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3);
+							break;						
+					case 0x34:		// ANTI-SNORE
+							prepare_mfp_NORMAL_KET(KEY_MEMORY4,3);
+							break;	
+					case 0x35:		// RAISE LUMBAR
+							prepare_mfp_NORMAL_KET(KEY_M4_OUT,15);
+							break;
+					case 0x36:		// LOWER LUMBAR
+							prepare_mfp_NORMAL_KET(KEY_M4_IN,15);
+							break;
+					case 0x37:		// RAISE TILT
+							prepare_mfp_NORMAL_KET(KEY_M3_OUT,15);
+							break;
+					case 0x38:		// LOWER TILT
+							prepare_mfp_NORMAL_KET(KEY_M3_IN,15);
+							break;
+
 					default:
 							LOG_I("Invalid command \r\n");
 		}
@@ -100,7 +120,7 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 {
     static VoiceState state = VOICE_STATE_DISABLED;
     /* 0、检查按键状态 */
-		check_offline_voice_keys();
+		// check_offline_voice_keys();
 	
 		/* 1、如果按键离线语音没有使能：直接退出 */
     if(g_offline_voice.key_enable == false){

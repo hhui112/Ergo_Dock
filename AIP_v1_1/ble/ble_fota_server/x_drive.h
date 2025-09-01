@@ -20,10 +20,10 @@
 #define LED_Blue_0_PIN      PA02           
 #define LED_Blue_1_PIN      PA00  
 #define LED_Blue_2_PIN      PB15  
-#define LED_Blue_3_PIN      PB09
+#define LED_Blue_3_PIN      PB09		// ¿∂—¿≈‰∂‘µ∆ ¿∂
 
 #define LED_Green_1_PIN     PA01           
-#define LED_Green_3_PIN     PB10  
+#define LED_Green_3_PIN     PB10  	// ¿∂—¿≈‰∂‘ ¬Ã
 
 #define LED_Red_all_PIN     PB13 
 

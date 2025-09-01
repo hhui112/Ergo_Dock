@@ -152,7 +152,7 @@
           <Type>0</Type>
           <LineNumber>337</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>402907718</Address>
+          <Address>402907938</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -168,7 +168,7 @@
           <Type>0</Type>
           <LineNumber>334</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>402907706</Address>
+          <Address>402907926</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -178,22 +178,6 @@
           <Filename>..\..\main.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\ble_fota_server\../../main.c\334</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>119</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>402893938</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\..\app_led.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\ble_fota_server\../../app_led.c\119</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

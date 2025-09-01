@@ -27,6 +27,12 @@ void app_led_reset_all(void)
 
 }
 
+void app_led_reset_Green(void)          
+{
+    io_write_pin(Led_blue_pin[1], 1);
+}
+
+
 void BLEPairing_led_reset(void)
 {
 	  BLEPairing_led_on_active = false; 
@@ -40,7 +46,7 @@ void BLEPairing_led_set(void)
     io_write_pin(Led_blue_pin[3], 0);
 }
 
-void app_led_set(uint8_t num,m_color_t color)          //Ãÿ∂®µ∆≥£¡¡ µ∆∫≈£∫num£®ff »´¡¡£© —’…´£∫color
+void app_led_set(uint8_t num,m_color_t color)          //????? ???num?ff ??? ???color
 {
 	  if(num != 3)
 		  app_led_reset_all();
@@ -71,7 +77,7 @@ void app_led_set(uint8_t num,m_color_t color)          //Ãÿ∂®µ∆≥£¡¡ µ∆∫≈£∫num£®f
 		}	
 }
 
-void on_led_period_set(uint8_t num, m_color_t color, uint8_t time_1S)          //Ãÿ∂®µ∆∂Ã‘›¡¡ µ∆∫≈£∫num —’…´£∫color  ±º‰£∫time_1S
+void on_led_period_set(uint8_t num, m_color_t color, uint8_t time_1S)          //?????? ???num ???color ???time_1S
 {
     app_led_set(num,color);
 	  uint8_t led_pin = 0;
@@ -81,7 +87,7 @@ void on_led_period_set(uint8_t num, m_color_t color, uint8_t time_1S)          /
 	  on_led_timeout_set(led_pin,time_1S);
 }
 
-void app_led_flash_set(void)        //…¡À∏3¥Œ                            
+void app_led_flash_set(void)        //??3?                            
 {
 	  memcpy(m_flash_ledlist, Led_blue_pin, sizeof(Led_blue_pin) - 1);
 	  app_led_reset_all();
@@ -99,18 +105,18 @@ bool on_BLEPairing_led_isActive(void)
 	  return BLEPairing_led_on_active ;
 }
 
-//”Ô“Ùµ∆ªΩ–—8s¿∂µ∆
+//?????8s??
 void app_Receive_Wakeup_LedOn(void)
 {
     on_led_period_set(3,blue,8);
 }
-//”Ô“Ùµ∆¬Ãµ∆¡¡3s∫Û ¿∂µ∆‘Ÿ¡¡5s
+//??????3s? ????5s
 void app_Receive_Wakeup_LedOn_5s(void)
 {
     on_led_period_set(3,blue,5);
 }
 
-//”Ô“Ùµ∆…¡À∏2¥Œ¿∂µ∆
+//?????2???
 void app_NotReceive_LedFlash(void)
 {
 	  m_flash_ledlist[0] = LED_Blue_3_PIN;
@@ -118,12 +124,19 @@ void app_NotReceive_LedFlash(void)
 	  led_flash_num = 1;
     m_flash_times = 2 * 2;
 }
-//”Ô“Ùµ∆¡¡∆3s¬Ãµ∆ + 5s¿∂µ∆
+//?????3s?? + 5s??
 void app_ReceiveCommand_LedOn(void)
 {
 	  on_led_period_set(3,green,3);
 	  app_ReceiveCommand_LedEnable();
 }
+
+// ????????10s??
+void app_key_blue_10s(uint8_t num)
+{
+    on_led_period_set(num,blue,10);
+}
+
 //
 void on_led_10ms_handle(void)
 {
@@ -138,6 +151,3 @@ void on_led_10ms_handle(void)
 			m_flash_times --;
 		}
 }
-
-
-

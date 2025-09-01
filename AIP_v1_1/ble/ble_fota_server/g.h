@@ -237,8 +237,9 @@ typedef struct
   uint8_t snoreIntervention_tmr;                   // 缓启动时间 
 	uint8_t snoreIntervention_threshold;            // 打鼾次数阈值
 	uint8_t       AntiSnore_intensity;
-	
-}snoreIntervention_t;
+	uint32_t timer_s;				// 当前计算时间
+	uint32_t oldsnoreNub;		// 当前打鼾次数
+}snoreIntervention_t;	
 
 typedef struct
 {
@@ -318,13 +319,16 @@ typedef struct
 	airpump_t 		airpump;						//气囊状态
 	uint8_t 			cursor; 						//一个游标指向执行气压的大小
 	stretch_t 		stretch;						//模式模式相关参数
-	x_sf_st sf;
-	snoreIntervention_t snoreIntervention;//打鼾干预
 	CI1302_t  ci1302;
 	calendar_cal_t calendar_cal;
 	calendar_time_t calendar_time;
 	uint8_t       AntiSnore_intensity;
+	uint8_t       last_AntiSnore_intensity;
+	
+	x_sf_st sf;
+	snoreIntervention_t snoreIntervention;//打鼾干预
 	uint8_t 			ubb;		// 床底灯状态
+	uint8_t   charge_state;    // 无限充电状态
 }sysparam_st;//系统参数
 
 

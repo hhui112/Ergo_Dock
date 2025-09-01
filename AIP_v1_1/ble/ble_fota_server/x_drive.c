@@ -165,11 +165,15 @@ void x_io_init(void)
 
 uint8_t on_WirelessCharege_status_get(void)
 {
-    if(io_read_pin(CHARGE_ABNORMAL_PIN)) 
+    if(io_read_pin(CHARGE_ABNORMAL_PIN)){ 
+			g_sysparam_st.charge_state = 0;
 		  return 0;
-		else if(io_read_pin(CHARGE_NORMAL_PIN)) 
+		}
+		else if(io_read_pin(CHARGE_NORMAL_PIN)){
+			g_sysparam_st.charge_state = 1;
 		  return 1;
-		
+		}
+		g_sysparam_st.charge_state = 0xFF; 
 		return 0xff;
 }
 

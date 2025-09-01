@@ -10,7 +10,7 @@ typedef enum
 }m_color_t;
 
 void app_led_reset_all(void);          
-void app_led_set(uint8_t num,m_color_t color);          //num:µÆºÅ£¨ff È«ÁÁ£© 
+void app_led_set(uint8_t num,m_color_t color);
 void on_led_10ms_handle(void);
 bool on_led_flash_isActive(void);
 void app_led_flash_set(void);
@@ -21,5 +21,9 @@ void app_Receive_Wakeup_LedOn(void);
 void app_NotReceive_LedFlash(void);
 void app_ReceiveCommand_LedOn(void);
 void app_Receive_Wakeup_LedOn_5s(void);
+void app_key_flash_LedOn(uint8_t led_num);
+void app_chargeon_LedOn(void);
+void app_led_reset_Green(void);
+void app_key_blue_10s(uint8_t num);
 
 #endif
