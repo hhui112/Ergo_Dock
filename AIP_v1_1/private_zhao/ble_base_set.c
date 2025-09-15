@@ -93,7 +93,13 @@ void start_adv(void)//¿ªÆô¹ã²¥
 	  LS_ASSERT(adv_obj_hdl != 0xff);
     uint8_t adv_data_length = ADV_DATA_PACK(advertising_data, 1, GAP_ADV_TYPE_SHORTENED_NAME, name_adv, sizeof(name_adv));
     dev_manager_start_adv(adv_obj_hdl, advertising_data, adv_data_length, scan_response_data, 0);
+		LOG_I("BLE: advertising start");
 }
 
-
+void stop_adv(void)
+{
+    LS_ASSERT(adv_obj_hdl != 0xff);
+    dev_manager_stop_adv(adv_obj_hdl);
+		LOG_I("BLE: advertising stopped");
+}
 

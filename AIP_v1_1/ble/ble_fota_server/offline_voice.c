@@ -11,6 +11,7 @@ void offline_voice_wake_up(void){
 void offline_voice_wake_off(void){
 	LOG_I("offline_voice_wake_off \r\n");
 	g_offline_voice.enabled = false;
+	
 	app_NotReceive_LedFlash();
 } 
 
@@ -20,12 +21,14 @@ void offline_voice_dataHandle(uint8_t cmd)
 {
 	/* 2¡¢¸ù¾ÝÃüÁîÅÐ¶ÏÖ¸Áî */
 		if(cmd == 0x21 || cmd == 0x22){
-				app_Receive_Wakeup_LedOn();	// À¶¼ÌÐøÁÁ8s
+			if(!g_sysparam_st.ble.ble_pair_flag) app_Receive_Wakeup_LedOn();	// À¶¼ÌÐøÁÁ8s
 				return;
 		}
-		app_ReceiveCommand_LedOn();	// ÂÌÁÁ3 À¶ÁÁ5s
+		if(!g_sysparam_st.ble.ble_pair_flag) app_ReceiveCommand_LedOn();	// ÂÌÁÁ3 À¶ÁÁ5s
+		
 		g_sysparam_st.snoreIntervention.is_intervening = false;
 		g_sysparam_st.snoreIntervention.triggered_flag = false;
+		// LOG_I("CMD = %02x",cmd);
 			switch (cmd) 
 			{
 					case 0x21:
@@ -67,16 +70,18 @@ void offline_voice_dataHandle(uint8_t cmd)
 							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
 							break;	
 					case 0x2D:		// Massage On  (massageAll ¿ªÆôÍ·½Å°´Ä¦)
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
+							if(g_sysparam_st.m1 == 0) prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
 							break;
 					case 0x2E:		// Massage Up Í·½Å°´Ä¦ÔöÇ¿
+							//prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
 							prepare_mfp_NORMAL_KET(KEY_MASSAGE_FEET|KEY_MASSAGE_HEAD,3);
 							break;
 					case 0x2F:		// Massage Down
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_HEAD_MINUS|KEY_MASSAGE_FEET_MIUNS,3);
+							//prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
+							 prepare_mfp_NORMAL_KET(KEY_MASSAGE_HEAD_MINUS|KEY_MASSAGE_FEET_MIUNS,3);
 							break;
 					case 0x30:		// MASSAGE OFF   
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
+							if(g_sysparam_st.m1 != 0) prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
 							break;
 					case 0x31:		// LIGHT OFF
 							if(g_offline_voice.ubb_enable == true)  prepare_mfp_NORMAL_KET(KEY_UBB,3);

@@ -43,7 +43,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	if(huart == &UART_Server1_Config)
 	{
 		HAL_UART_Receive_IT(&UART_Server1_Config, &rx1_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
-		 // LOG_I("UART1 Rx interrupt entered rx2_t_data = %x",rx1_t_data);
+		// LOG_I("UART1 Rx interrupt entered rx2_t_data = %x",rx1_t_data);
 		if(uart1_data_pack.rxindex <RXBUFF_LEN)
 		{
 			uart1_data_pack.rx.rawData[uart1_data_pack.rxindex++] = rx1_t_data;
@@ -54,7 +54,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)//串口接收回调函数
 	if(huart == &UART_Server2_Config)
 	{
 		HAL_UART_Receive_IT(&UART_Server2_Config, &rx2_t_data, 1);//调用此函数，串口接收使能，每次接收1byte，存放到uart_server_rx_byte
-		  LOG_I("UART2 Rx interrupt entered rx2_t_data = %x",rx2_t_data);
+		LOG_I("UART2 Rx interrupt entered rx2_t_data = %x",rx2_t_data);
 		if(uart2_data_pack.rxindex <RXBUFF_LEN)
 		{
 			uart2_data_pack.rxbuf[uart2_data_pack.rxindex++] = rx2_t_data;
@@ -79,6 +79,9 @@ void uart1_cmdHandle(void)
 {
 		// 读取UBB值
 		g_sysparam_st.ubb = uart1_data_pack.rx.rawData[11]& 0x01;
+		g_sysparam_st.m1 = uart1_data_pack.rx.rawData[12];
+		g_sysparam_st.m2 = uart1_data_pack.rx.rawData[13];
+		// LOG_I("ubb:%d,m1:%d,m2:%d",g_sysparam_st.ubb,g_sysparam_st.m1,g_sysparam_st.m2);
 		
 }
 void uart2_cmdHandle(void)

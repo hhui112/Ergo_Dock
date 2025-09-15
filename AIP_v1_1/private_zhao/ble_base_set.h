@@ -42,5 +42,6 @@ extern const struct att_decl ls_srv0020_server_att_decl[SRV0020_SVC_ATT_NUM];
 extern const struct svc_decl ls_srv0020_server_svc;
 
 void start_adv(void);
+void stop_adv(void);
 void ls_srv0020_server_read_req_ind(uint8_t att_idx, uint8_t con_idx);
 #endif

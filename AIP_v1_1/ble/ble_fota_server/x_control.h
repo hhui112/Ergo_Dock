@@ -9,6 +9,7 @@
 
 void control_timer10ms(void);
 void on_led_timeout_set(uint8_t led_num,uint8_t time_out);
+void on_led_timeout_clear(uint8_t led_pin);
 void control_timer1000ms(void);
 void app_ReceiveCommand_LedEnable(void);
 void adjust_pressure(int target_pa,int tolerance);

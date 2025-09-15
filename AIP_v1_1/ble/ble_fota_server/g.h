@@ -306,6 +306,14 @@ typedef struct
 }x_sf_st;//系统参数
 
 
+typedef struct 
+{
+	uint8_t   ble_connect;    	// 蓝牙配对状态 
+	uint8_t   ble_pair_flag;	//蓝牙配对标志位 
+	uint16_t   ble_pair_time;	//蓝牙配对标志位 
+}ble_st;
+
+
 //系统参数
 typedef struct 
 {
@@ -328,7 +336,11 @@ typedef struct
 	x_sf_st sf;
 	snoreIntervention_t snoreIntervention;//打鼾干预
 	uint8_t 			ubb;		// 床底灯状态
+	uint8_t 			m1;			// 头部马达
+	uint8_t 			m2;			// 脚步马达
 	uint8_t   charge_state;    // 无限充电状态
+	ble_st 		ble;
+	
 }sysparam_st;//系统参数
 
 

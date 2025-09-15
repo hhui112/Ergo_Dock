@@ -129,6 +129,7 @@ static void gap_manager_callback(enum gap_evt_type type,union gap_evt_u *evt,uin
     {
     case CONNECTED:
         connect_id = con_idx;
+				g_sysparam_st.ble.ble_connect = 1;
         LOG_I("connected!");
     break;
     case DISCONNECTED:
@@ -136,7 +137,12 @@ static void gap_manager_callback(enum gap_evt_type type,union gap_evt_u *evt,uin
         uart_server_mtu = UART_SERVER_MTU_DFT;
         LOG_I("disconnected!");
         fota_clean_state();
-        start_adv();
+				g_sysparam_st.ble.ble_connect = 0;
+				if(g_sysparam_st.ble.ble_pair_time != 3000 )// 如果在30s配对过程中断开则继续广播
+				{
+						start_adv(); 
+				}
+        // start_adv();  // 不在自动广播
     break;
     case CONN_PARAM_REQ:
         //LOG_I
@@ -305,10 +311,10 @@ static void dev_manager_callback(enum dev_evt_type type,union dev_evt_u *evt)
     case ADV_OBJ_CREATED:
         LS_ASSERT(evt->obj_created.status == 0);
         adv_obj_hdl = evt->obj_created.handle;
-        start_adv();
+        // start_adv();  // 初始化不在广播
     break;
     case ADV_STOPPED:
-        start_adv();            
+        // start_adv();  // 停止广播后不在重新广播
     break;
     case SCAN_STOPPED:
     break;

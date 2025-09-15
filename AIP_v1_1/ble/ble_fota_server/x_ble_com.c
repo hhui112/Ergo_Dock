@@ -146,7 +146,7 @@ void x_ble_com_handle(uint8_t *pbuff,uint8_t len)
 	if(len < total_len) return; 
 
 	crc1_t = ((uint16_t)pbuff[total_len + 1] << 8) | pbuff[total_len];
-	LOG_I("crc1_t 0x%04X, 0x%04X", pbuff[total_len + 1],  pbuff[total_len]);
+	LOG_I("CRC:   0x%04X, 0x%04X", pbuff[total_len + 1],  pbuff[total_len]);
 	crc2_t = Modbus_Crc_Compute(pbuff, total_len);
 	if(crc2_t != crc1_t){
 			LOG_I("CRC ERR: calc=0x%04X, recv=0x%04X", crc2_t, crc1_t);
@@ -226,6 +226,9 @@ void x_ble_com_txbuffFill(void)
 	bletxbuff[i++] = g_offline_voice.enabled;		// 离线语音唤醒
 	
 	bletxbuff[i++] = g_sysparam_st.charge_state; // 无线充标志位
+	bletxbuff[i++] = g_sysparam_st.ble.ble_pair_flag; // 蓝牙配对标志位
+	bletxbuff[i++] = g_sysparam_st.ble.ble_connect; // 蓝牙连接标志位
+	
 	bletxbuff[1] = i-4;	
 	temp = Modbus_Crc_Compute(bletxbuff,i);
 	
