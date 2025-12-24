@@ -138,8 +138,8 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 		/* 2°¢”Ô“Ù–æ∆¨∑¢ÀÕªΩ–—÷∏¡Ó£∫ ≈–∂œªΩ–—¥ æˆ∂® «∑ÒªΩ–— */
     switch(state) {
         case VOICE_STATE_DISABLED:		// ≈–∂œ÷∏¡Ó
-            if((data == 0x21 && g_offline_voice.wake_word == Hello_Ergo) ||
-               (data == 0x22 && g_offline_voice.wake_word == Hello_Bed)) {
+            if((cmd == 0x81 && data == 0x21 && g_offline_voice.wake_word == Hello_Ergo) ||
+               (cmd == 0x81 && data == 0x22 && g_offline_voice.wake_word == Hello_Bed)) {
                 state = VOICE_STATE_WAKE_WORD_DETECTED;
                 g_offline_voice.enabled = true;
                 offline_voice_wake_up();
