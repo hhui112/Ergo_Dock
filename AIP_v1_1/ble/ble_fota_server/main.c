@@ -18,6 +18,7 @@
 #include "APP_io_init.h"
 #include "uart_base.h"
 #include "g.h"
+#include "app_led_ctrl.h"  // æ–°çš„LEDæ§åˆ¶æ¨¡å—
 #include "stdio.h"
 #include "ls_hal_trng.h"
 #include "x_drive.h"
@@ -38,7 +39,7 @@ uint8_t recv_flag;//static volatile
 static uint8_t connect_id = 0xff; 
 static bool uart_server_ntf_done = true;
 static uint16_t uart_server_mtu = UART_SERVER_MTU_DFT;
-static struct builtin_timer *uart_server_timer_inst = NULL;//Èí¶¨Ê±
+static struct builtin_timer *uart_server_timer_inst = NULL;//ï¿½ï¿½ï¿½ï¿½Ê±
 
 //static uint8_t advertising_data[28] = {0x05, 0x09, 'u', 'a', 'r', 't'};
 //static uint8_t scan_response_data[31];
@@ -47,7 +48,7 @@ static struct builtin_timer *uart_server_timer_inst = NULL;//Èí¶¨Ê±
 uint8_t ls_bleup_server_send_notification(uint8_t  *data_notice,uint16_t length);
 static void ls_srv0020_server_data_length_update(uint8_t con_idx);
 
-static void ls_ble_dataup_50ms_timer_cb(void *param)//Èí¶¨Ê±»Øµ÷º¯Êı
+static void ls_ble_dataup_50ms_timer_cb(void *param)//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	static uint16_t count;
 	
@@ -57,35 +58,35 @@ static void ls_ble_dataup_50ms_timer_cb(void *param)//Èí¶¨Ê±»Øµ÷º¯Êı
 	{
 		count = 0;
 		x_ble_com_txbuffFill();
-		ls_bleup_server_send_notification(bletxbuff,bletxlen);//²éÑ¯ÊÇ·ñÓĞÊı¾İÉÏĞĞ·¢ËÍ
+		ls_bleup_server_send_notification(bletxbuff,bletxlen);//ï¿½ï¿½Ñ¯ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ·ï¿½ï¿½ï¿½
 	}
 		
-	if(uart_server_timer_inst)//Èí¶¨Ê±¸´Î»
+	if(uart_server_timer_inst)//ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Î»
 	{
 			builtin_timer_start(uart_server_timer_inst, 50, NULL); 
 	}
 }
 
-static void ls_time_server_init(void)//´´½¨Ò»¸öÈí¶¨Ê±£¬ÓÃÀ´¶¨Ê±²éÑ¯ÊÇ·ñÓĞÊı¾İÍ¨¹ıÀ¶ÑÀÉÏ±¨  
+static void ls_time_server_init(void)//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ñ¯ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½  
 {
     uart_server_timer_inst = builtin_timer_create(ls_ble_dataup_50ms_timer_cb);
-    builtin_timer_start(uart_server_timer_inst, 50, NULL);//Èí¶¨Ê±Ê±¼äÉèÖÃ50ms  µ¥Î»ms
+    builtin_timer_start(uart_server_timer_inst, 50, NULL);//ï¿½ï¿½ï¿½ï¿½Ê±Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½50ms  ï¿½ï¿½Î»ms
 }
 
 
 
-uint8_t ls_bleup_server_send_notification(uint8_t  *data_notice,uint16_t length)//À¶ÑÀÉÏĞĞÊı¾İÍ¨ĞÅ
+uint8_t ls_bleup_server_send_notification(uint8_t  *data_notice,uint16_t length)//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
 {
 	
 	
 	if(connect_id != CON_IDX_INVALID_VAL && length != 0 && uart_server_ntf_done)
 	{
-			uint32_t cpu_stat = enter_critical();//ÏµÍ³µ÷¶ÈÆ÷ÉÏËø
+			uint32_t cpu_stat = enter_critical();//ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			uart_server_ntf_done = false;
 			uint16_t handle = gatt_manager_get_svc_att_handle(&ls_uart_server_svc_env, SRV0020_SVC_IDX_TX_VAL);
 			gatt_manager_server_send_notification(connect_id, handle, &data_notice[0], length, NULL);         
 			srv0020.tx.plength = 0;	
-			exit_critical(cpu_stat);//ÏµÍ³µ÷¶ÈÆ÷½âËø
+			exit_critical(cpu_stat);//ÏµÍ³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			return 1;
 	}
 	else
@@ -129,20 +130,28 @@ static void gap_manager_callback(enum gap_evt_type type,union gap_evt_u *evt,uin
     {
     case CONNECTED:
         connect_id = con_idx;
-				g_sysparam_st.ble.ble_connect = 1;
+			g_sysparam_st.ble.ble_connect = 1;
         LOG_I("connected!");
+				// å¦‚æœåœ¨é…å¯¹æœŸé—´è¿æ¥æˆåŠŸï¼Œåˆ‡æ¢LEDä¸ºå¸¸äº®
+				if(g_sysparam_st.ble.ble_pair_flag && g_sysparam_st.ble.ble_pair_time > 0) {
+					led_bt_pairing(true);  // æ–°çš„LEDæ§åˆ¶ï¼šé…å¯¹æˆåŠŸï¼ˆå¸¸äº®ï¼‰
+				}
     break;
     case DISCONNECTED:
         connect_id = 0xff;
         uart_server_mtu = UART_SERVER_MTU_DFT;
         LOG_I("disconnected!");
         fota_clean_state();
-				g_sysparam_st.ble.ble_connect = 0;
-				if(g_sysparam_st.ble.ble_pair_time != 3000 )// Èç¹ûÔÚ30sÅä¶Ô¹ı³ÌÖĞ¶Ï¿ªÔò¼ÌĞø¹ã²¥
-				{
-						start_adv(); 
-				}
-        // start_adv();  // ²»ÔÚ×Ô¶¯¹ã²¥
+			g_sysparam_st.ble.ble_connect = 0;
+			if(g_sysparam_st.ble.ble_pair_time != 3000 )// ï¿½ï¿½ï¿½ï¿½ï¿½30sï¿½ï¿½Ô¹ï¿½ï¿½ï¿½ï¿½Ğ¶Ï¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã²¥
+			{
+					start_adv();
+					// å¦‚æœè¿˜åœ¨é…å¯¹æœŸé—´ï¼Œæ¢å¤é—ªçƒçŠ¶æ€
+					if(g_sysparam_st.ble.ble_pair_flag && g_sysparam_st.ble.ble_pair_time > 0) {
+						led_bt_pairing(false);  // æ–°çš„LEDæ§åˆ¶ï¼šé…å¯¹ä¸­ï¼ˆé—ªçƒï¼‰
+					}
+			}
+        // start_adv();  // ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ã²¥
     break;
     case CONN_PARAM_REQ:
         //LOG_I
@@ -182,9 +191,9 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
     break;
     case SERVER_WRITE_REQ:
         //LOG_I("write req");
-        if (evt->server_write_req.svc == &ls_uart_server_svc_env)	// ´®¿ÚÍ¸´«·şÎñ
+        if (evt->server_write_req.svc == &ls_uart_server_svc_env)	// ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
-           // ls_uart_server_write_req_ind(evt->server_write_req.att_idx, con_idx, evt->server_write_req.length, evt->server_write_req.value);//À¶ÑÀÏÂĞĞÊı¾İÍ¸´«¸ø´®¿Ú
+           // ls_uart_server_write_req_ind(evt->server_write_req.att_idx, con_idx, evt->server_write_req.length, evt->server_write_req.value);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 					LOG_I("srv0020");
 							if(evt->server_write_req.length<=50&&evt->server_write_req.length>=5)
 							{
@@ -196,7 +205,7 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
         }
         else
         {
-            ls_ota_server_write_req_ind(&evt->server_write_req, con_idx);	// ota·şÎñ
+            ls_ota_server_write_req_ind(&evt->server_write_req, con_idx);	// otaï¿½ï¿½ï¿½ï¿½
         }
     break;
     case SERVER_NOTIFICATION_DONE:
@@ -220,16 +229,16 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
 static void create_adv_obj()
 {
     struct legacy_adv_obj_param adv_param = {
-        .adv_intv_min = 0x20,//¹ã²¥°üµÄ×îĞ¡ÖÜÆÚ  µ¥Î»625us  ×î´óºÍ×îĞ¡ÖµÒ»°ãÅäÖÃÍ¬Ò»¸öÖµ
-        .adv_intv_max = 0x20,//¹ã²¥°üµÄ×î´óÖÜÆÚ  µ¥Î»625us  
+        .adv_intv_min = 0x20,//ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½Î»625us  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¡ÖµÒ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬Ò»ï¿½ï¿½Öµ
+        .adv_intv_max = 0x20,//ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½Î»625us  
         .own_addr_type = PUBLIC_OR_RANDOM_STATIC_ADDR,
         .filter_policy = 0,
-        .ch_map = 0x7,//¶¨ÒåÃ¿×é¹ã²¥°üµÄ¸öÊı£¬Ä¬ÈÏÎª7£¬±íÊ¾37/38/39Õâ3¸öchannelÉÏ¶¼»á·¢ËÍ
-        .disc_mode = ADV_MODE_GEN_DISC,//Í¨ÓÃ¹ã²¥
+        .ch_map = 0x7,//ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ã²¥ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½Ä¬ï¿½ï¿½Îª7ï¿½ï¿½ï¿½ï¿½Ê¾37/38/39ï¿½ï¿½3ï¿½ï¿½channelï¿½Ï¶ï¿½ï¿½á·¢ï¿½ï¿½
+        .disc_mode = ADV_MODE_GEN_DISC,//Í¨ï¿½Ã¹ã²¥
         .prop = {
-            .connectable = 1,//±ØĞëÎª1£¬·ñÔòÎª²»¿ÉÁ¬Ğø¹ã²¥°ü£¬ºóĞøÎŞ·¨½¨Á¢Á¬½Ó
-            .scannable = 1,//¿ÉÉ¨Ãè
-            .directed = 0,//·Ç¶¨Ïò
+            .connectable = 1,//ï¿½ï¿½ï¿½ï¿½Îª1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ş·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            .scannable = 1,//ï¿½ï¿½É¨ï¿½ï¿½
+            .directed = 0,//ï¿½Ç¶ï¿½ï¿½ï¿½
             .high_duty_cycle = 0,
         },
     };
@@ -281,14 +290,14 @@ static void dev_manager_callback(enum dev_evt_type type,union dev_evt_u *evt)
     {
         uint8_t addr[6];
 				bool type;
-				x_uart_init();  	// ³õÊ¼»¯´®¿Ú
+				x_uart_init();  	// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         dev_manager_get_identity_bdaddr(addr,&type);
 			  LOG_I("type:%d,addr:",type);
         LOG_HEX(addr,sizeof(addr));
-        dev_manager_add_service((struct svc_decl *)&ls_srv0020_server_svc);	//Ìí¼Ó·şÎñÏÈµ÷ÓÃ¸Ãº¯Êı£¬È»ºóÔÚSERVICE_ADDED½ø¶Èµ÷ÓÃgatt_manager_svc_register(evt->service_added.start_hdl, UART_SVC_ATT_NUM, &ls_uart_server_svc_env);
-       // HAL_UART_Receive_IT(&UART_Server_Config, &uart_server_rx_byte, 1); //´®¿Ú½ÓÊÕÊ¹ÄÜ£¬Ã¿´Î½ÓÊÕ1byte£¬´æ·Åµ½uart_server_rx_byte
-        ls_time_server_init();   //mainÖĞ50msÈí¶¨Ê±³õÊ¼»¯       	
-				ls_even_timer_init();//user Èí¶¨Ê±³õÊ¼»¯				
+        dev_manager_add_service((struct svc_decl *)&ls_srv0020_server_svc);	//ï¿½ï¿½ï¿½Ó·ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½Ã¸Ãºï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½SERVICE_ADDEDï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½gatt_manager_svc_register(evt->service_added.start_hdl, UART_SVC_ATT_NUM, &ls_uart_server_svc_env);
+       // HAL_UART_Receive_IT(&UART_Server_Config, &uart_server_rx_byte, 1); //ï¿½ï¿½ï¿½Ú½ï¿½ï¿½ï¿½Ê¹ï¿½Ü£ï¿½Ã¿ï¿½Î½ï¿½ï¿½ï¿½1byteï¿½ï¿½ï¿½ï¿½Åµï¿½uart_server_rx_byte
+        ls_time_server_init();   //mainï¿½ï¿½50msï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê¼ï¿½ï¿½       	
+				ls_even_timer_init();//user ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ê¼ï¿½ï¿½				
     }
     break;
     case SERVICE_ADDED:
@@ -304,17 +313,17 @@ static void dev_manager_callback(enum dev_evt_type type,union dev_evt_u *evt)
         else if (1 == svc_added_flag)
         {
             fotas_register_svc(evt->service_added.start_hdl);
-            create_adv_obj();//´´½¨¹ã²¥¶ÔÏó
+            create_adv_obj();//ï¿½ï¿½ï¿½ï¿½ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½
         }
     }
     break;
     case ADV_OBJ_CREATED:
         LS_ASSERT(evt->obj_created.status == 0);
         adv_obj_hdl = evt->obj_created.handle;
-        // start_adv();  // ³õÊ¼»¯²»ÔÚ¹ã²¥
+        // start_adv();  // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ú¹ã²¥
     break;
     case ADV_STOPPED:
-        // start_adv();  // Í£Ö¹¹ã²¥ºó²»ÔÚÖØĞÂ¹ã²¥
+        // start_adv();  // Í£Ö¹ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¹ã²¥
     break;
     case SCAN_STOPPED:
     break;
@@ -337,14 +346,15 @@ void delay_ms(uint32_t ms)
 
 int main()
 {
-    sys_init_app();//ÏµÍ³³õÊ¼»¯
+    sys_init_app();//ÏµÍ³ï¿½ï¿½Ê¼ï¿½ï¿½
 		x_driver_init();
-    ble_init();//ble³õÊ¼»¯
-    dev_manager_init(dev_manager_callback);//Éè±¸¹ÜÀí³õÊ¼»¯²¢×¢²á»Øµ÷
-    gap_manager_init(gap_manager_callback);//gap³õÊ¼»¯Óë»Øµ÷×¢²á
-    gatt_manager_init(gatt_manager_callback);//gatt³õÊ¼»¯Óë»Øµ÷×¢²á
+		led_ctrl_init();  // åˆå§‹åŒ–LEDæ§åˆ¶æ¨¡å—
+    ble_init();//bleï¿½ï¿½Ê¼ï¿½ï¿½
+    dev_manager_init(dev_manager_callback);//ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½Øµï¿½
+    gap_manager_init(gap_manager_callback);//gapï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Øµï¿½×¢ï¿½ï¿½
+    gatt_manager_init(gatt_manager_callback);//gattï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Øµï¿½×¢ï¿½ï¿½
 		SnoringInterventionInit();
-		ble_loop();//Ñ­»·´¦ÀíbleÊÂ¼ş
+		ble_loop();//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bleï¿½Â¼ï¿½
 
 	
 	/*
@@ -365,7 +375,7 @@ int main()
 		adaptivecontrol_default();
 		x_flash_load();
 		x_ai_Init();
-    ble_loop();//Ñ­»·´¦ÀíbleÊÂ¼ş
+    ble_loop();//Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½bleï¿½Â¼ï¿½
 	*/
 }
 

@@ -14,6 +14,7 @@
 #include "heat_control.h"
 #include "g.h"
 #include "app_key.h"
+#include "app_led_ctrl.h"  // 新的LED控制模块
 
 
 
@@ -322,7 +323,8 @@ static void ls_10ms_timer_cb(void *param)
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
   on_key_10ms_handle();
-	on_led_10ms_handle();
+	// on_led_10ms_handle();  // 旧的LED控制，已弃用
+	led_ctrl_10ms_handler();  // 新的LED控制模块
 	control_timer10ms();
 	x_uart_10ms();
 	// x_report_time_10ms();

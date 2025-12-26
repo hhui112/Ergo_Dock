@@ -114,10 +114,23 @@ bool on_BLEPairing_led_isActive(void)
 }
 
 //?????8s??
-void app_Receive_Wakeup_LedOn(void)
+void app_Receive_Wakeup_LedOn_(void)
 {
     on_led_period_set(3,blue,9);
 }
+
+void app_Receive_Wakeup_LedOn(void)  // 新的函数，直接操作硬件，不调用app_led_set避免副作用
+{
+    // 不清除LED 3的定时任务（如果有的话）
+    on_led_timeout_clear(LED_Blue_3_PIN);
+    
+    // 直接操作硬件，不调用app_led_set避免副作用
+    io_write_pin(LED_Blue_3_PIN, 0);  // 点亮LED 3
+    
+    // 设置LED 3的定时器
+    on_led_timeout_set(LED_Blue_3_PIN, 9);
+}
+
 //??????3s? ????5s
 void app_Receive_Wakeup_LedOn_5s(void)
 {

@@ -1,6 +1,7 @@
 #include "x_control.h"
 #include "g.h"
 #include "ble_base_set.h"
+#include "app_led_ctrl.h"  // 新的LED控制模块
 
 static bool chargeAbnormal_flag = false;
 static uint8_t chargeAbnormal_timeout = 0;
@@ -51,43 +52,37 @@ void control_timer10ms(void)
 		} else if(last_key == key && key != 0) {
 		  if(key_repeat < UINT16_MAX) 
 				key_repeat ++;
-			if(key_repeat == 300 && key == app_key_num4) {
-			  keys_ignore = true;
-				if(g_sysparam_st.ble.ble_pair_flag == 0){
-						g_sysparam_st.ble.ble_pair_flag = 1;
-						start_adv();
-				}else{
-						// g_sysparam_st.ble.ble_pair_flag = 0;
-						g_sysparam_st.ble.ble_pair_time = 1;
-						stop_adv();
-				}
-
-		/*
-				if(!on_BLEPairing_led_isActive()){
+		if(key_repeat == 300 && key == app_key_num4) {
+		  keys_ignore = true;
+			if(g_sysparam_st.ble.ble_pair_flag == 0){
+					g_sysparam_st.ble.ble_pair_flag = 1;
+					g_sysparam_st.ble.ble_pair_time = 3000;  // 30秒超时（3000 * 10ms）
 					start_adv();
-				  BLEPairing_led_set();
-				}
-        else{
-				  BLEPairing_led_reset();
+					led_bt_pairing(false);  // 新的LED控制：蓝牙配对中（闪烁30秒）
+			}else{
+					g_sysparam_st.ble.ble_pair_flag = 0;
+					g_sysparam_st.ble.ble_pair_time = 0;
 					stop_adv();
-				}
-		*/
+					led_bt_pairing_stop();  // 新的LED控制：停止配对指示
 			}
-			if(key_repeat == 500 && key == app_key_num3) {
-			  app_led_flash_set();
-				keys_ignore = true;
-				g_sysparam_st.AntiSnore_intensity = 0;
-				//关闭
-			}
+		}
+		if(key_repeat == 500 && key == app_key_num3) {
+		  // app_led_flash_set();  // 旧的LED控制
+			led_snore_disabled_flash();  // 新的LED控制：打鼾功能关闭闪烁
+			keys_ignore = true;
+			g_sysparam_st.AntiSnore_intensity = 0;
+			//关闭
+		}
 		}else if(last_key != 0 && key == 0) {
 			LOG_I("key %x released",last_key);
-			if(last_key == app_key_num3 && !keys_ignore) {
-				chargeAbnormal_flag = false;
-				g_sysparam_st.AntiSnore_intensity = (g_sysparam_st.AntiSnore_intensity < 3)? g_sysparam_st.AntiSnore_intensity + 1:1;
-				uint8_t led_num = g_sysparam_st.AntiSnore_intensity - 1;
-				// app_led_set(led_num,blue);
-				app_key_blue_10s(led_num); // 调整为短按触发后指示灯亮10秒自动熄灭
-			}
+		if(last_key == app_key_num3 && !keys_ignore) {
+			chargeAbnormal_flag = false;
+			g_sysparam_st.AntiSnore_intensity = (g_sysparam_st.AntiSnore_intensity < 3)? g_sysparam_st.AntiSnore_intensity + 1:1;
+			// uint8_t led_num = g_sysparam_st.AntiSnore_intensity - 1;
+			// app_led_set(led_num,blue);  // 旧的LED控制
+			// app_key_blue_10s(led_num);  // 旧的LED控制
+			led_snore_level_set(g_sysparam_st.AntiSnore_intensity);  // 新的LED控制：设置打鼾档位
+		}
 		}else {
 		  key_repeat = 0;
 			keys_ignore = false;
@@ -146,51 +141,33 @@ void control_timer1000ms(void)
 {
 	static uint8_t last_charge_status = 0xff;
 	uint8_t current_charge_status = on_WirelessCharege_status_get();
-	static uint8_t charge_green_timeout = 0;	// 绿灯倒计时15s
 	
-	  // if(g_sysparam_st.AntiSnore_intensity == 0 && !on_led_flash_isActive())
-	  if(!on_led_flash_isActive())		// 不在闪烁中
+	// 充电状态检测
+	// 注意：LED 1同时用于打鼾档位（蓝灯）和充电指示（绿灯），需要避免冲突
+	// 只有在LED 1不显示打鼾档位时才显示充电指示
+	bool led1_busy_for_snore = (g_sysparam_st.AntiSnore_intensity == 2 && led_ctrl_is_active(LED_ID_1));
+	
+	if(!current_charge_status && !chargeAbnormal_flag)  // 充电异常
+	{
+		chargeAbnormal_flag = true;
+		led_charge_error();  // 新的LED控制：充电异常指示（红灯30秒）
+	}
+	else if(current_charge_status == 1)  // 正常充电
+	{
+		if (last_charge_status != 1 && !led1_busy_for_snore)
 		{
-      if(!current_charge_status && !chargeAbnormal_flag)	// 充电异常
-		  {
-			  chargeAbnormal_flag = true;
-		    app_led_set(0xFF,red);
-		    chargeAbnormal_timeout = 30;
-		  }
-		  else if(current_charge_status == 1) 	// 正常充电
-		  {
-				if (last_charge_status != 1)
-				{
-						app_led_set(1, green);
-						charge_green_timeout = 15;
-				}
-				chargeAbnormal_flag = false;
-				chargeAbnormal_timeout = 0;
-		  }
-			else if(current_charge_status == 0xff)	// 没充电
-			{
-					// app_led_reset_all();
-					io_write_pin(LED_Red_all_PIN, 1);
-					io_write_pin(LED_Green_1_PIN, 1);
-					chargeAbnormal_flag = false;
-					chargeAbnormal_timeout = 0;
-					charge_green_timeout = 0;
-			}
-			
-		  if(chargeAbnormal_timeout > 0) chargeAbnormal_timeout --;  
-		  if(chargeAbnormal_timeout == 0 && chargeAbnormal_flag) {
-		  //30s计时结束后 业务逻辑待定 清楚红灯
-			  app_led_reset_all();
-		  }			
-        if (charge_green_timeout > 0)
-        {
-            charge_green_timeout--;
-            if (charge_green_timeout == 0)
-            {
-                io_write_pin(LED_Green_1_PIN, 1);
-            }
-        }				
+			led_charge_normal();  // 新的LED控制：充电正常指示（绿灯15秒）
+			// 注意：如果LED 1正在显示打鼾档位，跳过充电指示
 		}
+		chargeAbnormal_flag = false;
+	}
+	else if(current_charge_status == 0xff)  // 没充电
+	{
+		// 熄灭充电相关的LED
+		io_write_pin(LED_Red_all_PIN, 1);
+		io_write_pin(LED_Green_1_PIN, 1);
+		chargeAbnormal_flag = false;
+	}
 		
 /*		
     if(led_off_count > 0) 

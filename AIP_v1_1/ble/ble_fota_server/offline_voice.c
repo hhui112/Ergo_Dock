@@ -2,29 +2,34 @@
 #include "offline_voice.h"
 #include "mfp_queue.h"
 #include "g.h"
+#include "app_led_ctrl.h"  // æ–°çš„LEDæ§åˆ¶æ¨¡å—
 
 void offline_voice_wake_up(void){
 	LOG_I("offline_voice_wake_up \r\n");
-	app_Receive_Wakeup_LedOn();
+	// app_Receive_Wakeup_LedOn();  // æ—§çš„LEDæ§åˆ¶
+	led_voice_wakeup();  // æ–°çš„LEDæ§åˆ¶ï¼šè¯­éŸ³å”¤é†’æŒ‡ç¤ºï¼ˆè“ç¯8ç§’ï¼‰
 } 
 
 void offline_voice_wake_off(void){
 	LOG_I("offline_voice_wake_off \r\n");
 	g_offline_voice.enabled = false;
 	
-	app_NotReceive_LedFlash();
+	// app_NotReceive_LedFlash();  // æ—§çš„LEDæ§åˆ¶
+	led_voice_close_flash();  // æ–°çš„LEDæ§åˆ¶ï¼šè¯­éŸ³å…³é—­é—ªçƒï¼ˆ2æ¬¡ï¼‰
 } 
 
 
 
 void offline_voice_dataHandle(uint8_t cmd)
 {
-	/* 2¡¢¸ù¾İÃüÁîÅĞ¶ÏÖ¸Áî */
+	/* 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶ï¿½Ö¸ï¿½ï¿½ */
 		if(cmd == 0x21 || cmd == 0x22){
-			if(!g_sysparam_st.ble.ble_pair_flag) app_Receive_Wakeup_LedOn();	// À¶¼ÌĞøÁÁ8s
-				return;
+			// if(!g_sysparam_st.ble.ble_pair_flag) app_Receive_Wakeup_LedOn();  // æ—§çš„LEDæ§åˆ¶
+			if(!g_sysparam_st.ble.ble_pair_flag) led_voice_wakeup();  // æ–°çš„LEDæ§åˆ¶ï¼šè¯­éŸ³å”¤é†’æŒ‡ç¤ºï¼ˆè“ç¯8ç§’ï¼‰
+			return;
 		}
-		if(!g_sysparam_st.ble.ble_pair_flag) app_ReceiveCommand_LedOn();	// ÂÌÁÁ3 À¶ÁÁ5s
+		// if(!g_sysparam_st.ble.ble_pair_flag) app_ReceiveCommand_LedOn();  // æ—§çš„LEDæ§åˆ¶ï¼šç»¿ç¯3ç§’+è“ç¯5ç§’
+		if(!g_sysparam_st.ble.ble_pair_flag) led_voice_command_confirm();  // æ–°çš„LEDæ§åˆ¶ï¼šè¯­éŸ³å‘½ä»¤ç¡®è®¤ï¼ˆç»¿ç¯3ç§’â†’è“ç¯8ç§’ï¼‰
 		
 		g_sysparam_st.snoreIntervention.is_intervening = false;
 		g_sysparam_st.snoreIntervention.triggered_flag = false;
@@ -40,7 +45,7 @@ void offline_voice_dataHandle(uint8_t cmd)
 							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,1); 
 							break;
 					case 0x24:		// All Up
-							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  Í·½ÅÌ§Éı6s
+							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  Í·ï¿½ï¿½Ì§ï¿½ï¿½6s
 							// prepare_mfp_SOFT_START(KEY_MEMORY4, 0x32, 0x10,3);  //KEY_MEMORY4 
 							//app_Receive_Wakeup_LedOn();
 							break;
@@ -51,14 +56,14 @@ void offline_voice_dataHandle(uint8_t cmd)
 							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
 							// prepare_mfp_SOFT_START(KEY_ALLFATE,0x32,0x20,3);
 							break;				
-					case 0x27:		// Favorite preset  // ÒôÀÖÎ»ÖÃ
+					case 0x27:		// Favorite preset  // ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
 							prepare_mfp_NORMAL_KET(KEY_MEMORY5,3); 
 							break;
 					case 0x28:		// Tv preset
 							prepare_mfp_NORMAL_KET(KEY_MEMORY3,3); 
 							break;
 					case 0x29:		// Raise-head
-							prepare_mfp_NORMAL_KET(KEY_M1_OUT,15); // Í·Ì§Éı3s
+							prepare_mfp_NORMAL_KET(KEY_M1_OUT,15); // Í·Ì§ï¿½ï¿½3s
 							break;
 					case 0x2A:		// Lower-head
 							prepare_mfp_NORMAL_KET(KEY_M1_IN,15);
@@ -69,10 +74,10 @@ void offline_voice_dataHandle(uint8_t cmd)
 					case 0x2C:		// Lower foot
 							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
 							break;	
-					case 0x2D:		// Massage On  (massageAll ¿ªÆôÍ·½Å°´Ä¦)
+					case 0x2D:		// Massage On  (massageAll ï¿½ï¿½ï¿½ï¿½Í·ï¿½Å°ï¿½Ä¦)
 							if(g_sysparam_st.m1 == 0) prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
 							break;
-					case 0x2E:		// Massage Up Í·½Å°´Ä¦ÔöÇ¿
+					case 0x2E:		// Massage Up Í·ï¿½Å°ï¿½Ä¦ï¿½ï¿½Ç¿
 							//prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
 							prepare_mfp_NORMAL_KET(KEY_MASSAGE_FEET|KEY_MASSAGE_HEAD,3);
 							break;
@@ -88,7 +93,7 @@ void offline_voice_dataHandle(uint8_t cmd)
 							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
 							break;
 					case 0x32:		// LIGHT On
-							 if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBB¹Ø±ÕÊ±ºò²Å¿ªÆô   ×´Ì¬²»ÓÃ±£´æ(MFP×´Ì¬Ò»Ö±»Ø´«µÄ)
+							 if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBBï¿½Ø±ï¿½Ê±ï¿½ï¿½Å¿ï¿½ï¿½ï¿½   ×´Ì¬ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½(MFP×´Ì¬Ò»Ö±ï¿½Ø´ï¿½ï¿½ï¿½)
 							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
 							break;
 					case 0x33:		// GOOD NIGHT
@@ -124,20 +129,20 @@ typedef enum {
 void offline_voice_Handle(uint8_t cmd, uint8_t data) 
 {
     static VoiceState state = VOICE_STATE_DISABLED;
-    /* 0¡¢¼ì²é°´¼ü×´Ì¬ */
+    /* 0ï¿½ï¿½ï¿½ï¿½é°´ï¿½ï¿½×´Ì¬ */
 		// check_offline_voice_keys();
 	
-		/* 1¡¢Èç¹û°´¼üÀëÏßÓïÒôÃ»ÓĞÊ¹ÄÜ£ºÖ±½ÓÍË³ö */
+		/* 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ê¹ï¿½Ü£ï¿½Ö±ï¿½ï¿½ï¿½Ë³ï¿½ */
     if(g_offline_voice.key_enable == false){
-			state = VOICE_STATE_DISABLED;		// ĞèÒªÖØĞÂ»½ĞÑ
+			state = VOICE_STATE_DISABLED;		// ï¿½ï¿½Òªï¿½ï¿½ï¿½Â»ï¿½ï¿½ï¿½
 			return;
 		}
 	
 		LOG_I( "key_enable = %d, wake_word = %d,cmd = %x ,ubb = %d",g_offline_voice.key_enable,g_offline_voice.wake_word ,data,g_offline_voice.ubb_enable);
 
-		/* 2¡¢ÓïÒôĞ¾Æ¬·¢ËÍ»½ĞÑÖ¸Áî£º ÅĞ¶Ï»½ĞÑ´Ê¾ö¶¨ÊÇ·ñ»½ĞÑ */
+		/* 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½Ö¸ï¿½î£º ï¿½Ğ¶Ï»ï¿½ï¿½Ñ´Ê¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ */
     switch(state) {
-        case VOICE_STATE_DISABLED:		// ÅĞ¶ÏÖ¸Áî
+        case VOICE_STATE_DISABLED:		// ï¿½Ğ¶ï¿½Ö¸ï¿½ï¿½
             if((cmd == 0x81 && data == 0x21 && g_offline_voice.wake_word == Hello_Ergo) ||
                (cmd == 0x81 && data == 0x22 && g_offline_voice.wake_word == Hello_Bed)) {
                 state = VOICE_STATE_WAKE_WORD_DETECTED;
@@ -146,15 +151,15 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
             }
             break;
             
-        case VOICE_STATE_WAKE_WORD_DETECTED:	// »½ĞÑ
+        case VOICE_STATE_WAKE_WORD_DETECTED:	// ï¿½ï¿½ï¿½ï¿½
 		
         case VOICE_STATE_ACTIVE:
             if(cmd == 0x81) {
 
-                offline_voice_dataHandle(data);		/* 2.1¡¢ÓïÒôĞ¾Æ¬·¢ËÍ²Ù×÷£º ½«Ö¸ÁîÂë´«ÈëÀëÏßÓïÒô´¦Àíº¯Êı */
+                offline_voice_dataHandle(data);		/* 2.1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ë´«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
                 state = VOICE_STATE_ACTIVE;
             } 
-            else if(cmd == 0x82) 									/* 3¡¢ÓïÑÔĞ¾Æ¬·¢ËÍ¹Ø±ÕÖ¸Áî£º ÀëÏßÓïÒô¹Ø±Õ*/
+            else if(cmd == 0x82) 									/* 3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í¹Ø±ï¿½Ö¸ï¿½î£º ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½*/
 						{
                 offline_voice_wake_off();			
                 state = VOICE_STATE_DISABLED;			
@@ -165,15 +170,15 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 
 //void offline_voice_Handle_(uint8_t cmd , uint8_t data)
 //{
-//		/* 0¡¢¼ì²é°´¼ü×´Ì¬ */
+//		/* 0ï¿½ï¿½ï¿½ï¿½é°´ï¿½ï¿½×´Ì¬ */
 //		check_offline_voice_keys();
 //	
-//		/* 1¡¢Èç¹ûÀëÏßÓïÒôÃ»ÓĞÊ¹ÄÜ£ºÖ±½ÓÍË³ö */
+//		/* 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½Ê¹ï¿½Ü£ï¿½Ö±ï¿½ï¿½ï¿½Ë³ï¿½ */
 //		if(g_offline_voice.key_enable == false) return;
 //	
 //		LOG_I( "g_offline_voice.key_enable = %d, g_offline_voice.wake_word = %d,cmd = %x",g_offline_voice.key_enable,g_offline_voice.wake_word ,data );
 //	
-//		/* 1.1¡¢ÓïÒôĞ¾Æ¬·¢ËÍ»½ĞÑÖ¸Áî£º ÅĞ¶Ï»½ĞÑ´Ê¾ö¶¨ÊÇ·ñ»½ĞÑ */
+//		/* 1.1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½Ö¸ï¿½î£º ï¿½Ğ¶Ï»ï¿½ï¿½Ñ´Ê¾ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ */
 //		if(g_offline_voice.wake_word == Hello_Ergo && data == 0x21){
 //			g_offline_voice.enabled = true;
 //		}
@@ -185,17 +190,17 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 //		
 //		
 //		if(g_offline_voice.enabled == true){
-//				offline_voice_wake_up(); // Êµ¼Ê»½ĞÑ15s µÆ8s
+//				offline_voice_wake_up(); // Êµï¿½Ê»ï¿½ï¿½ï¿½15s ï¿½ï¿½8s
 //		}else{
 //			return; 
 //		}	
 //	
 //	
-//		/* 2¡¢ÓïÒôĞ¾Æ¬·¢ËÍ²Ù×÷£º ½«Ö¸ÁîÂë´«ÈëÀëÏßÓïÒô´¦Àíº¯Êı */
+//		/* 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ë´«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 //		if(cmd == 0x81){
 //				offline_voice_dataHandle(data);
 //		}
-//		/* 3¡¢ÓïÑÔĞ¾Æ¬·¢ËÍ¹Ø±ÕÖ¸Áî£º ÀëÏßÓïÒô¹Ø±Õ*/
+//		/* 3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¾Æ¬ï¿½ï¿½ï¿½Í¹Ø±ï¿½Ö¸ï¿½î£º ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø±ï¿½*/
 //		if(cmd == 0x82){
 
 //			offline_voice_wake_off();

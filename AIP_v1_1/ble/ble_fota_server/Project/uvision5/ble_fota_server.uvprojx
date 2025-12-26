@@ -1465,6 +1465,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\app_led.c</FilePath>
             </File>
+            <File>
+              <FileName>app_led_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led_ctrl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3412,6 +3417,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\app_led.c</FilePath>
             </File>
+            <File>
+              <FileName>app_led_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led_ctrl.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -5358,6 +5368,11 @@
               <FileName>app_led.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\app_led.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_led_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\app_led_ctrl.c</FilePath>
             </File>
           </Files>
         </Group>
