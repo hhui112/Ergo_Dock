@@ -163,6 +163,12 @@ void led_charge_normal(void);
 void led_charge_error(void);
 
 /**
+ * @brief 停止充电指示（熄灭绿灯）
+ * @note 在充电停止时立即熄灭LED 1的绿灯
+ */
+void led_charge_stop(void);
+
+/**
  * @brief LED测试函数 - 依次点亮所有蓝灯
  */
 void led_test_all_blue(void);
@@ -180,6 +186,37 @@ void led_bt_pairing(bool connected);
  * @brief 停止蓝牙配对指示
  */
 void led_bt_pairing_stop(void);
+
+/* ========== 调试辅助函数 ========== */
+
+/**
+ * @brief 调试函数：获取绿灯1引脚值
+ * @return LED_Green_1_PIN的值（用于排查引脚定义问题）
+ */
+uint8_t led_get_green_pin_value(void);
+
+/**
+ * @brief 调试函数：打印LED引脚映射表
+ * @note 用于启动时检查引脚定义是否正确
+ */
+void led_print_pin_map(void);
+
+/**
+ * @brief 调试函数：直接测试绿灯硬件（绕过所有逻辑）
+ * @note 用于排查是否为硬件问题
+ */
+void led_test_green_hardware(void);
+
+/**
+ * @brief 调试函数：关闭测试的绿灯
+ */
+void led_test_green_off(void);
+
+/**
+ * @brief 调试函数：读取充电引脚状态
+ * @note 用于排查充电检测硬件问题
+ */
+void led_test_charge_pins(void);
 
 #endif // APP_LED_CTRL_H
 

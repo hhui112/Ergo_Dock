@@ -142,32 +142,47 @@ void control_timer1000ms(void)
 	static uint8_t last_charge_status = 0xff;
 	uint8_t current_charge_status = on_WirelessCharege_status_get();
 	
-	// 充电状态检测
-	// 注意：LED 1同时用于打鼾档位（蓝灯）和充电指示（绿灯），需要避免冲突
-	// 只有在LED 1不显示打鼾档位时才显示充电指示
-	bool led1_busy_for_snore = (g_sysparam_st.AntiSnore_intensity == 2 && led_ctrl_is_active(LED_ID_1));
-	
-	if(!current_charge_status && !chargeAbnormal_flag)  // 充电异常
+	// 充电状态处理（充电优先级高，会自动覆盖打鼾档位LED）
+	if(current_charge_status == 0 && !chargeAbnormal_flag)  // 充电异常（CHARGE_ABNORMAL_PIN高电平）
 	{
+		// 如果之前在正常充电，先关闭绿灯
+		if (last_charge_status == 1) {
+			led_charge_stop();
+		}
+		
 		chargeAbnormal_flag = true;
-		led_charge_error();  // 新的LED控制：充电异常指示（红灯30秒）
+		led_charge_error();  // 充电异常指示（红灯30秒，会清除打鼾蓝灯）
 	}
-	else if(current_charge_status == 1)  // 正常充电
+	else if(current_charge_status == 1)  // 正常充电（CHARGE_NORMAL_PIN高电平）
 	{
-		if (last_charge_status != 1 && !led1_busy_for_snore)
+		if (last_charge_status != 1)
 		{
-			led_charge_normal();  // 新的LED控制：充电正常指示（绿灯15秒）
-			// 注意：如果LED 1正在显示打鼾档位，跳过充电指示
+			// 如果之前是充电异常，先关闭红灯
+			if (last_charge_status == 0) {
+				io_write_pin(LED_Red_all_PIN, 1);
+				led_ctrl_force_off(LED_ID_0);  // 清除LED 0的红色任务
+			}
+			
+			led_charge_normal();  // 充电正常指示（绿灯15秒）
 		}
 		chargeAbnormal_flag = false;
 	}
-	else if(current_charge_status == 0xff)  // 没充电
+	else if(current_charge_status == 0xff)  // 没充电（两个引脚都是低电平）
 	{
-		// 熄灭充电相关的LED
-		io_write_pin(LED_Red_all_PIN, 1);
-		io_write_pin(LED_Green_1_PIN, 1);
+		// 如果之前在正常充电，现在停止了，需要立即熄灭绿灯
+		if (last_charge_status == 1) {
+			led_charge_stop();  // 停止充电指示（熄灭绿灯）
+		}
+		
+		// 熄灭充电相关的LED（只在红色异常灯时才需要手动关闭红灯）
+		if (chargeAbnormal_flag) {
+			io_write_pin(LED_Red_all_PIN, 1);
+		}
 		chargeAbnormal_flag = false;
 	}
+	
+	// 更新充电状态
+	last_charge_status = current_charge_status;
 		
 /*		
     if(led_off_count > 0) 
@@ -206,6 +221,5 @@ void control_timer1000ms(void)
         }
     }
 }
-		 last_charge_status = current_charge_status;
-		// LOG_I("cur_s = %d , Lst_s = %d, g_timeout = %d \n",current_charge_status,last_charge_status,charge_green_timeout);
+	// 注意：last_charge_status 的更新已经移到充电判断之后（第199行）
 }

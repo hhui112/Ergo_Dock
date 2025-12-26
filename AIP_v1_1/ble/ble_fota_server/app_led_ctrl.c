@@ -157,6 +157,9 @@ void led_ctrl_init(void)
     led_ctrl_clear_all();
     
     LOG_I("LED ctrl init done");
+    
+    // 打印引脚映射表（调试用）
+    led_print_pin_map();
 }
 
 /**
@@ -462,14 +465,109 @@ void led_voice_close_flash(void)
     LOG_I("Voice close: flash 2x");
 }
 
+/* ========== 充电相关辅助函数 ========== */
+
+/**
+ * @brief 辅助函数：强制清除所有打鼾干预LED的蓝灯
+ * @note 用于充电异常时清除可能存在的打鼾干预蓝灯，避免红蓝同时亮
+ */
+static void led_ctrl_clear_all_snore_leds(void)
+{
+    // 强制关闭LED 0/1/2的蓝色灯（打鼾干预专用）
+    for (int i = LED_ID_0; i <= LED_ID_2; i++) {
+        led_ctrl_t *ctrl = &led_ctrl[i];
+        if (ctrl->color == LED_COLOR_BLUE) {
+            led_hw_turn_off((led_id_t)i, LED_COLOR_BLUE);
+            ctrl->mode = LED_MODE_OFF;
+            ctrl->color = LED_COLOR_NONE;
+            ctrl->priority = 0;
+            ctrl->callback = NULL;
+        }
+    }
+}
+
+/**
+ * @brief 调试函数：获取绿灯引脚值（用于排查充电绿灯问题）
+ */
+uint8_t led_get_green_pin_value(void)
+{
+    return LED_Green_1_PIN;
+}
+
+/**
+ * @brief 调试函数：打印LED引脚映射表
+ */
+void led_print_pin_map(void)
+{
+    LOG_I("=== LED Pin Mapping ===");
+    for (int i = 0; i < LED_ID_MAX; i++) {
+        LOG_I("LED %d: Blue=%d, Green=%d, Red=%d", 
+              i, 
+              led_pin_map[i].blue_pin, 
+              led_pin_map[i].green_pin, 
+              led_pin_map[i].red_pin);
+    }
+    LOG_I("LED_PIN_NONE = %d", LED_PIN_NONE);
+    LOG_I("======================");
+}
+
+/**
+ * @brief 调试函数：直接测试绿灯硬件（绕过所有逻辑）
+ * @note 用于排查是否为硬件问题
+ */
+void led_test_green_hardware(void)
+{
+    LOG_I("=== Test Green LED Hardware ===");
+    LOG_I("Step 1: Direct pin write LED_Green_1_PIN=%d", LED_Green_1_PIN);
+    
+    // 直接操作引脚，点亮3秒
+    io_write_pin(LED_Green_1_PIN, 0);  // 低电平点亮
+    LOG_I("Green LED should be ON now for 3s");
+    
+    // 注意：需要在外部延时3秒后调用 led_test_green_off() 来关闭
+}
+
+/**
+ * @brief 调试函数：关闭测试的绿灯
+ */
+void led_test_green_off(void)
+{
+    io_write_pin(LED_Green_1_PIN, 1);  // 高电平熄灭
+    LOG_I("Green LED turned OFF");
+}
+
+/**
+ * @brief 调试函数：读取充电引脚状态
+ * @note 用于排查充电检测硬件问题
+ */
+void led_test_charge_pins(void)
+{
+    extern uint8_t on_WirelessCharege_status_get(void);
+    
+    uint8_t abnormal = io_read_pin(CHARGE_ABNORMAL_PIN);
+    uint8_t normal = io_read_pin(CHARGE_NORMAL_PIN);
+    uint8_t status = on_WirelessCharege_status_get();
+    
+    LOG_I("=== Charge Pin Status ===");
+    LOG_I("CHARGE_ABNORMAL_PIN = %d (value=%d)", CHARGE_ABNORMAL_PIN, abnormal);
+    LOG_I("CHARGE_NORMAL_PIN = %d (value=%d)", CHARGE_NORMAL_PIN, normal);
+    LOG_I("Charge status = %d (0=error, 1=normal, 255=none)", status);
+    LOG_I("========================");
+}
+
 /**
  * @brief 无线充正常指示
  */
 void led_charge_normal(void)
 {
+    // 检查LED 1是否被更高优先级任务占用
+    if (led_ctrl[LED_ID_1].priority > LED_PRIORITY_NORMAL && 
+        led_ctrl[LED_ID_1].mode != LED_MODE_OFF) {
+        return;
+    }
+    
     // LED 1 绿灯亮15秒
     led_ctrl_set_on(LED_ID_1, LED_COLOR_GREEN, 15, LED_PRIORITY_NORMAL, NULL);
-    LOG_I("Charge normal: green 15s");
 }
 
 /**
@@ -477,10 +575,23 @@ void led_charge_normal(void)
  */
 void led_charge_error(void)
 {
-    // LED 0/1/2 红灯亮30秒（公共引脚，只需点亮一次）
-    // 使用LED 0作为代表，设置红色
+    // 先强制清除所有打鼾干预的蓝灯（避免红蓝同时亮）
+    led_ctrl_clear_all_snore_leds();
+    
+    // LED 0/1/2 红灯亮30秒（公共引脚）
     led_ctrl_set_on(LED_ID_0, LED_COLOR_RED, 30, LED_PRIORITY_CRITICAL, NULL);
-    LOG_I("Charge error: red 30s");
+}
+
+/**
+ * @brief 停止充电指示（熄灭绿灯）
+ */
+void led_charge_stop(void)
+{
+    // 检查LED 1是否正在显示绿色充电指示
+    if (led_ctrl[LED_ID_1].color == LED_COLOR_GREEN && 
+        led_ctrl[LED_ID_1].mode != LED_MODE_OFF) {
+        led_ctrl_force_off(LED_ID_1);
+    }
 }
 
 /**

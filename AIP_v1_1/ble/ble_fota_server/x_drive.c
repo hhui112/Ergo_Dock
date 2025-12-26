@@ -61,15 +61,15 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
     TIM_OC_InitTypeDef sConfig = {0};
 
 
-//		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//Æø±Ã
-//		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//¼ÓÈÈ²¼
-//    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//Æø±Ã
+//		pinmux_gptima1_ch1_init(VALVE_CTR_PIN , true, 0);//ï¿½ï¿½ï¿½ï¿½
+//		pinmux_gptima1_ch2_init(EXPUMPCRT_CTR_PIN, true, 0);//ï¿½ï¿½ï¿½È²ï¿½
+//    pinmux_gptima1_ch3_init(PUMPCRT_CTR_PIN , true, 0);//ï¿½ï¿½ï¿½ï¿½
 
 		LOG_I("PWM_IO OK ");
     /*##-1- Configure the TIM peripheral #######################################*/
-    x_TimHandle.Instance = LSGPTIMA;//Ñ¡Ôñ¶¨Ê±Æ÷A
-    x_TimHandle.Init.Prescaler = TIM_PRESCALER; //Ô¤·ÖÆµÉèÖÃ
-    x_TimHandle.Init.Period = TIM_PERIOD;//×Ô¶¯ÖØÔØ¼Ä´æÆ÷
+    x_TimHandle.Instance = LSGPTIMA;//Ñ¡ï¿½ï¿½Ê±ï¿½ï¿½A
+    x_TimHandle.Init.Prescaler = TIM_PRESCALER; //Ô¤ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½
+    x_TimHandle.Init.Period = TIM_PERIOD;//ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½Ø¼Ä´ï¿½ï¿½ï¿½
     x_TimHandle.Init.ClockDivision = 0;
     x_TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
     x_TimHandle.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -106,7 +106,7 @@ static void x_Basic_PWM_Output_Cfg(void)//PWM
 
 }
 
-// I2C??? MFP_CTR ÍÈÍæÊä³ö À­¸ß
+// I2C??? MFP_CTR ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 void x_io_init(void)
 {
 		///////////////LED//////////////////
@@ -160,24 +160,21 @@ void x_io_init(void)
 		
 		///////////////MFP_CTRL//////////////////
 	io_cfg_output(UART_CTR); 		// 
-	io_write_pin(UART_CTR,1);		//À­¸ß ½ÓÊÕÄ£Ê½
+	io_write_pin(UART_CTR,1);		//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä£Ê½
 }
 
 uint8_t on_WirelessCharege_status_get(void)
 {
     if(io_read_pin(CHARGE_ABNORMAL_PIN)){ 
-			g_sysparam_st.charge_state = 0;
-		  return 0;
-		}
-		else if(io_read_pin(CHARGE_NORMAL_PIN)){
-			g_sysparam_st.charge_state = 1;
-		  return 1;
-		}
-		g_sysparam_st.charge_state = 0xFF; 
-		return 0xff;
+        return 0;  // å……ç”µå¼‚å¸¸
+    }
+    else if(io_read_pin(CHARGE_NORMAL_PIN)){
+        return 1;  // æ­£å¸¸å……ç”µ
+    }
+    return 0xff;  // æ²¡æœ‰å……ç”µ
 }
 
-// ÉÏÉýÑØ ´ò÷ý
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 void x_exti_init(void)
 {
     io_cfg_input(SNORE_OUT_PIN);    //LOWPOWER_M0_BTN config input  
@@ -186,7 +183,7 @@ void x_exti_init(void)
 }
 
 
-void x_Basic_Timer_Cfg(void)//10usÖÐ¶ÏÒ»´Î
+void x_Basic_Timer_Cfg(void)//10usï¿½Ð¶ï¿½Ò»ï¿½ï¿½
 { 
 
     x_TimBHandle.Instance           = LSGPTIMB;
@@ -239,7 +236,7 @@ void x_rtc_get(void)
 
 void x_driver_init(void)
 {
-	x_io_init();  // MFP_DE¡¢(µÆ)
+	x_io_init();  // MFP_DEï¿½ï¿½(ï¿½ï¿½)
 	x_exti_init();
 	x_rtc_init();
 }
