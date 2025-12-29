@@ -169,12 +169,13 @@ bool led_ctrl_set_on(led_id_t led_id, led_color_t color, uint16_t timeout_s,
                      uint8_t priority, void (*callback)(void))
 {
     if (led_id >= LED_ID_MAX || color == LED_COLOR_NONE) {
+        LOG_I("LED %d set ON FAILED: invalid params", led_id);
         return false;
     }
     
     // 检查该LED是否支持此颜色
     if (led_get_pin_by_color(led_id, color) == LED_PIN_NONE) {
-        LOG_I("LED %d not support color %d", led_id, color);
+        LOG_I("LED %d set ON FAILED: not support color %d", led_id, color);
         return false;
     }
     
@@ -182,7 +183,8 @@ bool led_ctrl_set_on(led_id_t led_id, led_color_t color, uint16_t timeout_s,
     
     // 优先级检查：如果当前有更高优先级的任务，拒绝
     if (ctrl->mode != LED_MODE_OFF && ctrl->priority > priority) {
-        LOG_I("LED %d priority low (cur=%d new=%d)", led_id, ctrl->priority, priority);
+        LOG_I("LED %d set ON REJECTED: priority too low (cur_pri=%d cur_mode=%d, new_pri=%d new_color=%d)", 
+              led_id, ctrl->priority, ctrl->mode, priority, color);
         return false;
     }
     
@@ -201,7 +203,8 @@ bool led_ctrl_set_on(led_id_t led_id, led_color_t color, uint16_t timeout_s,
     // 点亮LED
     led_hw_turn_on(led_id, color);
     
-    LOG_I("LED %d set ON: color=%d timeout=%ds pri=%d", led_id, color, timeout_s, priority);
+    LOG_I("LED %d set ON SUCCESS: color=%d timeout=%ds pri=%d mode=%d", 
+          led_id, color, timeout_s, priority, ctrl->mode);
     
     return true;
 }
@@ -416,13 +419,15 @@ void led_snore_disabled_flash(void)
 }
 
 /**
- * @brief 语音唤醒后续动作：蓝灯8秒
+ * @brief 语音命令后恢复蓝灯常亮
  */
-static void led_voice_wakeup_callback(void)
+static void led_voice_restore_blue(void)
 {
-    // 绿灯3秒结束后，点亮蓝灯8秒
-    led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 8, LED_PRIORITY_NORMAL, NULL);
-    LOG_I("Voice cmd confirm: blue 8s");
+    // 绿灯3秒结束后，恢复蓝灯常亮（如果没有被更高优先级任务占用）
+    if (led_ctrl[LED_ID_3].priority <= LED_PRIORITY_NORMAL) {
+        led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 0, LED_PRIORITY_NORMAL, NULL);
+        LOG_I("Voice restore: blue ON permanent");
+    }
 }
 
 /**
@@ -430,14 +435,15 @@ static void led_voice_wakeup_callback(void)
  */
 void led_voice_wakeup(void)
 {
-    // LED 3 蓝灯亮8秒（检查是否在配对中）
+    // LED 3 蓝灯常亮（永久，直到收到关闭命令）
+    // 检查是否被蓝牙配对占用
     if (led_ctrl[LED_ID_3].priority > LED_PRIORITY_NORMAL) {
-        LOG_I("LED3 busy, skip voice wakeup");
+        LOG_I("Voice wakeup: LED3 busy (pri=%d), skip", led_ctrl[LED_ID_3].priority);
         return;
     }
     
-    led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 8, LED_PRIORITY_NORMAL, NULL);
-    LOG_I("Voice wakeup: blue 8s");
+    led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 0, LED_PRIORITY_NORMAL, NULL);
+    LOG_I("Voice wakeup: blue ON permanent");
 }
 
 /**
@@ -445,14 +451,15 @@ void led_voice_wakeup(void)
  */
 void led_voice_command_confirm(void)
 {
-    // LED 3 绿灯亮3秒，然后蓝灯亮8秒
+    // LED 3 绿灯亮3秒，然后恢复蓝灯常亮
+    // 检查是否被蓝牙配对占用
     if (led_ctrl[LED_ID_3].priority > LED_PRIORITY_NORMAL) {
-        LOG_I("LED3 busy, skip voice cmd");
+        LOG_I("Voice cmd: LED3 busy (pri=%d), skip", led_ctrl[LED_ID_3].priority);
         return;
     }
     
-    led_ctrl_set_on(LED_ID_3, LED_COLOR_GREEN, 3, LED_PRIORITY_NORMAL, led_voice_wakeup_callback);
-    LOG_I("Voice cmd: green 3s");
+    led_ctrl_set_on(LED_ID_3, LED_COLOR_GREEN, 3, LED_PRIORITY_NORMAL, led_voice_restore_blue);
+    LOG_I("Voice cmd: green 3s -> blue ON");
 }
 
 /**
@@ -460,9 +467,9 @@ void led_voice_command_confirm(void)
  */
 void led_voice_close_flash(void)
 {
-    // LED 3 闪烁2次
+    // LED 3 蓝灯闪烁2次后关闭
     led_ctrl_set_flash(LED_ID_3, LED_COLOR_BLUE, 200, 2, 3, LED_PRIORITY_NORMAL, NULL);
-    LOG_I("Voice close: flash 2x");
+    LOG_I("Voice close: flash 2x then OFF");
 }
 
 /* ========== 充电相关辅助函数 ========== */
@@ -616,28 +623,52 @@ void led_test_all_blue_step3(void)
 }
 
 /**
+ * @brief 蓝牙配对30秒超时回调（自动清理配对状态）
+ */
+static void led_bt_pairing_timeout_callback(void)
+{
+    extern void stop_adv(void);
+    // g_sysparam_st 已在 g.h 中声明
+    
+    // 30秒超时，清除配对标志并停止广播
+    g_sysparam_st.ble.ble_pair_flag = 0;
+    g_sysparam_st.ble.ble_pair_time = 0;
+    stop_adv();
+    
+    LOG_I("BT pair timeout (30s), stop adv");
+}
+
+/**
  * @brief 蓝牙配对中指示
  */
 void led_bt_pairing(bool connected)
 {
     if (connected) {
-        // 配对成功：LED 3 蓝灯常亮30秒
-        led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 30, LED_PRIORITY_HIGH, NULL);
+        // 配对成功：LED 3 蓝灯常亮30秒，超时后自动清理
+        led_ctrl_set_on(LED_ID_3, LED_COLOR_BLUE, 30, LED_PRIORITY_HIGH, led_bt_pairing_timeout_callback);
         LOG_I("BT pair success: blue 30s");
     } else {
-        // 配对中：LED 3 蓝灯闪烁30秒（500ms间隔）
-        led_ctrl_set_flash(LED_ID_3, LED_COLOR_BLUE, 500, 0, 30, LED_PRIORITY_HIGH, NULL);
+        // 配对中：LED 3 蓝灯闪烁30秒（500ms间隔），超时后自动清理
+        led_ctrl_set_flash(LED_ID_3, LED_COLOR_BLUE, 500, 0, 30, LED_PRIORITY_HIGH, led_bt_pairing_timeout_callback);
         LOG_I("BT pairing: flash 30s");
     }
 }
 
 /**
- * @brief 停止蓝牙配对指示
+ * @brief 停止蓝牙配对指示（手动停止或长按再次取消）
  */
 void led_bt_pairing_stop(void)
 {
     // 强制关闭LED 3
     led_ctrl_force_off(LED_ID_3);
-    LOG_I("BT pair stop");
+    
+    // 检查是否需要恢复离线语音LED（如果离线语音处于激活状态）
+    // g_offline_voice 已在 g.h 中声明
+    if (g_offline_voice.enabled) {
+        led_voice_wakeup();  // 恢复离线语音蓝灯常亮
+        LOG_I("BT pair stop, restore voice LED");
+    } else {
+        LOG_I("BT pair stop");
+    }
 }
 

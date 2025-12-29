@@ -5,17 +5,14 @@
 #include "app_led_ctrl.h"  // 新的LED控制模块
 
 void offline_voice_wake_up(void){
-	LOG_I("offline_voice_wake_up \r\n");
-	// app_Receive_Wakeup_LedOn();  // 旧的LED控制
-	led_voice_wakeup();  // 新的LED控制：语音唤醒指示（蓝灯8秒）
+	LOG_I("offline_voice_wake_up");
+	led_voice_wakeup();  // 新的LED控制：语音唤醒指示（蓝灯常亮）
 } 
 
 void offline_voice_wake_off(void){
-	LOG_I("offline_voice_wake_off \r\n");
+	LOG_I("offline_voice_wake_off");
 	g_offline_voice.enabled = false;
-	
-	// app_NotReceive_LedFlash();  // 旧的LED控制
-	led_voice_close_flash();  // 新的LED控制：语音关闭闪烁（2次）
+	led_voice_close_flash();  // 新的LED控制：蓝灯闪烁2次后关闭
 } 
 
 
@@ -24,12 +21,15 @@ void offline_voice_dataHandle(uint8_t cmd)
 {
 	/* 2�����������ж�ָ�� */
 		if(cmd == 0x21 || cmd == 0x22){
-			// if(!g_sysparam_st.ble.ble_pair_flag) app_Receive_Wakeup_LedOn();  // 旧的LED控制
-			if(!g_sysparam_st.ble.ble_pair_flag) led_voice_wakeup();  // 新的LED控制：语音唤醒指示（蓝灯8秒）
+			// 这是唤醒词，不是控制命令
+			LOG_I("Voice: wakeup word (cmd=0x%02x)", cmd);
+			led_voice_wakeup();  // LED模块内部会根据优先级自动处理冲突
 			return;
 		}
-		// if(!g_sysparam_st.ble.ble_pair_flag) app_ReceiveCommand_LedOn();  // 旧的LED控制：绿灯3秒+蓝灯5秒
-		if(!g_sysparam_st.ble.ble_pair_flag) led_voice_command_confirm();  // 新的LED控制：语音命令确认（绿灯3秒→蓝灯8秒）
+		
+		// 控制命令的LED指示（绿灯3秒 → 蓝灯恢复常亮）
+		LOG_I("Voice: control cmd (cmd=0x%02x)", cmd);
+		led_voice_command_confirm();  // LED模块内部会根据优先级自动处理冲突
 		
 		g_sysparam_st.snoreIntervention.is_intervening = false;
 		g_sysparam_st.snoreIntervention.triggered_flag = false;
@@ -134,9 +134,16 @@ void offline_voice_Handle(uint8_t cmd, uint8_t data)
 	
 		/* 1�����������������û��ʹ�ܣ�ֱ���˳� */
     if(g_offline_voice.key_enable == false){
-			state = VOICE_STATE_DISABLED;		// ��Ҫ���»���
-			return;
+		// 如果之前离线语音处于激活状态，需要清理LED
+		if(g_offline_voice.enabled || state != VOICE_STATE_DISABLED) {
+			LOG_I("Voice switch OFF, force clear LED immediately");
+			g_offline_voice.enabled = false;
+			// 手动关闭开关，直接强制关闭LED（不闪烁）
+			led_ctrl_force_off(LED_ID_3);
 		}
+		state = VOICE_STATE_DISABLED;  // 重置状态
+		return;
+	}
 	
 		LOG_I( "key_enable = %d, wake_word = %d,cmd = %x ,ubb = %d",g_offline_voice.key_enable,g_offline_voice.wake_word ,data,g_offline_voice.ubb_enable);
 

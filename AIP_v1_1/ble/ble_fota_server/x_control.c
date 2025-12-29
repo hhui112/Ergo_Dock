@@ -31,9 +31,9 @@ void check_offline_voice_keys(void)
     {
         g_offline_voice.key_enable = true;   
         if (key1 == 0)
-            g_offline_voice.wake_word = Hello_Ergo; // 1=Hello Ergo
+            g_offline_voice.wake_word = Hello_Bed; // 1=Hello Ergo
         else if (key2 == 0)
-            g_offline_voice.wake_word = Hello_Bed; // 2=Hello Bed
+            g_offline_voice.wake_word = Hello_Ergo; // 2=Hello Bed 适配12.29新丝印
     }
 		if(g_sysparam_st.ubb == 1){
 			g_offline_voice.ubb_enable = true;		// light_on
