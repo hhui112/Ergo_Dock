@@ -194,10 +194,9 @@ static void gatt_manager_callback(enum gatt_evt_type type,union gatt_evt_u *evt,
         if (evt->server_write_req.svc == &ls_uart_server_svc_env)	// ����͸������
         {
            // ls_uart_server_write_req_ind(evt->server_write_req.att_idx, con_idx, evt->server_write_req.length, evt->server_write_req.value);//������������͸��������
-					LOG_I("srv0020");
 							if(evt->server_write_req.length<=50&&evt->server_write_req.length>=5)
 							{
-								LOG_I("APP_DATA");
+								// LOG_I("BLE wr %uB", (unsigned)evt->server_write_req.length);
 								memcpy(&ble_data_receive.ble_data_receive[0],&evt->server_write_req.value[0],evt->server_write_req.length);
 								ble_data_receive.lengh=evt->server_write_req.length;
 								x_ble_com_handle((uint8_t*)&evt->server_write_req.value[0],evt->server_write_req.length);

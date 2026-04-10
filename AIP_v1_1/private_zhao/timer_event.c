@@ -13,6 +13,7 @@
 #include "sleep_posture.h"
 #include "heat_control.h"
 #include "g.h"
+#include "x_control.h"
 #include "app_key.h"
 #include "app_led_ctrl.h"  // 新的LED控制模块
 
@@ -322,6 +323,8 @@ static void ls_10ms_timer_cb(void *param)
  {
     builtin_timer_start(xTimer_10ms_inst, 10, NULL); 
   }
+	/* 拨键优先：先于触摸键/LED，尽快更新并下发 CI1302 */
+	check_offline_voice_keys();
   on_key_10ms_handle();
 	// on_led_10ms_handle();  // 旧的LED控制，已弃用
 	led_ctrl_10ms_handler();  // 新的LED控制模块

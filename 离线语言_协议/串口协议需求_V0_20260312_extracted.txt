@@ -1,0 +1,1071 @@
+
+===== xl/worksheets/sheet1.xml (19 rows) =====
+1	Base Model 床系列 | CB Model (TBD by supplier) 控制盒型号（由供应商待定） | 备注 |  |  |  |  |  | 
+2	Ergo Rio 2.0  | 68002155 / JLDP.15.020.006 |  | JLDP.15.020.006!A1 |  |  |  |  | 
+3	Ergo Rio 3.0 | 68002155 / JLDP.15.020.006 |  | JLDP.15.020.006!A1 |  |  |  |  | 
+4	Ergo Rio 4.0  | 68002156 / JLDP.15.016.215 | 单击放平 | JLDP.15.016.215!A1 |  |  |  |  | 
+5	 | 68004983 / JLDP.15.016.253 | 双击放平 | JLDP.15.016.253!A1 |  |  |  |  | 
+6	Ergo Rio 5.0 | 68003580 / JLDP.15.028.209 | 单击放平 | JLDP.15.028.209!A1 |  |  |  |  | 
+7	 | 68003579 / JLDP.15.028.208 | 单击放平 | JLDP.15.028.208!A1 |  |  |  |  | 
+8	 | 68004985 / JLDP.15.028.230 | 双击放平 | JLDP.15.028.230!A1 |  |  |  |  | 
+9	 | 68004986 / JLDP.15.028.231 | 双击放平 | JLDP.15.028.231!A1 |  |  |  |  | 
+10	Ergo Rio 6.0  | 68003328 / JLDP.15.032.006 | 单击放平 | JLDP.15.032.006!A1 |  |  |  |  |  
+11	 | 68003330 / JLDP.15.032.008 | 单击放平 | JLDP.15.032.008!A1 |  |  |  |  | 
+12	 | 68003431 / JLDP.15.032.010 | 单击放平 | JLDP.15.032.010!A1 |  |  |  |  | 
+13	 | 68004988 / JLDP.15.032.026 | 双击放平 | JLDP.15.032.026!A1 |  |  |  |  | 
+14	 | 68004989 / JLDP.15.032.027 | 双击放平 | JLDP.15.032.027!A1 |  |  |  |  | 
+15	 | 68004990 / JLDP.15.032.028 | 双击放平 | JLDP.15.032.028!A1 |  |  |  |  | 
+16	STOW | 68003398 / JLDP.15.020.040 |  | JLDP.15.020.040!A1 |  |  |  |  | 
+17	DUETTO | 68004291 / JLDP.15.028.215 |  | JLDP.15.028.215!A1 |  |  |  |  | 
+18	Ascend  | 68004854 / JLDP.15.032.020 |  | JLDP.15.032.020!A1 |  |  |  |  | 
+19	 Adapt | 68005241 / JLDP.15.032.020 |  | JLDP.15.032.020!A1 |  |  |  |  | 
+
+===== xl/worksheets/sheet10.xml (68 rows) =====
+1	Sheet1!B11 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet11.xml (68 rows) =====
+1	Sheet1!B12 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet12.xml (68 rows) =====
+1	Sheet1!B13 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet13.xml (68 rows) =====
+1	Sheet1!B14 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet14.xml (68 rows) =====
+1	Sheet1!B15 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet15.xml (42 rows) =====
+1	Sheet1!B16 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x18 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，固定0 |  |  |  | 
+9	8 | ledData[1] | 调试用，固定0 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，脚部驱动器基准电流值 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，头部驱动器基准电流值 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 
+18	 | uint8_t angleAdj            :  1; | 预留，固定1 |  | 0x00000080 | M4 in | 
+19	 | uint8_t reserved:  1; | 预留，固定0 |  | 0x00000100 | Massage All | 
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 
+21	13 | massage_status[0] | 预留，固定0 |  | 0x00000400 | Massage Feet | 
+22	14 | massage_status[1] | 预留，固定0 |  | 0x00000800 | Massage Head | 
+23	15 | massageTimer | 预留，固定0 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 
+31	23 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 
+32	24 | current[0] |  |  | 0x00200000 | Intensity3 | 
+33	25 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[1] |  |  | 0x00800000 | Massage Head Minus | 
+35	27 | checkSum | 校验和 |  | 0x01000000 | Massage Feet Minus | 
+36	 |  |  |  | 0x02000000 | MassageStopAll | 
+37	 |  |  |  | 0x04000000 | MassageMode | 
+38	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  | 0x08000000 | AllFlat | 放平位置
+39	 |  |  |  | 0x10000000 | Massage Waist Minus | 
+40	 |  |  |  | 0x20000000 | AngleAdjust | 头脚部运行至设置纹波位置
+41	 |  |  |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1
+42	 |  |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2
+
+===== xl/worksheets/sheet16.xml (64 rows) =====
+1	Sheet1!B17 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x30 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，遥控器随机数 |  |  |  | 
+9	8 | ledData[1] | 调试用，头脚驱动器运行状态 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，缓启动速度 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，打断剩余时间，单位10ms |  | 0x00000001 | M1 out | 头部1驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部1驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，1开 |  | 0x00000004 | M2 out | 头部2驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 头部2驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 脚部驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 脚部驱动器缩回
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 
+18	 | uint8_t angleAdj            :  1; | 运行过缓启动标志，1运行过 |  | 0x00000080 | M4 in | 
+19	 | uint8_t PANEL:  1; | 灯牌状态，1开 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置，支持自定义
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器1纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 头部驱动器2纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 
+31	23 | pulseCounter[2] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 
+33	25 | current[0] | 头部驱动器1电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[0] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-1-0循环
+35	27 | current[1] | 头部驱动器2电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-1-0循环
+36	28 | current[1] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[2] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[2] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | U_div_2 | 1/11的15V电压基准值，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | U_div_2 |  |  | 0x20000000 | AngleAdjust | 
+41	33 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1，支持自定义
+42	34 | massageCurrent |  |  | 0x80000000 | EXTmemory2 | 打断
+43	35 | mfpCurrent | 脚部按摩马达电流，低字节在前，高字节在后 |  |  |  | 
+44	36 | mfpCurrent |  |  | 定义 | 数据 | 备注
+45	37 | dummy[0] | 预留，固定0 |  | 数据长度length | 固定0x07 | 
+46	38 | dummy[1] | 预留，固定0 |  | 类型Type | 固定0x01 | 
+47	39 | slow_pwm | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | slow_timer | 预留，固定0 |  | 左右床Cmd |  | 左右床控制字节
+49	41 | bedtype | 预留，固定0 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | uint8_t addr  : 2; | 左右床标志 |  | 时间Time |  | 单位秒
+51	 | uint8_t mode  : 2; | 左右床控制 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+53	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+54	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+55	43 | heating | 预留，固定0 |  |  |  | 
+56	44 | aromaswitch | 预留，固定0 |  |  |  | 
+57	45 | rgb | 固定0xA4 |  |  |  | 
+58	46 | reddata | Red值 |  |  |  | 
+59	47 | greendata | Green值 |  |  |  | 
+60	48 | bluedata | Blue值 |  |  |  | 
+61	49 | massge_mode | 按摩模式 |  |  |  | 
+62	50 | brightness | 亮度值 |  |  |  | 
+63	51 | checkSum | 校验和 |  |  |  | 
+64	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet17.xml (68 rows) =====
+1	Sheet1!B18 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，流程标志|放平标志 |  |  |  | 
+9	8 | ledData[1] | 调试用，串口检验和出错次数 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，自检流程标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头部倾斜驱动器伸出，脚部倾斜驱动器缩回
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头部倾斜驱动器缩回
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 脚部倾斜驱动器伸出，头部倾斜驱动器缩回
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 脚部倾斜驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 头部倾斜驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 脚部倾斜驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 头部倾斜驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 脚部倾斜驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 内置演示流程
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet2.xml (60 rows) =====
+1	Sheet1!B2 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x2C |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，键值保持剩余时间，单位ms |  |  |  | 
+9	8 | ledData[1] | 调试用，舒展流程剩余时间，单位ms |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，流程步骤 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，流程标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 
+18	 | uint8_t angleAdj            :  1; | 预留，固定1 |  | 0x00000080 | M4 in | 
+19	 | uint8_t reserved:  1; | 预留，固定0 |  | 0x00000100 | Massage All | 
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 
+21	13 | massage_status[0] | 预留，固定0 |  | 0x00000400 | Massage Feet | 
+22	14 | massage_status[1] | 预留，固定0 |  | 0x00000800 | Massage Head | 
+23	15 | massageTimer | 预留，固定0 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 
+31	23 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 
+32	24 | current[0] |  |  | 0x00200000 | Intensity3 | 
+33	25 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[1] |  |  | 0x00800000 | Massage Head Minus | 
+35	27 | U_div_2 | 预留，固定0 |  | 0x01000000 | Massage Feet Minus | 
+36	28 | U_div_2 |  |  | 0x02000000 | MassageStopAll | 
+37	29 | massageCurrent | 预留，固定0 |  | 0x04000000 | MassageMode | 
+38	30 | massageCurrent |  |  | 0x08000000 | AllFlat | 放平位置
+39	31 | V29Voltage | 29V电压基准，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 
+40	32 | V29Voltage |  |  | 0x20000000 | AngleAdjust | 头脚部运行至设置纹波位置
+41	33 | dummy[0] | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1，支持自定义
+42	34 | dummy[1] | 预留，固定0 |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2，支持自定义
+43	35 | dummy[2] | 预留，固定0 |  |  |  | 
+44	36 | dummy[3] | 预留，固定0 |  |  |  | 
+45	37 | drivenum | 预留，固定0 |  |  |  | 
+46	38 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+47	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+48	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+49	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+50	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+51	39 | heating | 预留，固定0 |  |  |  | 
+52	40 | aromaswitch | 预留，固定0 |  |  |  | 
+53	41 | rgb | 固定0xA4 |  |  |  | 
+54	42 | reddata | Red值 |  |  |  | 
+55	43 | greendata | Green值 |  |  |  | 
+56	44 | bluedata | Blue值 |  |  |  | 
+57	45 | massge_mode | 预留，固定0 |  |  |  | 
+58	46 | brightness | 亮度值 |  |  |  | 
+59	47 | checkSum | 校验和 |  |  |  | 
+60	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet3.xml (60 rows) =====
+1	Sheet1!B4 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x2C |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，Red值 |  |  |  | 
+9	8 | ledData[1] | 调试用，Green值 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，Blue值 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，流程标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 
+18	 | uint8_t angleAdj            :  1; | 预留，固定1 |  | 0x00000080 | M4 in | 
+19	 | uint8_t reserved:  1; | 预留，固定0 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | current[0] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[1] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | U_div_2 | 1/11的15V电压基准值，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | U_div_2 |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | massageCurrent | 预留，固定0 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | massageCurrent |  |  | 0x08000000 | AllFlat | 头脚部驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | V29Voltage | 29V电压基准值，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | V29Voltage |  |  | 0x20000000 | AngleAdjust | 头脚部运行至设置纹波位置
+41	33 | dummy[0] | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1，支持自定义
+42	34 | dummy[1] | 预留，固定0 |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2，支持自定义
+43	35 | dummy[2] | 预留，固定0 |  |  |  | 
+44	36 | dummy[3] | 预留，固定0 |  |  |  | 
+45	37 | drivenum | 预留，固定0 |  |  |  | 
+46	38 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+47	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+48	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+49	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+50	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+51	39 | heating | 预留，固定0xFF |  |  |  | 
+52	40 | aromaswitch | 预留，固定0xFF |  |  |  | 
+53	41 | rgb | 固定0xA4 |  |  |  | 
+54	42 | reddata | Red值 |  |  |  | 
+55	43 | greendata | Green值 |  |  |  | 
+56	44 | bluedata | Blue值 |  |  |  | 
+57	45 | massge_mode | 按摩模式 |  |  |  | 
+58	46 | brightness | 亮度值 |  |  |  | 
+59	47 | checkSum | 校验和 |  |  |  | 
+60	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet4.xml (60 rows) =====
+1	Sheet1!B5 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x2C |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，Red值 |  |  |  | 
+9	8 | ledData[1] | 调试用，Green值 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，Blue值 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，流程标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 
+18	 | uint8_t angleAdj            :  1; | 预留，固定1 |  | 0x00000080 | M4 in | 
+19	 | uint8_t reserved:  1; | 预留，固定0 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | current[0] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[1] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | U_div_2 | 1/11的15V电压基准值，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | U_div_2 |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | massageCurrent | 预留，固定0 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | massageCurrent |  |  | 0x08000000 | AllFlat | 头脚部驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | V29Voltage | 29V电压基准值，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | V29Voltage |  |  | 0x20000000 | AngleAdjust | 头脚部运行至设置纹波位置
+41	33 | dummy[0] | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1，支持自定义
+42	34 | dummy[1] | 预留，固定0 |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2，支持自定义
+43	35 | dummy[2] | 预留，固定0 |  |  |  | 
+44	36 | dummy[3] | 预留，固定0 |  |  |  | 
+45	37 | drivenum | 预留，固定0 |  |  |  | 
+46	38 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+47	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+48	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+49	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+50	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+51	39 | heating | 预留，固定0xFF |  |  |  | 
+52	40 | aromaswitch | 预留，固定0xFF |  |  |  | 
+53	41 | rgb | 固定0xA4 |  |  |  | 
+54	42 | reddata | Red值 |  |  |  | 
+55	43 | greendata | Green值 |  |  |  | 
+56	44 | bluedata | Blue值 |  |  |  | 
+57	45 | massge_mode | 按摩模式 |  |  |  | 
+58	46 | brightness | 亮度值 |  |  |  | 
+59	47 | checkSum | 校验和 |  |  |  | 
+60	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet5.xml (64 rows) =====
+1	Sheet1!B6 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x30 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，RF信号强度 |  |  |  | 
+9	8 | ledData[1] | 调试用，自检状态 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，串口校验出错计数 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，flash存储标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[0] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[1] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[2] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | U_div_2 | 预留，固定0 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | U_div_2 |  |  | 0x20000000 | AngleAdjust | 
+41	33 | massageCurrent | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 内置脚本演示流程
+42	34 | massageCurrent |  |  | 0x80000000 | EXTmemory2 | 自检流程
+43	35 | mfpCurrent | 预留，固定0 |  |  |  | 
+44	36 | mfpCurrent |  |  | 定义 | 数据 | 备注
+45	37 | dummy[0] | 感应灯使能状态，1使能 |  | 数据长度length | 固定0x07 | 
+46	38 | dummy[1] | 预留，固定0 |  | 类型Type | 固定0x01 | 
+47	39 | slow_pwm | 缓启动速度 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | slow_timer | 缓启动时间 |  | 左右床Cmd |  | 左右床控制字节
+49	41 | bedtype | 预留，固定0 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | uint8_t addr  : 2; | 左右床标志 |  | 时间Time |  | 单位秒
+51	 | uint8_t mode  : 2; | 左右床控制 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+53	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+54	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+55	43 | heating | 预留，固定0 |  |  |  | 
+56	44 | aromaswitch | 预留，固定0 |  |  |  | 
+57	45 | rgb | 固定0xA4 |  |  |  | 
+58	46 | reddata | Red值 |  |  |  | 
+59	47 | greendata | Green值 |  |  |  | 
+60	48 | bluedata | Blue值 |  |  |  | 
+61	49 | massge_mode | 按摩模式 |  |  |  | 
+62	50 | brightness | 亮度值 |  |  |  | 
+63	51 | checkSum | 校验和 |  |  |  | 
+64	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet6.xml (64 rows) =====
+1	Sheet1!B7 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x30 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，RF信号强度 |  |  |  | 
+9	8 | ledData[1] | 调试用，自检状态 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，串口校验出错计数 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，flash存储标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[0] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[1] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[2] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | U_div_2 | 预留，固定0 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | U_div_2 |  |  | 0x20000000 | AngleAdjust | 
+41	33 | massageCurrent | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 内置演示流程
+42	34 | massageCurrent |  |  | 0x80000000 | EXTmemory2 | 自检流程
+43	35 | mfpCurrent | 预留，固定0 |  |  |  | 
+44	36 | mfpCurrent |  |  | 定义 | 数据 | 备注
+45	37 | dummy[0] | 感应灯使能状态，1使能 |  | 数据长度length | 固定0x07 | 
+46	38 | dummy[1] | 预留，固定0 |  | 类型Type | 固定0x01 | 
+47	39 | slow_pwm | 缓启动速度 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | slow_timer | 缓启动时间 |  | 左右床Cmd |  | 左右床控制字节
+49	41 | bedtype | 预留，固定0 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | uint8_t addr  : 2; | 左右床标志 |  | 时间Time |  | 单位秒
+51	 | uint8_t mode  : 2; | 左右床控制 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+53	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+54	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+55	43 | heating | 预留，固定0 |  |  |  | 
+56	44 | aromaswitch | 预留，固定0 |  |  |  | 
+57	45 | rgb | 固定0xA4 |  |  |  | 
+58	46 | reddata | Red值 |  |  |  | 
+59	47 | greendata | Green值 |  |  |  | 
+60	48 | bluedata | Blue值 |  |  |  | 
+61	49 | massge_mode | 按摩模式 |  |  |  | 
+62	50 | brightness | 亮度值 |  |  |  | 
+63	51 | checkSum | 校验和 |  |  |  | 
+64	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet7.xml (64 rows) =====
+1	Sheet1!B8 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x30 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，RF信号强度 |  |  |  | 
+9	8 | ledData[1] | 调试用，自检状态 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，串口校验出错计数 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，flash存储标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 头脚部运行至零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[0] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[1] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[2] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | U_div_2 | 预留，固定0 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | U_div_2 |  |  | 0x20000000 | AngleAdjust | 
+41	33 | massageCurrent | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 内置演示流程
+42	34 | massageCurrent |  |  | 0x80000000 | EXTmemory2 | 自检流程
+43	35 | mfpCurrent | 预留，固定0 |  |  |  | 
+44	36 | mfpCurrent |  |  | 定义 | 数据 | 备注
+45	37 | dummy[0] | 感应灯使能状态，1使能 |  | 数据长度length | 固定0x07 | 
+46	38 | dummy[1] | 预留，固定0 |  | 类型Type | 固定0x01 | 
+47	39 | slow_pwm | 缓启动速度 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | slow_timer | 缓启动时间 |  | 左右床Cmd |  | 左右床控制字节
+49	41 | bedtype | 预留，固定0 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | uint8_t addr  : 2; | 左右床标志 |  | 时间Time |  | 单位秒
+51	 | uint8_t mode  : 2; | 左右床控制 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+53	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+54	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+55	43 | heating | 预留，固定0 |  |  |  | 
+56	44 | aromaswitch | 预留，固定0 |  |  |  | 
+57	45 | rgb | 固定0xA4 |  |  |  | 
+58	46 | reddata | Red值 |  |  |  | 
+59	47 | greendata | Green值 |  |  |  | 
+60	48 | bluedata | Blue值 |  |  |  | 
+61	49 | massge_mode | 按摩模式 |  |  |  | 
+62	50 | brightness | 亮度值 |  |  |  | 
+63	51 | checkSum | 校验和 |  |  |  | 
+64	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet8.xml (64 rows) =====
+1	Sheet1!B9 |  |  |  |  |  | 
+2	1 | length | 长度，固定0x30 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，RF信号强度 |  |  |  | 
+9	8 | ledData[1] | 调试用，自检状态 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，串口校验出错计数 |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，flash存储标志 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 舒展流程
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 
+34	26 | current[0] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[1] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[2] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | U_div_2 | 预留，固定0 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | U_div_2 |  |  | 0x20000000 | AngleAdjust | 
+41	33 | massageCurrent | 预留，固定0 |  | 0x40000000 | EXTmemory1 | 内置演示流程
+42	34 | massageCurrent |  |  | 0x80000000 | EXTmemory2 | 自检流程
+43	35 | mfpCurrent | 预留，固定0 |  |  |  | 
+44	36 | mfpCurrent |  |  | 定义 | 数据 | 备注
+45	37 | dummy[0] | 感应灯使能状态，1使能 |  | 数据长度length | 固定0x07 | 
+46	38 | dummy[1] | 预留，固定0 |  | 类型Type | 固定0x01 | 
+47	39 | slow_pwm | 缓启动速度 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | slow_timer | 缓启动时间 |  | 左右床Cmd |  | 左右床控制字节
+49	41 | bedtype | 预留，固定0 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | uint8_t addr  : 2; | 左右床标志 |  | 时间Time |  | 单位秒
+51	 | uint8_t mode  : 2; | 左右床控制 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+53	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+54	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+55	43 | heating | 预留，固定0 |  |  |  | 
+56	44 | aromaswitch | 预留，固定0 |  |  |  | 
+57	45 | rgb | 固定0xA4 |  |  |  | 
+58	46 | reddata | Red值 |  |  |  | 
+59	47 | greendata | Green值 |  |  |  | 
+60	48 | bluedata | Blue值 |  |  |  | 
+61	49 | massge_mode | 按摩模式 |  |  |  | 
+62	50 | brightness | 亮度值 |  |  |  | 
+63	51 | checkSum | 校验和 |  |  |  | 
+64	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 
+
+===== xl/worksheets/sheet9.xml (68 rows) =====
+1	Sheet1!B10 |  |  |  |  |  | 
+2	1 | length | 固定0x34 |  | 定义 | 数据 | 备注
+3	2 | type | 类型，固定0x07 |  | 数据长度length | 固定0x05 | 
+4	3 | keys | 键值，低字节在前，高字节在后 |  | 类型Type | 固定0x01 | 
+5	4 | keys |  |  | 键值Key | 键值详见下表 | 低字节在前，高字节在后
+6	5 | keys |  |  | 左右床Cmd |  | 左右床控制字节
+7	6 | keys |  |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+8	7 | ledData[0] | 调试用，电机打断运行标志，1打断中 |  |  |  | 
+9	8 | ledData[1] | 调试用，感应灯使能标志，1使能 |  | Key Words | function | specfication
+10	9 | ledData[2] | 调试用，感应灯关闭剩余时间，单位10ms |  | 0x00000000 | Action_start | The action is start
+11	10 | ledData[3] | 调试用，电机自动运行标志，1打断中 |  | 0x00000001 | M1 out | 头部驱动器伸出
+12	11 | ledData[4] | 调试用，遥控器反馈标志 |  | 0x00000002 | M1 in | 头部驱动器缩回
+13	12 | uint8_t UBB        : 1; | 床底灯状态，0关1开 |  | 0x00000004 | M2 out | 脚部驱动器伸出
+14	 | uint8_t stopAll       : 1; | 电机打断运行标志，1打断中 |  | 0x00000008 | M2 in | 脚部驱动器缩回
+15	 | uint8_t automaticMovementIsActive  : 1; | 电机自动运行标志，1自动运行中 |  | 0x00000010 | M3 out | 头枕驱动器伸出
+16	 | uint8_t sync       : 1; | 预留，固定0 |  | 0x00000020 | M3 in | 头枕驱动器伸出
+17	 | uint8_t lock      : 1; | 预留，固定0 |  | 0x00000040 | M4 out | 腰部驱动器伸出
+18	 | uint8_t angleAdj            :  1; | 预留，固定0 |  | 0x00000080 | M4 in | 腰部驱动器缩回
+19	 | uint8_t factoryMode:  1; | 工厂模式标志，1进入工厂模式 |  | 0x00000100 | Massage All | 头脚部按摩强度按0-1-3-6-0循环
+20	 | uint8_t addr       :  1; | 主从机标志，0从1主 |  | 0x00000200 | Massage Timer | 按摩时间按0-10-20-30-0min循环
+21	13 | massage_status[0] | 头部按摩强度 |  | 0x00000400 | Massage Feet | 脚部按摩强度按0-1-3-6-0循环
+22	14 | massage_status[1] | 脚部按摩强度 |  | 0x00000800 | Massage Head | 头部按摩强度按0-1-3-6-0循环
+23	15 | massageTimer | 按摩剩余时间，单位ms，低字节在前，高字节在后 |  | 0x00001000 | ZeroG | 零重力位置
+24	16 | massageTimer |  |  | 0x00002000 | Memory2 | 头脚部运行至休闲位置，支持自定义
+25	17 | massageTimer |  |  | 0x00004000 | Memory3 | 头脚部运行至电视位置，支持自定义
+26	18 | massageTimer |  |  | 0x00008000 | Memory4 | 头脚部运行至止鼾位置，支持自定义
+27	19 | pulseCounter[0] | 头部驱动器纹波，低字节在前，高字节在后 |  | 0x00010000 | Memory5 | 头脚部运行至音乐位置，支持自定义
+28	20 | pulseCounter[0] |  |  | 0x00020000 | Ubb | 床底灯开关
+29	21 | pulseCounter[1] | 脚部驱动器纹波，低字节在前，高字节在后 |  | 0x00040000 | StrechMove | 
+30	22 | pulseCounter[1] |  |  | 0x00080000 | Intensity1 | 头脚部按摩模式1
+31	23 | pulseCounter[2] | 腰部驱动器纹波，低字节在前，高字节在后 |  | 0x00100000 | Intensity2 | 头脚部按摩模式2
+32	24 | pulseCounter[2] |  |  | 0x00200000 | Intensity3 | 头脚部按摩模式3
+33	25 | pulseCounter[3] | 头枕驱动器纹波，低字节在前，高字节在后 |  | 0x00400000 | Massage Waist | 自检流程
+34	26 | pulseCounter[3] |  |  | 0x00800000 | Massage Head Minus | 头部按摩强度按0-6-3-1-0循环
+35	27 | current[0] | 头部驱动器电流，低字节在前，高字节在后 |  | 0x01000000 | Massage Feet Minus | 脚部按摩强度按0-6-3-1-0循环
+36	28 | current[0] |  |  | 0x02000000 | MassageStopAll | 关闭头脚部按摩
+37	29 | current[1] | 脚部驱动器电流，低字节在前，高字节在后 |  | 0x04000000 | MassageMode | 头脚部按摩模式按0-1-2-3-0循环
+38	30 | current[1] |  |  | 0x08000000 | AllFlat | 驱动器运行到Flat位置&关闭头脚部按摩
+39	31 | current[2] | 腰部驱动器电流，低字节在前，高字节在后 |  | 0x10000000 | Massage Waist Minus | 头脚部按摩时间按0-30-20-10-0min循环
+40	32 | current[2] |  |  | 0x20000000 | AngleAdjust | 
+41	33 | current[3] | 头枕驱动器电流，低字节在前，高字节在后 |  | 0x40000000 | EXTmemory1 | 头脚部运行至额外位置1位置，支持自定义
+42	34 | current[3] |  |  | 0x80000000 | EXTmemory2 | 头脚部运行至额外位置2位置，支持自定义
+43	35 | U_div_2 | 预留，固定0 |  |  |  | 
+44	36 | U_div_2 |  |  | 定义 | 数据 | 备注
+45	37 | massageCurrent | 头部按摩马达电流，低字节在前，高字节在后 |  | 数据长度length | 固定0x07 | 
+46	38 | massageCurrent |  |  | 类型Type | 固定0x01 | 
+47	39 | mfpCurrent | 预留，固定0 |  | 键值Key | 键值详见上表 | 低字节在前，高字节在后
+48	40 | mfpCurrent |  |  | 左右床Cmd |  | 左右床控制字节
+49	41 | selfcheck | 自检状态 |  | 速度Pwm |  | 数值越大，速度越快
+50	42 | selfcheck |  |  | 时间Time |  | 单位秒
+51	43 | slow_pwm | 缓启动速度 |  | 校验和Check Sum |  | 校验和详见上述校验和计算
+52	44 | slow_timer | 缓启动时间 |  |  |  | 
+53	45 | bedtype | 预留，固定0 |  |  |  | 
+54	46 | uint8_t addr  : 2; | 左右床标志 |  |  |  | 
+55	 | uint8_t mode  : 2; | 左右床控制 |  |  |  | 
+56	 | uint8_t strechMove: 2; | 预留，固定0 |  |  |  | 
+57	 | uint8_t music : 1; | 预留，固定0 |  |  |  | 
+58	 | uint8_t reserved :1; | 预留，固定0 |  |  |  | 
+59	47 | heating | 预留，固定0 |  |  |  | 
+60	48 | aromaswitch | 预留，固定0 |  |  |  | 
+61	49 | rgb | 固定0xA4 |  |  |  | 
+62	50 | reddata | Red值 |  |  |  | 
+63	51 | greendata | Green值 |  |  |  | 
+64	52 | bluedata | Blue值 |  |  |  | 
+65	53 | massge_mode | 按摩模式 |  |  |  | 
+66	54 | brightness | 亮度值 |  |  |  | 
+67	55 | checkSum | 校验和 |  |  |  | 
+68	uint8_t syncCalcCheckSum(uint8_t* data, uint16_t length) {     uint16_t i;     uint8_t sum;     sum = 0xff;     for (i = 0; i < ((uint16_t)2 + (uint16_t)length); i++)     {         sum -= data [i];    |  |  |  |  |  | 

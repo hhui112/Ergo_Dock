@@ -79,7 +79,7 @@ void prepare_mfp_NORMAL_KET(uint32_t keys,uint8_t repeat)
 		uartTxbuff[i++] = 0x00;
 		uartTxbuff[i++] = syncCalcCheckSum(uartTxbuff,i);	
 		// LOG_I("SUM = %d\n", uartTxbuff[i-1]);
-	
+        // LOG_I("NORMAL_KET = %x %x %x %x %x %x %x %x", uartTxbuff[0], uartTxbuff[1], uartTxbuff[2], uartTxbuff[3], uartTxbuff[4], uartTxbuff[5], uartTxbuff[6], uartTxbuff[7]);
 		if (!mfp_send_request(uartTxbuff, i, repeat))
 			
     {

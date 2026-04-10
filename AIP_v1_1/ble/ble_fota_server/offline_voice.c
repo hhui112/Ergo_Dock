@@ -2,214 +2,158 @@
 #include "offline_voice.h"
 #include "mfp_queue.h"
 #include "g.h"
-#include "app_led_ctrl.h"  // 新的LED控制模块
+#include "app_led_ctrl.h"
 
-void offline_voice_wake_up(void){
-	LOG_I("offline_voice_wake_up");
-	led_voice_wakeup();  // 新的LED控制：语音唤醒指示（蓝灯常亮）
-} 
+void offline_voice_wake_up(void)
+{
+	LOG_I("V wake_up");
+	led_voice_wakeup();
+}
 
-void offline_voice_wake_off(void){
-	LOG_I("offline_voice_wake_off");
+void offline_voice_wake_off(void)
+{
+	LOG_I("V wake_off");
 	g_offline_voice.enabled = false;
-	led_voice_close_flash();  // 新的LED控制：蓝灯闪烁2次后关闭
-} 
+	led_voice_close_flash();
+}
 
-
-
+/* Map CI1302 voice command byte (data) to MFP keys after wake word matched. */
 void offline_voice_dataHandle(uint8_t cmd)
 {
-	/* 2�����������ж�ָ�� */
-		if(cmd == 0x21 || cmd == 0x22){
-			// 这是唤醒词，不是控制命令
-			LOG_I("Voice: wakeup word (cmd=0x%02x)", cmd);
-			led_voice_wakeup();  // LED模块内部会根据优先级自动处理冲突
-			return;
-		}
-		
-		// 控制命令的LED指示（绿灯3秒 → 蓝灯恢复常亮）
-		LOG_I("Voice: control cmd (cmd=0x%02x)", cmd);
-		led_voice_command_confirm();  // LED模块内部会根据优先级自动处理冲突
-		
-		g_sysparam_st.snoreIntervention.is_intervening = false;
-		g_sysparam_st.snoreIntervention.triggered_flag = false;
-		// LOG_I("CMD = %02x",cmd);
-			switch (cmd) 
-			{
-					case 0x21:
-							break;
-					case 0x22:
-							break;
-					case 0x23:		// STOP
-							mfp_tx_queue_clear();
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,1); 
-							break;
-					case 0x24:		// All Up
-							prepare_mfp_NORMAL_KET((KEY_M1_OUT|KEY_M2_OUT),30); 	//  ͷ��̧��6s
-							// prepare_mfp_SOFT_START(KEY_MEMORY4, 0x32, 0x10,3);  //KEY_MEMORY4 
-							//app_Receive_Wakeup_LedOn();
-							break;
-					case 0x25:		// Zero G
-							prepare_mfp_NORMAL_KET(KEY_ZEROG,3);
-							break;
-					case 0x26:		// Flat Preset
-							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3); 
-							// prepare_mfp_SOFT_START(KEY_ALLFATE,0x32,0x20,3);
-							break;				
-					case 0x27:		// Favorite preset  // ����λ��
-							prepare_mfp_NORMAL_KET(KEY_MEMORY5,3); 
-							break;
-					case 0x28:		// Tv preset
-							prepare_mfp_NORMAL_KET(KEY_MEMORY3,3); 
-							break;
-					case 0x29:		// Raise-head
-							prepare_mfp_NORMAL_KET(KEY_M1_OUT,15); // ͷ̧��3s
-							break;
-					case 0x2A:		// Lower-head
-							prepare_mfp_NORMAL_KET(KEY_M1_IN,15);
-							break;
-					case 0x2B:		// Raise-foot
-							prepare_mfp_NORMAL_KET(KEY_M2_OUT,15);
-							break;
-					case 0x2C:		// Lower foot
-							prepare_mfp_NORMAL_KET(KEY_M2_IN,15);
-							break;	
-					case 0x2D:		// Massage On  (massageAll ����ͷ�Ű�Ħ)
-							if(g_sysparam_st.m1 == 0) prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
-							break;
-					case 0x2E:		// Massage Up ͷ�Ű�Ħ��ǿ
-							//prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
-							prepare_mfp_NORMAL_KET(KEY_MASSAGE_FEET|KEY_MASSAGE_HEAD,3);
-							break;
-					case 0x2F:		// Massage Down
-							//prepare_mfp_NORMAL_KET(KEY_MASSAGE_All,3);
-							 prepare_mfp_NORMAL_KET(KEY_MASSAGE_HEAD_MINUS|KEY_MASSAGE_FEET_MIUNS,3);
-							break;
-					case 0x30:		// MASSAGE OFF   
-							if(g_sysparam_st.m1 != 0) prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL,3);
-							break;
-					case 0x31:		// LIGHT OFF
-							if(g_offline_voice.ubb_enable == true)  prepare_mfp_NORMAL_KET(KEY_UBB,3);
-							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
-							break;
-					case 0x32:		// LIGHT On
-							 if(g_offline_voice.ubb_enable == false) prepare_mfp_NORMAL_KET(KEY_UBB,3);		// UBB�ر�ʱ��ſ���   ״̬���ñ���(MFP״̬һֱ�ش���)
-							// prepare_mfp_NORMAL_KET(KEY_UBB,3);
-							break;
-					case 0x33:		// GOOD NIGHT
-							prepare_mfp_NORMAL_KET(KEY_ALLFATE,3);
-							break;						
-					case 0x34:		// ANTI-SNORE
-							prepare_mfp_NORMAL_KET(KEY_MEMORY4,3);
-							break;	
-					case 0x35:		// RAISE LUMBAR
-							prepare_mfp_NORMAL_KET(KEY_M4_OUT,15);
-							break;
-					case 0x36:		// LOWER LUMBAR
-							prepare_mfp_NORMAL_KET(KEY_M4_IN,15);
-							break;
-					case 0x37:		// RAISE TILT
-							prepare_mfp_NORMAL_KET(KEY_M3_OUT,15);
-							break;
-					case 0x38:		// LOWER TILT
-							prepare_mfp_NORMAL_KET(KEY_M3_IN,15);
-							break;
+	if (cmd == 0x21 || cmd == 0x22) {
+		LOG_I("V wake_word 0x%02x", cmd);
+		led_voice_wakeup();
+		return;
+	}
 
-					default:
-							LOG_I("Invalid command \r\n");
-		}
+	LOG_I("V cmd 0x%02x", cmd);
+	led_voice_command_confirm();
+
+	g_sysparam_st.snoreIntervention.is_intervening = false;
+	g_sysparam_st.snoreIntervention.triggered_flag = false;
+	switch (cmd) {
+	case 0x23:
+		mfp_tx_queue_clear();
+		prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL, 1);
+		break;
+	case 0x24:
+		prepare_mfp_NORMAL_KET((KEY_M1_OUT | KEY_M2_OUT), 30);
+		break;
+	case 0x25:
+		prepare_mfp_NORMAL_KET(KEY_ZEROG, 3);
+		break;
+	case 0x26:
+		prepare_mfp_NORMAL_KET(KEY_ALLFATE, 3);
+		break;
+	case 0x27:
+		prepare_mfp_NORMAL_KET(KEY_MEMORY5, 3);
+		break;
+	case 0x28:
+		prepare_mfp_NORMAL_KET(KEY_MEMORY3, 3);
+		break;
+	case 0x29:
+		prepare_mfp_NORMAL_KET(KEY_M1_OUT, 15);
+		break;
+	case 0x2A:
+		prepare_mfp_NORMAL_KET(KEY_M1_IN, 15);
+		break;
+	case 0x2B:
+		prepare_mfp_NORMAL_KET(KEY_M2_OUT, 15);
+		break;
+	case 0x2C:
+		prepare_mfp_NORMAL_KET(KEY_M2_IN, 15);
+		break;
+	case 0x2D:
+		if (g_sysparam_st.m1 == 0)
+			prepare_mfp_NORMAL_KET(KEY_MASSAGE_All, 3);
+		break;
+	case 0x2E:
+		prepare_mfp_NORMAL_KET(KEY_MASSAGE_FEET | KEY_MASSAGE_HEAD, 3);
+		break;
+	case 0x2F:
+		prepare_mfp_NORMAL_KET(KEY_MASSAGE_HEAD_MINUS | KEY_MASSAGE_FEET_MIUNS, 3);
+		break;
+	case 0x30:
+		if (g_sysparam_st.m1 != 0)
+			prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL, 3);
+		break;
+	case 0x31:
+		if (g_offline_voice.ubb_enable == true)
+			prepare_mfp_NORMAL_KET(KEY_UBB, 3);
+		break;
+	case 0x32:
+		if (g_offline_voice.ubb_enable == false)
+			prepare_mfp_NORMAL_KET(KEY_UBB, 3);
+		break;
+	case 0x33:
+		prepare_mfp_NORMAL_KET(KEY_ALLFATE, 3);
+		break;
+	case 0x34:
+		prepare_mfp_NORMAL_KET(KEY_MEMORY4, 3);
+		break;
+	case 0x35:
+		prepare_mfp_NORMAL_KET(KEY_M4_OUT, 15);
+		break;
+	case 0x36:
+		prepare_mfp_NORMAL_KET(KEY_M4_IN, 15);
+		break;
+	case 0x37:
+		prepare_mfp_NORMAL_KET(KEY_M3_OUT, 15);
+		break;
+	case 0x38:
+		prepare_mfp_NORMAL_KET(KEY_M3_IN, 15);
+		break;
+	default:
+		LOG_I("V unk cmd 0x%02x", cmd);
+		break;
+	}
 }
 
 typedef enum {
-    VOICE_STATE_DISABLED,
-    VOICE_STATE_WAKE_WORD_DETECTED,
-    VOICE_STATE_ACTIVE
+	VOICE_STATE_DISABLED,
+	VOICE_STATE_WAKE_WORD_DETECTED,
+	VOICE_STATE_ACTIVE
 } VoiceState;
 
-void offline_voice_Handle(uint8_t cmd, uint8_t data) 
+/*
+ * cmd 0x81: voice payload; data = sub-command.
+ * cmd 0x82: session end from CI1302.
+ */
+void offline_voice_Handle(uint8_t cmd, uint8_t data)
 {
-    static VoiceState state = VOICE_STATE_DISABLED;
-    /* 0����鰴��״̬ */
-		// check_offline_voice_keys();
-	
-		/* 1�����������������û��ʹ�ܣ�ֱ���˳� */
-    if(g_offline_voice.key_enable == false){
-		// 如果之前离线语音处于激活状态，需要清理LED
-		if(g_offline_voice.enabled || state != VOICE_STATE_DISABLED) {
-			LOG_I("Voice switch OFF, force clear LED immediately");
+	static VoiceState state = VOICE_STATE_DISABLED;
+
+	if (g_offline_voice.key_enable == false) {
+		if (g_offline_voice.enabled || state != VOICE_STATE_DISABLED) {
+			LOG_I("V off LED3");
 			g_offline_voice.enabled = false;
-			// 手动关闭开关，直接强制关闭LED（不闪烁）
 			led_ctrl_force_off(LED_ID_3);
 		}
-		state = VOICE_STATE_DISABLED;  // 重置状态
+		state = VOICE_STATE_DISABLED;
 		return;
 	}
-	
-		LOG_I( "key_enable = %d, wake_word = %d,cmd = %x ,ubb = %d",g_offline_voice.key_enable,g_offline_voice.wake_word ,data,g_offline_voice.ubb_enable);
 
-		/* 2������оƬ���ͻ���ָ� �жϻ��Ѵʾ����Ƿ��� */
-    switch(state) {
-        case VOICE_STATE_DISABLED:		// �ж�ָ��
-            if((cmd == 0x81 && data == 0x21 && g_offline_voice.wake_word == Hello_Ergo) ||
-               (cmd == 0x81 && data == 0x22 && g_offline_voice.wake_word == Hello_Bed)) {
-                state = VOICE_STATE_WAKE_WORD_DETECTED;
-                g_offline_voice.enabled = true;
-                offline_voice_wake_up();
-            }
-            break;
-            
-        case VOICE_STATE_WAKE_WORD_DETECTED:	// ����
-		
-        case VOICE_STATE_ACTIVE:
-            if(cmd == 0x81) {
+	LOG_I("V key_enable=%d wake_word=%d data=0x%x ubb_enable=%d", g_offline_voice.key_enable, g_offline_voice.wake_word,data, g_offline_voice.ubb_enable);
 
-                offline_voice_dataHandle(data);		/* 2.1������оƬ���Ͳ����� ��ָ���봫������������������ */
-                state = VOICE_STATE_ACTIVE;
-            } 
-            else if(cmd == 0x82) 									/* 3������оƬ���͹ر�ָ� ���������ر�*/
-						{
-                offline_voice_wake_off();			
-                state = VOICE_STATE_DISABLED;			
-            }
-            break;
-    }
+	switch (state) {
+	case VOICE_STATE_DISABLED:
+		if ((cmd == 0x81 && data == 0x21 && g_offline_voice.wake_word == Hello_Ergo) ||
+		    (cmd == 0x81 && data == 0x22 && g_offline_voice.wake_word == Hello_Bed)) {
+			state = VOICE_STATE_WAKE_WORD_DETECTED;
+			g_offline_voice.enabled = true;
+			offline_voice_wake_up();
+		}
+		break;
+
+	case VOICE_STATE_WAKE_WORD_DETECTED:
+	case VOICE_STATE_ACTIVE:
+		if (cmd == 0x81) {
+			offline_voice_dataHandle(data);
+			state = VOICE_STATE_ACTIVE;
+		} else if (cmd == 0x82) {
+			offline_voice_wake_off();
+			state = VOICE_STATE_DISABLED;
+		}
+		break;
+	}
 }
-
-//void offline_voice_Handle_(uint8_t cmd , uint8_t data)
-//{
-//		/* 0����鰴��״̬ */
-//		check_offline_voice_keys();
-//	
-//		/* 1�������������û��ʹ�ܣ�ֱ���˳� */
-//		if(g_offline_voice.key_enable == false) return;
-//	
-//		LOG_I( "g_offline_voice.key_enable = %d, g_offline_voice.wake_word = %d,cmd = %x",g_offline_voice.key_enable,g_offline_voice.wake_word ,data );
-//	
-//		/* 1.1������оƬ���ͻ���ָ� �жϻ��Ѵʾ����Ƿ��� */
-//		if(g_offline_voice.wake_word == Hello_Ergo && data == 0x21){
-//			g_offline_voice.enabled = true;
-//		}
-//		
-//		if(g_offline_voice.wake_word == Hello_Bed && data == 0x22){
-//				g_offline_voice.enabled = true;
-//			  LOG_I("g_offline_voice.enabled = true \r\n");
-//		}
-//		
-//		
-//		if(g_offline_voice.enabled == true){
-//				offline_voice_wake_up(); // ʵ�ʻ���15s ��8s
-//		}else{
-//			return; 
-//		}	
-//	
-//	
-//		/* 2������оƬ���Ͳ����� ��ָ���봫������������������ */
-//		if(cmd == 0x81){
-//				offline_voice_dataHandle(data);
-//		}
-//		/* 3������оƬ���͹ر�ָ� ���������ر�*/
-//		if(cmd == 0x82){
-
-//			offline_voice_wake_off();
-//		}
-//}

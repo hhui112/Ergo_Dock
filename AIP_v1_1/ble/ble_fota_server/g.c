@@ -85,7 +85,7 @@ static uint8_t IsLeapYear(uint16_t year) {
 }
 
 /* 将RTC时间转换为UTC时间戳 */
-uint32_t x_time_RTC_ToUTC(void) 
+uint32_t x_time_RTC_ToUTC(void)
 {
 	
     uint32_t seconds = 0;
