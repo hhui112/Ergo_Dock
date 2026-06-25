@@ -39,8 +39,8 @@
 //#include "bo_ota.h"
 
 //#include "bsp.h"
-uint8_t ls_bleup_server_send_notification(uint8_t  *data_notice,uint16_t length);//À¶ÑÀÉÏÐÐÊý¾ÝÍ¨ÐÅ
-void create_adv_obj();//´´½¨¹ã²¥¶ÔÏó
+uint8_t ls_bleup_server_send_notification(uint8_t  *data_notice,uint16_t length);//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
+void create_adv_obj();//ï¿½ï¿½ï¿½ï¿½ï¿½ã²¥ï¿½ï¿½ï¿½ï¿½
 void Error_Handler(void);
 void changePWM_PULSE(uint8_t PULSE_SET);
 #endif

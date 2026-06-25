@@ -266,7 +266,6 @@ static void ls_5ms_timer_cb(void *param)
 //	}
 	
 	//OKIN_ai_run();
-	// x_flash_run();
 	flash_run();
 	// SnoringIntervention_run();
  if(xTimer_5ms_inst)

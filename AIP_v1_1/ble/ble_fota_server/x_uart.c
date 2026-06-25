@@ -3,6 +3,7 @@
 #include "g.h"
 #include "offline_voice.h"
 #include "x_control.h"
+#include <string.h>
 
 uint8_t s_tx_busy;
 uint8_t rx1_t_data, rx2_t_data, rx3_t_data;
@@ -14,6 +15,30 @@ uart_data_st uart3_data_pack;
 UART_HandleTypeDef UART_Server3_Config;
 UART_HandleTypeDef UART_Server2_Config;
 UART_HandleTypeDef UART_Server1_Config;
+
+/** 最近一次 MFP 校验通过帧的原始快照（与 rx.rawData 一致，避免后续 memset 后 BLE 读不到）。 */
+static uint8_t s_uart1_last_mfp_raw[UART_RX_BUF_SIZE];
+static uint16_t s_uart1_last_mfp_raw_len;
+
+uint8_t uart1_get_last_mfp_raw(uint8_t *dst, uint8_t max_len)
+{
+	uint16_t n;
+
+	if (dst == NULL || max_len == 0U || s_uart1_last_mfp_raw_len == 0U)
+		return 0U;
+	n = s_uart1_last_mfp_raw_len;
+	if (n > (uint16_t)max_len)
+		n = (uint16_t)max_len;
+	memcpy(dst, s_uart1_last_mfp_raw, (size_t)n);
+	return (uint8_t)n;
+}
+
+uint8_t uart1_get_last_mfp_sync_len(void)
+{
+	if (s_uart1_last_mfp_raw_len == 0U)
+		return 0U;
+	return s_uart1_last_mfp_raw[0];
+}
 
 void x_uart1_dateReceiveHandle(void);
 void x_uart2_dateReceiveHandle(void);
@@ -63,12 +88,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 }
 
-/* Parse MFP sync packet: UBB / massage flags from fixed offsets. */
+/* MFP 同步包：先快照整帧供 BLE 0xB7，再解析 UBB / 按摩等固定偏移。 */
 void uart1_cmdHandle(void)
 {
+	uint16_t flen = (uint16_t)uart1_data_pack.rx.Syncdata.length + 3U;
+
+	if (flen > UART_RX_BUF_SIZE)
+		flen = UART_RX_BUF_SIZE;
+	memcpy(s_uart1_last_mfp_raw, uart1_data_pack.rx.rawData, (size_t)flen);
+	s_uart1_last_mfp_raw_len = flen;
+
 	g_sysparam_st.ubb = uart1_data_pack.rx.rawData[11] & 0x01;
+	/* 与主控同步灯态：离线语音 0x31/0x32 分支依赖 ubb_enable，必须在每帧更新（不能只靠拨键回调） */
+	g_offline_voice.ubb_enable = (g_sysparam_st.ubb != 0U);
 	g_sysparam_st.m1 = uart1_data_pack.rx.rawData[12];
 	g_sysparam_st.m2 = uart1_data_pack.rx.rawData[13];
+	if (flen >= 18U) {
+		g_sysparam_st.mfp_keys = uart1_data_pack.rx.syncPacket.keys;
+		g_sysparam_st.massage_timer = uart1_data_pack.rx.syncPacket.massageTimer;
+	}
 	// LOG_I("ubb// LOG_I("ubb:%d,m1:%d,m2:%d",g_sysparam_st.ubb,g_sysparam_st.m1,g_sysparam_st.m2);:%d,m1:%d,m2:%d",g_sysparam_st.ubb,g_sysparam_st.m1,g_sysparam_st.m2);
 }
 

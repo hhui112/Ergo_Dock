@@ -20,14 +20,13 @@
 #include "app_key.h"
 #include "app_led.h"
 
-/*
- * 协议 3.2 APP 键值响应帧 — 蓝牙盒信息段 B8：软件三字节（偏移 20~22）、硬件两字节（23~24）。
- * C 源文件中不能写 2.0.0 形式字面量，故拆成整数宏。
- * 硬件丝印 2.0.1 在协议中仅两字节，此处用 主=2、次=1 与末位对齐。
- */
+/* 
+* 软件版本 2.0.1 
+* 硬件版本 2.1
+*/
 #define BLE_APP_KEYRESP_SW_MAJOR   2U
 #define BLE_APP_KEYRESP_SW_MINOR   0U
-#define BLE_APP_KEYRESP_SW_PATCH   0U
+#define BLE_APP_KEYRESP_SW_PATCH   1U
 #define BLE_APP_KEYRESP_HW_MAJOR   2U
 #define BLE_APP_KEYRESP_HW_MINOR   1U
 
@@ -175,7 +174,7 @@ union SyncCommunicationData_t
 			uint8_t factoryMode									: 1;  // 工厂模式：1 工厂模式，0 正常模式
 			uint8_t	addr												: 1;  // 两控制盒同步时区分地址
 			uint8_t massage_status[2];								// 头脚按摩器按摩强度
-			uint32_t massageTimer;										// 按摩时间，单位 10ms
+			uint32_t massageTimer;										// 按摩剩余时间，单位 10ms（小端，与主控同步帧一致）
 			uint16_t pulseCounter[MOTOR_NUM];					// 驱动器纹波（结合电机数量，当前 2/3/4 电机）
 			int16_t  current[MOTOR_NUM];							// 驱动器电流（结合电机数量）
 			uint16_t U_div_2; 												// 基准电流
@@ -221,6 +220,8 @@ typedef struct {
     bool enabled;           // en = 1 
     uint8_t wake_word;      // 1=Hello Ergo, 2=Hello Bed
 		bool ubb_enable; 				// litht_on = 1
+		uint8_t last_control_cmd;   /* 最近一次 CI1302 控制词(如 0x23)，供 BLE 3.3.3 应答第 6 字节；未下发过为 0 */
+		uint8_t bed_type;           /* BLE 3.3.2 床型：0 默认主控盒，1 AB床主控盒 */
 } offline_voice_ctrl_t;
 
 
@@ -250,6 +251,10 @@ typedef struct
 	uint8_t       AntiSnore_intensity;
 	uint32_t timer_s;				// 当前计算时间
 	uint32_t oldsnoreNub;		// 当前打鼾次数
+	uint8_t lift_stage;			/* 本放平周期内已累计抬升段数 0..3（每段 TMR/3≈总 TMR/15°）；换干预强度档位不重置，仅改判定阈值 */
+	uint32_t first_lift_tick;		/* 首次抬升时 g_sysparam_st.timer（10ms tick），0=未开始；达 SNORE_FLAT_DELAY_TICKS 后放平 */
+	uint32_t lift_seg_end_tick;	/* 抬升段结束 timer(10ms)，0=未在 M1_OUT sustain 段内 */
+	uint8_t lift_seg_pwm;			/* 本段 sustain 使用的 PWM */
 }snoreIntervention_t;	
 
 typedef struct
@@ -324,6 +329,16 @@ typedef struct
 	uint16_t   ble_pair_time;	// 蓝牙配对时间 
 }ble_st;
 
+/* BLE 3.5 测试信息计数（仅 RAM，掉电清零；应答 0x12 段：B4 汇总 + B3 各口令 1B 计数） */
+#define BLE_TESTINFO_VOICE_DETAIL_N  24U  /* 0x21..0x38 与文档「精确数据」顺序一致 */
+typedef struct {
+	uint16_t offline_voice_wake;          /* 离线语音唤醒次数 */
+	uint16_t offline_voice_resp;          /* 离线语音控制词响应次数（进入 switch 处理） */
+	uint16_t snore_intervention_trig;     /* 打鼾干预抬升下发次数（每段 KEY_MEMORY4 一次） */
+	/* 各控制词触发次数（uint8 饱和 0xFF）；顺序：Hello Ergo..Lower Tilt，对应 cmd 0x21..0x38 */
+	uint8_t voice_detail[BLE_TESTINFO_VOICE_DETAIL_N];
+} ble_testinfo_st;
+
 
 // 系统参数
 typedef struct 
@@ -349,11 +364,13 @@ typedef struct
 	uint8_t 			ubb;		// 床底灯状态
 	uint8_t 			m1;			// 头部按摩强度
 	uint8_t 			m2;			// 脚部按摩强度
+	uint32_t			massage_timer;	// 按摩剩余时间 ms（MFP 同步帧缓存，供 BLE BA 段）
+	uint32_t			mfp_keys;		// 主控当前键值（MFP 同步帧缓存，供 BLE B9 段）
 	uint8_t   charge_state;    // 无线充电状态
 	ble_st 		ble;
+	ble_testinfo_st ble_testinfo;
 	
 }sysparam_st;// 系统参数
-
 
 // 故障检测
 typedef struct 
@@ -365,15 +382,13 @@ typedef struct
 }faultDetect_st;										// 故障检测标志位
 
 
-// Flash 保存项
-typedef struct 
-{
-	uint8_t 			ai_adj;
-	uint16_t 			adjPa;       							// 自适应气压
-	uint8_t 			snoreIntervention_enable;	// 打鼾干预使能标志位
-	uint8_t 			ai_adj_strength;					// 自适应强度
-	uint16_t 			crc;      				 				// 自适应气压
-}flash_save_data_st;// Flash 保存标志位
+/* Flash 仅存打鼾干预：pwm/tmr/强度；强度 0 表示关闭（与 snoreIntervention.enable 一致，无需单独使能位） */
+typedef struct {
+	uint8_t snore_pwm;
+	uint8_t snore_tmr;
+	uint8_t snore_intensity;
+	uint16_t crc;
+} __attribute__ ((packed)) flash_save_data_st;
 
 extern void x_time_UTC_ToRTC(uint64_t t_utc);
 extern uint32_t x_time_RTC_ToUTC(void);

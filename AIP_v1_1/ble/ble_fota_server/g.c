@@ -1,11 +1,10 @@
 #include "g.h"
 #include "time.h"
 
-
-
-/* Ã¿¸öÔÂµÄÌìÊı£¨·ÇÈòÄê£© */
+/* Days per month in a common year (Jan..Dec) */
 static const uint8_t daysPerMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+/* Modbus RTU CRC16 lookup table, poly 0xA001 */
 static uint16_t crcTb[] = {
         0X0000, 0XC0C1, 0XC181, 0X0140, 0XC301, 0X03C0, 0X0280, 0XC241,
         0XC601, 0X06C0, 0X0780, 0XC741, 0X0500, 0XC5C1, 0XC481, 0X0440,
@@ -47,10 +46,11 @@ offline_voice_ctrl_t g_offline_voice = {
 		.key_enable = false,
     .enabled = false,
     .wake_word = 0,
-		.ubb_enable = false
+		.ubb_enable = false,
+		.bed_type = 0U
 };
 
-
+/* Modbus RTU CRC16 over buf[0 .. bufLen-1] */
 uint16_t Modbus_Crc_Compute(const uint8_t *buf, uint16_t bufLen) 
 {
 	uint8_t num;
@@ -63,13 +63,12 @@ uint16_t Modbus_Crc_Compute(const uint8_t *buf, uint16_t bufLen)
   return modbus16;
 }
 
-//Ê±¼ä¹¤¾ß
-
-//½«UTCÊ±¼ä´Á×ª»»Îª±±¾©Ê±¼ä²¢´òÓ¡
+/* UTC epoch seconds -> UTC+8 local time, then RTC set + log */
 void x_time_UTC_ToRTC(uint64_t t_utc)
 {
 	struct tm *tm_info;
 	time_t timestamp = t_utc+8*3600;
+    // time_t timestamp = t_utc + timezone_offset;  // åŠ¨æ€é…ç½®
 	tm_info = localtime(&timestamp);
 	
 	LOG_I("tm_info %d : %d : %d  %d/%d/%d week = %d", tm_info->tm_hour,tm_info->tm_min,tm_info->tm_sec,
@@ -78,44 +77,47 @@ void x_time_UTC_ToRTC(uint64_t t_utc)
 	x_rtc_set(tm_info->tm_year-100,tm_info->tm_mon+1,tm_info->tm_mday,tm_info->tm_hour,tm_info->tm_min,tm_info->tm_sec,tm_info->tm_wday);
 }
 
-
-/* ÅĞ¶ÏÊÇ·ñÎªÈòÄê */
+/* Gregorian calendar leap year */
 static uint8_t IsLeapYear(uint16_t year) {
     return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
 }
 
-/* ½«RTCÊ±¼ä×ª»»ÎªUTCÊ±¼ä´Á */
+/*
+ * Calendar in g_sysparam_st -> UTC seconds since 1970-01-01 00:00:00 UTC,
+ * then minus 8 hours (legacy offset, keep in sync with callers).
+ */
 uint32_t x_time_RTC_ToUTC(void)
 {
 	
     uint32_t seconds = 0;
-    uint16_t year = 2000 + g_sysparam_st.calendar_cal.year;  /* ×ª»»ÎªÊµ¼ÊÄê·İ */
+    /* calendar_cal.year is 0..99 -> full year 2000..2099 */
+    uint16_t year = 2000 + g_sysparam_st.calendar_cal.year;
     uint8_t month = g_sysparam_st.calendar_cal.mon;
     uint8_t day = g_sysparam_st.calendar_cal.date;
     
-    /* ¼ÆËã´Ó1970Äêµ½Ö¸¶¨Äê·İµÄ×ÜÃëÊı */
+    /* Seconds from 1970-01-01 to (year-01-01) */
     for (uint16_t y = 1970; y < year; y++) {
         seconds += (IsLeapYear(y) ? 366 : 365) * 24 * 60 * 60;
     }
     
-    /* ¼ÆËãµ½Ö¸¶¨ÔÂ·İµÄ×ÜÃëÊı */
+    /* Seconds for Jan .. (month-1) */
     for (uint8_t m = 1; m < month; m++) {
         uint8_t days = daysPerMonth[m-1];
-        if (m == 2 && IsLeapYear(year)) days++;  /* ÈòÄê2ÔÂÓĞ29Ìì */
+        if (m == 2 && IsLeapYear(year)) days++; /* Feb 29 in leap year */
         seconds += days * 24 * 60 * 60;
     }
     
-    /* ¼ÆËãµ½Ö¸¶¨ÈÕÆÚµÄ×ÜÃëÊı */
+    /* Days in month before 'day' */
     seconds += (day - 1) * 24 * 60 * 60;
     
-    /* ¼ÓÉÏµ±ÌìµÄÊ±·ÖÃë */
+    /* Time of day */
     seconds += g_sysparam_st.calendar_time.hour * 60 * 60;
     seconds += g_sysparam_st.calendar_time.min * 60;
     seconds += g_sysparam_st.calendar_time.sec;
-   // LOG_I("RTC_ToUTC %d",seconds);
     return seconds-8*3600;
 }
 
+/* MFP sync checksum: start 0xFF, subtract each data byte */
 uint8_t syncCalcCheckSum(const uint8_t *data, uint8_t len)
 {
     uint8_t sum = 0xFF;

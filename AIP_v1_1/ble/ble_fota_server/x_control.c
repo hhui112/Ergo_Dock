@@ -72,11 +72,6 @@ void check_offline_voice_keys(void)
 		else if (key2 == 0U)
 			g_offline_voice.wake_word = Hello_Ergo;
 	}
-		if(g_sysparam_st.ubb == 1){
-			g_offline_voice.ubb_enable = true;		// light_on
-		}else{
-			g_offline_voice.ubb_enable = false;		// litht off
-		}
 	/* 拨键稳定切换后，经 UART2 下发 CI1302 配置（与上电 force 互补，避免重复） */
 	ci1302_uart2_voice_config_sync(false);
 } 
@@ -91,7 +86,8 @@ void control_timer10ms(void)
 		} else if(last_key == key && key != 0) {
 		  if(key_repeat < UINT16_MAX) 
 				key_repeat ++;
-		if(key_repeat == 300 && key == app_key_num4) {
+		if(key_repeat == 200 && key == app_key_num4)  // 配网长按3s->改为2s
+		{
 		  keys_ignore = true;
 			if(g_sysparam_st.ble.ble_pair_flag == 0){
 					g_sysparam_st.ble.ble_pair_flag = 1;

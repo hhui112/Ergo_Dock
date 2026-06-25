@@ -4,22 +4,21 @@
 
 #define FLASH_ADDR  0x1807BE00
 
-static uint8_t 			old_ai_adj;
-static uint8_t 			old_ai_adj_strength;
-static uint16_t 		old_adjPa;       				//????????
-static uint8_t 			old_snoreIntervention_enable;	//?????????¦Ë
+static uint8_t old_snore_pwm;
+static uint8_t old_snore_tmr;
+static uint8_t old_snore_intensity;
 
-void x_flash_static_Init(void);
+static void flash_static_init(void);
+static void flash_snore_shadow_update(void);
 
 void set_savetoflash(uint8_t *p,uint8_t len)
 {
-	uint8_t i;
-  hal_flash_page_erase(FLASH_ADDR);
+  	hal_flash_page_erase(FLASH_ADDR);
 	hal_flash_page_program(FLASH_ADDR,p,len);
 }
 
 
-void x_flash_load(void)
+void flash_load(void)
 {
 	uint8_t *p = (uint8_t*)FLASH_ADDR;
 	uint16_t crc_t = 0;
@@ -27,72 +26,63 @@ void x_flash_load(void)
 	
 	memcpy(&flash_save_data,p,sizeof(flash_save_data));
 	
-	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRC§µ??
+	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);
 	
 	if(crc_t == flash_save_data.crc)
 	{
 		LOG_I("flsh_read OK");
 		
-		g_sysparam_st.ai_adj = flash_save_data.ai_adj;
-		g_sysparam_st.airpump.adjPa = flash_save_data.adjPa; 
-		g_sysparam_st.ai_adj_strength = flash_save_data.ai_adj_strength;
+		g_sysparam_st.snoreIntervention.snoreIntervention_pwm = flash_save_data.snore_pwm;
+		g_sysparam_st.snoreIntervention.snoreIntervention_tmr = flash_save_data.snore_tmr;
+		g_sysparam_st.AntiSnore_intensity = (uint8_t)(flash_save_data.snore_intensity > 3U ? 3U : flash_save_data.snore_intensity);
+		g_sysparam_st.snoreIntervention.enable = (bool)(g_sysparam_st.AntiSnore_intensity != 0U);
 	}
 	else
 	{
-//		adaptivecontrol_default();
 		LOG_I("flsh_read FAIL");
 	}
-	x_flash_static_Init();
+	flash_static_init();
 }
 
-void x_flash_save(void)
+static void flash_save(void)
 {
 	uint16_t crc_t = 0;
 	flash_save_data_st  flash_save_data;	
 	memset(&flash_save_data,0,sizeof(flash_save_data));
-	flash_save_data.ai_adj =g_sysparam_st.ai_adj;
-	flash_save_data.ai_adj_strength = g_sysparam_st.ai_adj_strength;
-	flash_save_data.adjPa = g_sysparam_st.airpump.adjPa;
-	crc_t=Modbus_Crc_Compute((uint8_t*)&flash_save_data, sizeof(flash_save_data)-2);//CRC§µ??
+	flash_save_data.snore_pwm = g_sysparam_st.snoreIntervention.snoreIntervention_pwm;
+	flash_save_data.snore_tmr = g_sysparam_st.snoreIntervention.snoreIntervention_tmr;
+	flash_save_data.snore_intensity = (uint8_t)(g_sysparam_st.AntiSnore_intensity > 3U ? 3U : g_sysparam_st.AntiSnore_intensity);
+	crc_t = Modbus_Crc_Compute((uint8_t *)&flash_save_data, sizeof(flash_save_data) - 2U);
 	flash_save_data.crc = crc_t;
 	set_savetoflash((uint8_t*)&flash_save_data,sizeof(flash_save_data));
 }
 
 
-void x_flash_static_Init(void)
+static void flash_static_init(void)
 {
-	old_ai_adj_strength =  g_sysparam_st.ai_adj_strength;
-	old_ai_adj = g_sysparam_st.ai_adj;
-	old_adjPa = g_sysparam_st.airpump.adjPa;
-	old_snoreIntervention_enable = g_sysparam_st.snoreIntervention.enable;
+	flash_snore_shadow_update();
 }
 
-
-void x_flash_run(void)
+static void flash_snore_shadow_update(void)
 {
+	old_snore_pwm = g_sysparam_st.snoreIntervention.snoreIntervention_pwm;
+	old_snore_tmr = g_sysparam_st.snoreIntervention.snoreIntervention_tmr;
+	old_snore_intensity = g_sysparam_st.AntiSnore_intensity;
+}
 
-	if(old_ai_adj != g_sysparam_st.ai_adj || 
-		 old_ai_adj_strength !=  g_sysparam_st.ai_adj_strength||
-		 old_adjPa != g_sysparam_st.airpump.adjPa || 
-		 old_snoreIntervention_enable != g_sysparam_st.snoreIntervention.enable)
-	{
-		x_flash_save();
+void flash_save_snore_cfg_if_changed(void)
+{
+	if (old_snore_pwm != g_sysparam_st.snoreIntervention.snoreIntervention_pwm ||
+	    old_snore_tmr != g_sysparam_st.snoreIntervention.snoreIntervention_tmr ||
+	    old_snore_intensity != g_sysparam_st.AntiSnore_intensity) {
+		flash_save();
 	}
-	
-	
-	old_ai_adj = g_sysparam_st.ai_adj;
-	old_adjPa = g_sysparam_st.airpump.adjPa;
-	old_snoreIntervention_enable = g_sysparam_st.snoreIntervention.enable;
-	old_ai_adj_strength =  g_sysparam_st.ai_adj_strength;
+	flash_snore_shadow_update();
 }
 
 
 void flash_run(void)
 {
-
-	if(old_snoreIntervention_enable != g_sysparam_st.snoreIntervention.enable)
-	{
-		x_flash_save();
-	}
-	old_snoreIntervention_enable = g_sysparam_st.snoreIntervention.enable;
+	/* Keep periodic polling: key path may update snore intensity without BLE write. */
+	flash_save_snore_cfg_if_changed();
 }
