@@ -21,14 +21,14 @@
 #include "app_led.h"
 
 /* 
-* 软件版本 2.0.1 
-* 硬件版本 2.1
+* 软件版本 2.0.3
+* 硬件版本 2.2
 */
 #define BLE_APP_KEYRESP_SW_MAJOR   2U
 #define BLE_APP_KEYRESP_SW_MINOR   0U
-#define BLE_APP_KEYRESP_SW_PATCH   1U
+#define BLE_APP_KEYRESP_SW_PATCH   3U // 增加了打鼾的调试信息、优化了打鼾缓启动逻辑
 #define BLE_APP_KEYRESP_HW_MAJOR   2U
-#define BLE_APP_KEYRESP_HW_MINOR   1U
+#define BLE_APP_KEYRESP_HW_MINOR   2U
 
 /* 工程兼容（如 x_uart）：整型简写 主*100+次 */
 #define VERSION  ((BLE_APP_KEYRESP_SW_MAJOR) * 100U + (BLE_APP_KEYRESP_SW_MINOR))
@@ -334,7 +334,7 @@ typedef struct
 typedef struct {
 	uint16_t offline_voice_wake;          /* 离线语音唤醒次数 */
 	uint16_t offline_voice_resp;          /* 离线语音控制词响应次数（进入 switch 处理） */
-	uint16_t snore_intervention_trig;     /* 打鼾干预抬升下发次数（每段 KEY_MEMORY4 一次） */
+	uint16_t snore_intervention_trig;     /* 打鼾干预抬升下发次数（内部 uint16；BLE 3.5 B4 应答饱和 1B） */
 	/* 各控制词触发次数（uint8 饱和 0xFF）；顺序：Hello Ergo..Lower Tilt，对应 cmd 0x21..0x38 */
 	uint8_t voice_detail[BLE_TESTINFO_VOICE_DETAIL_N];
 } ble_testinfo_st;

@@ -15,30 +15,30 @@ uint8_t bletxbuff[BLE_LINK_FRAME_BUF];
 uint8_t bletxlen;
 
 /*
- * Ergo_Dock2.0 BLEï¼šé“¾è·¯å±‚ã€Œå¸§é•¿(=æ•°æ®åŸŸå­—èŠ‚æ•°) + ç«¯å£ + æ•°æ®åŸŸã€ï¼Œæ— åŒæ­¥å¤´ã€æ— é“¾è·¯ CRCã€‚
- * ä¾‹ 3.3.1ï¼š02 06 10 B6 â†’ æ•°æ®åŸŸä»… 10 B6ï¼ˆ2Bï¼‰ï¼Œå¸§é•¿ 02 ä¸åŒ…å«ç«¯å£ 06ã€‚
- * 3.5 æµ‹è¯•ä¿¡æ¯ï¼šæŸ¥è¯¢ 02 06 12 B6 / 12 B7ï¼›åº”ç­” 21 06 12 B4 + ä¸‰ä¸ª uint16ï¼ˆå°ç«¯ï¼‰+ B3 + 24Ã—uint8ï¼ˆcmd 0x21..0x38ï¼‰ã€‚
- * 3.1 é”®å€¼ä»…ä¸¤ç§æ•´å¸§ï¼š05 01 01 00 00 00 00ï¼ˆæ™®é€šï¼‰ï¼›07 01 01 00 00 00 50 10ï¼ˆç¼“å¯åŠ¨ï¼‰ã€‚
+ * Ergo_Dock2.0 BLE£ºÁ´Â·²ã¡¸Ö¡³¤(=Êı¾İÓò×Ö½ÚÊı) + ¶Ë¿Ú + Êı¾İÓò¡¹£¬ÎŞÍ¬²½Í·¡¢ÎŞÁ´Â· CRC¡£
+ * Àı 3.3.1£º02 06 10 B6 ¡ú Êı¾İÓò½ö 10 B6£¨2B£©£¬Ö¡³¤ 02 ²»°üº¬¶Ë¿Ú 06¡£
+ * 3.5 ²âÊÔĞÅÏ¢£º²éÑ¯ 02 06 12 B6 / 12 B7£»Ó¦´ğ 21 06 12 B4 + »½ĞÑ/ÏìÓ¦¸÷ LE16 + ´ò÷ı¸ÉÔ¤´¥·¢ 1B + ´ò÷ı°ü×ÜÊı 1B + B3 + 24¡Áuint8£¨cmd 0x21..0x38£©¡£
+ * 3.1 ¼üÖµ½öÁ½ÖÖÕûÖ¡£º05 01 01 00 00 00 00£¨ÆÕÍ¨£©£»07 01 01 00 00 00 50 10£¨»ºÆô¶¯£©¡£
  */
 
-#define BLE_APP_PORT_INNER          0x01U  /* ç«¯å£ï¼š0x01 = APP é”®å€¼å¸§ / ä¸»æ§å“åº”å¸§ */
-#define BLE_DATA_PORT               0x06U  /* ç«¯å£ï¼š0x06 = æ•°æ®æ®µ */
-#define BLE_SERVICE_PORT            0x09U  /* ç«¯å£ï¼š0x09 = æœåŠ¡å¸§ */
+#define BLE_APP_PORT_INNER          0x01U  /* ¶Ë¿Ú£º0x01 = APP ¼üÖµÖ¡ / Ö÷¿ØÏìÓ¦Ö¡ */
+#define BLE_DATA_PORT               0x06U  /* ¶Ë¿Ú£º0x06 = Êı¾İ¶Î */
+#define BLE_SERVICE_PORT            0x09U  /* ¶Ë¿Ú£º0x09 = ·şÎñÖ¡ */
 
 #define BLE_RX_MAX_PAYLOAD          160U
 
-/* æ•°æ®åŸŸå†…ï¼šBA/A9/B8 å›ºå®šæ®µå…± 32 å­—èŠ‚ï¼Œä¸‹ä¸€å­—èŠ‚ä¸º B7ï¼›B7 åç´§è·Ÿä¸»æ§ç›’ UART åŸå§‹å¸§ï¼ˆé¦–å­—èŠ‚å³ä¸ºåè®® lengthï¼Œä¸å†å•ç‹¬å¸¦ raw é•¿åº¦å­—èŠ‚ï¼‰ */
+/* Êı¾İÓòÄÚ£ºBA/A9/B8 ¹Ì¶¨¶Î¹² 32 ×Ö½Ú£¬ÏÂÒ»×Ö½ÚÎª B7£»B7 ºó½ô¸úÖ÷¿ØºĞ UART Ô­Ê¼Ö¡£¨Ê××Ö½Ú¼´ÎªĞ­Òé length£¬²»ÔÙµ¥¶À´ø raw ³¤¶È×Ö½Ú£© */
 #define BLE_RESP_SEG_END_FIXED      32U
-#define BLE_SEG_MFP_RAW             0xB7U  /* ä¸»æ§åŸå§‹æ®µç±»å‹ */
-#define BLE_SEG_TESTINFO            0x12U  /* 3.5 æµ‹è¯•ä¿¡æ¯æ®µ */
-#define BLE_TESTINFO_PARAM_DETAIL   0xB3U  /* æµ‹è¯•ä¿¡æ¯ç²¾ç¡®æ•°æ®ï¼ˆç´§éš B4 æ±‡æ€»ä¹‹åï¼‰ */
-#define BLE_TESTINFO_TX_DATA_LEN    (2U + 6U + 1U + BLE_TESTINFO_VOICE_DETAIL_N) /* 12 B4 + 3Ã—LE16 + B3 + detail */
+#define BLE_SEG_MFP_RAW             0xB7U  /* Ö÷¿ØÔ­Ê¼¶ÎÀàĞÍ */
+#define BLE_SEG_TESTINFO            0x12U  /* 3.5 ²âÊÔĞÅÏ¢¶Î */
+#define BLE_TESTINFO_PARAM_DETAIL   0xB3U  /* ²âÊÔĞÅÏ¢¾«È·Êı¾İ£¨½ô°¤ B4 »ã×ÜÖ®ºó£© */
+#define BLE_TESTINFO_TX_DATA_LEN    (2U + 6U + 1U + BLE_TESTINFO_VOICE_DETAIL_N) /* 12 B4 + 2¡ÁLE16 + 2¡Á1B + B3 + detail */
 
 extern mfp_data_st uart1_data_pack;
 extern uint8_t ls_bleup_server_send_notification(uint8_t *data_notice, uint16_t length);
 extern uint8_t uart1_get_last_mfp_raw(uint8_t *dst, uint8_t max_len);
 
-/* ä¸€å¸§æœ‰æ•ˆå­—èŠ‚æ•°ï¼šå¸§é•¿ + ç«¯å£ + æ•°æ®åŸŸ = 2 + data_lenï¼ˆæ— å°¾ CRCï¼‰ */
+/* Ò»Ö¡ÓĞĞ§×Ö½ÚÊı£ºÖ¡³¤ + ¶Ë¿Ú + Êı¾İÓò = 2 + data_len£¨ÎŞÎ² CRC£© */
 static uint16_t ble_frame_len(uint8_t data_len)
 {
 	return (uint16_t)(2U + (uint16_t)data_len);
@@ -59,7 +59,7 @@ static void ble_link_send(uint8_t port, const uint8_t *data, uint8_t n)
 	(void)ls_bleup_server_send_notification(bletxbuff, bletxlen);
 }
 
-/* 3.3.3 ä½¿èƒ½å­—èŠ‚ï¼šä¸åè®®ä¸€è‡´ 0x01=Hello Ergo, 0x02=Hello Bedï¼ˆä¸ g_offline_voice.wake_word 1/2 ä¸€è‡´ï¼‰ */
+/* 3.3.3 Ê¹ÄÜ×Ö½Ú£ºÓëĞ­ÒéÒ»ÖÂ 0x01=Hello Ergo, 0x02=Hello Bed£¨Óë g_offline_voice.wake_word 1/2 Ò»ÖÂ£© */
 static uint8_t ble_offline_voice_state_byte(void)
 {
 	if (!g_offline_voice.key_enable)
@@ -71,7 +71,7 @@ static uint8_t ble_offline_voice_state_byte(void)
 	return 0U;
 }
 
-static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›’å“åº”å¸§ï¼ˆä»…å¡«æ•°æ®åŸŸï¼›å¸§é•¿ã€ç«¯å£ç”± x_ble_com_txbuffFill å†™åœ¨ p ä¹‹å‰ï¼‰
+static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APP ¼üÖµÖ¡/Ö÷¿ØºĞÏìÓ¦Ö¡£¨½öÌîÊı¾İÓò£»Ö¡³¤¡¢¶Ë¿ÚÓÉ x_ble_com_txbuffFill Ğ´ÔÚ p Ö®Ç°£©
 {
 	uint32_t mt;
 	uint32_t keys_le;
@@ -79,7 +79,7 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›
 	uint8_t domain_len;
 	uint8_t max_raw;
 
-	p[0] = 0xBAU;						/* åŸºç¡€å¤´æ®µç±»å‹ */
+	p[0] = 0xBAU;						/* »ù´¡Í·¶ÎÀàĞÍ */
 	p[1] = g_sysparam_st.ubb;
 	p[2] = g_sysparam_st.m1;
 	p[3] = g_sysparam_st.m2;
@@ -94,7 +94,7 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›
 	}
 	p[9] = 0U;
 
-	p[10] = 0xB9U;						/* é”®å€¼æ®µç±»å‹ */
+	p[10] = 0xB9U;						/* ¼üÖµ¶ÎÀàĞÍ */
 	p[11] = 0U;
 	p[12] = 0U;
 	p[13] = 0U;
@@ -104,14 +104,14 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›
 	p[16] = (uint8_t)((keys_le >> 16) & 0xFFU);
 	p[17] = (uint8_t)((keys_le >> 24) & 0xFFU);
 
-	p[18] = 0xB8U;						/* ç³»ç»Ÿä¿¡æ¯æ®µç±»å‹ */
+	p[18] = 0xB8U;						/* ÏµÍ³ĞÅÏ¢¶ÎÀàĞÍ */
 	p[19] = (uint8_t)BLE_APP_KEYRESP_SW_MAJOR;
 	p[20] = (uint8_t)BLE_APP_KEYRESP_SW_MINOR;
 	p[21] = (uint8_t)BLE_APP_KEYRESP_SW_PATCH;
-	/* è½¯ä»¶ç‰ˆæœ¬ä¸‰å­—èŠ‚ï¼šä¸»ç‰ˆæœ¬ 2ï¼Œæ¬¡ç‰ˆæœ¬ 0ï¼Œä¿®è®¢ 0 */
+	/* Èí¼ş°æ±¾Èı×Ö½Ú£ºÖ÷°æ±¾ 2£¬´Î°æ±¾ 0£¬ĞŞ¶© 0 */
 	p[22] = (uint8_t)BLE_APP_KEYRESP_HW_MAJOR;
 	p[23] = (uint8_t)BLE_APP_KEYRESP_HW_MINOR;
-	/* ç¡¬ä»¶ç‰ˆæœ¬ä¸¤å­—èŠ‚ï¼šä¸»ç‰ˆæœ¬ 2ï¼Œæ¬¡ç‰ˆæœ¬ 1 */
+	/* Ó²¼ş°æ±¾Á½×Ö½Ú£ºÖ÷°æ±¾ 2£¬´Î°æ±¾ 1 */
 	p[24] = 0U;
 	p[25] = 0U;
 	p[26] = 0U;
@@ -121,7 +121,7 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›
 	p[30] = g_sysparam_st.AntiSnore_intensity;
 	p[31] = g_sysparam_st.charge_state;
 
-	p[32] = 0xB7U;						/* ä¸»æ§åŸå§‹æ•°æ®æ®µç±»å‹ï¼›å…¶åç›´æ¥ä¸ºä¸»æ§ UART åŸå§‹å­—èŠ‚æµ */
+	p[32] = 0xB7U;						/* Ö÷¿ØÔ­Ê¼Êı¾İ¶ÎÀàĞÍ£»ÆäºóÖ±½ÓÎªÖ÷¿Ø UART Ô­Ê¼×Ö½ÚÁ÷ */
 	max_raw = (uint8_t)(BLE_RX_MAX_PAYLOAD - BLE_RESP_SEG_END_FIXED - 1U);
 	raw_len = uart1_get_last_mfp_raw(&p[33], max_raw);
 	domain_len = (uint8_t)(BLE_RESP_SEG_END_FIXED + 1U + raw_len);
@@ -129,8 +129,8 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APPé”®å€¼å¸§/ä¸»æ§ç›
 }
 
 /*
- * 3.3.3 åº”ç­”ï¼šæ•°æ®åŸŸå›ºå®š 5B = 10 + B4 + ä½¿èƒ½ + å”¤é†’çŠ¶æ€ + æ§åˆ¶è¯ï¼›æ•´å¸§ 05 06 10 B4 xx xx xxã€‚
- * ä½¿èƒ½ï¼š0=å…³ï¼›0x01=Hello Ergoï¼›0x02=Hello Bedã€‚å”¤é†’çŠ¶æ€ï¼š0=ä¼‘çœ ï¼›1=å·²å”¤é†’ã€‚æ§åˆ¶è¯ï¼šæœ€è¿‘ä¸€æ¬¡ CI1302 æŒ‡ä»¤ï¼Œé»˜è®¤ 0ã€‚
+ * 3.3.3 Ó¦´ğ£ºÊı¾İÓò¹Ì¶¨ 5B = 10 + B4 + Ê¹ÄÜ + »½ĞÑ×´Ì¬ + ¿ØÖÆ´Ê£»ÕûÖ¡ 05 06 10 B4 xx xx xx¡£
+ * Ê¹ÄÜ£º0=¹Ø£»0x01=Hello Ergo£»0x02=Hello Bed¡£»½ĞÑ×´Ì¬£º0=ĞİÃß£»1=ÒÑ»½ĞÑ¡£¿ØÖÆ´Ê£º×î½üÒ»´Î CI1302 Ö¸Áî£¬Ä¬ÈÏ 0¡£
  */
 static void ble_offline_voice_send_response(void)
 {
@@ -146,13 +146,17 @@ static void ble_offline_voice_send_response(void)
 }
 
 /*
- * 3.4.3 åº”ç­”ï¼šå¸§é•¿ 0x0Aã€ç«¯å£ 0x06 ç”± ble_link_send å†™å…¥ï¼›æ•°æ®åŸŸç»„å¸§ï¼šé•¿åº¦1 + ç«¯å£1 + 11 B4 + ç¼“å¯ + å¼ºåº¦ + è§¦å‘ + å‰©ä½™ 4Bã€‚
- * æ•´å¸§ç¤ºä¾‹ï¼š0A 06 11 B4 50 40 01 01 00 00 00 00
+ * 3.4.3 Ó¦´ğ£¨Ö÷¿ØÆ÷ -> APP£©£ºÊı¾İÓò¹Ì¶¨ 14B£¨Ö¡³¤ 0x0E£©¡£
+ * 11 B4 | pwm | tmr | Ç¿¶È | ´¥·¢ | Ê£Óà LE32(10ms) | ´ò÷ı°ü×ÜÊı | 1min | 5min | Ô¤Áô
+ * Ê¾Àı£º0E 06 11 B4 32 40 01 01 00 00 00 00 03 02 01 00
  */
 static void ble_snore_send_response(void)
 {
-	uint8_t r[10];
+	uint8_t r[14];
 	uint32_t remain_10ms = 0U;
+	uint16_t snore_total;
+	uint16_t snore_1min;
+	uint16_t snore_5min;
 
 	if (g_sysparam_st.snoreIntervention.first_lift_tick != 0U) {
 		uint32_t first = g_sysparam_st.snoreIntervention.first_lift_tick;
@@ -162,6 +166,8 @@ static void ble_snore_send_response(void)
 			remain_10ms = SNORE_FLAT_DELAY_TICKS - elapsed;
 	}
 
+	snore_debug_counts_get(&snore_total, &snore_1min, &snore_5min);
+
 	r[0] = 0x11U;
 	r[1] = 0xB4U;
 	r[2] = g_sysparam_st.snoreIntervention.snoreIntervention_pwm;
@@ -169,17 +175,19 @@ static void ble_snore_send_response(void)
 	r[4] = (uint8_t)(g_sysparam_st.AntiSnore_intensity > 3U ? 3U : g_sysparam_st.AntiSnore_intensity);
 	r[5] = (uint8_t)((g_sysparam_st.snoreIntervention.is_intervening ||
 	                  g_sysparam_st.snoreIntervention.triggered_flag) ? 1U : 0U);
-	r[6]  = (uint8_t)(remain_10ms & 0xFFU);
-	r[7]  = (uint8_t)((remain_10ms >> 8) & 0xFFU);
+	r[6] = (uint8_t)(remain_10ms & 0xFFU);
+	r[7] = (uint8_t)((remain_10ms >> 8) & 0xFFU);
 	r[8] = (uint8_t)((remain_10ms >> 16) & 0xFFU);
 	r[9] = (uint8_t)((remain_10ms >> 24) & 0xFFU);
-	LOG_I("BLE 3.4.3 tx: 0A 06 %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X", r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9]);
-	ble_link_send(BLE_DATA_PORT, r, 10U);
+	r[10] = (uint8_t)(snore_total > 0xFFU ? 0xFFU : snore_total);
+	r[11] = (uint8_t)(snore_1min > 0xFFU ? 0xFFU : snore_1min);
+	r[12] = (uint8_t)(snore_5min > 0xFFU ? 0xFFU : snore_5min);
+	r[13] = 0U;
+	LOG_I("BLE 3.4.3 tx: 0E 06 11 B4 snore=%u/%u/%u", (unsigned)r[10], (unsigned)r[11], (unsigned)r[12]);
+	ble_link_send(BLE_DATA_PORT, r, 14U);
 }
 
-/*
- * æ•°æ®æ®µ 0x10ï¼šB6 æŸ¥è¯¢ï¼›B7 è®¾ç½®ï¼ˆ3.3.2ï¼š10 B7 åºŠå‹ï¼Œä½¿èƒ½/å”¤é†’è¯è®¾ç½®æš‚ä¸å¼€æ”¾ï¼ŒåºŠå‹å†™å…¥ g_offline_voice.bed_typeï¼‰ã€‚
- */
+/* Êı¾İ¶Î 0x10£ºB6 ²éÑ¯ / B7 ÉèÖÃ£¨3.3.2£º10 B7 ´²ĞÍ£© */
 static void ble_offline_voice_segment_handle(const uint8_t *d, uint8_t n)
 {
 	if (n < 2U) {
@@ -191,18 +199,18 @@ static void ble_offline_voice_segment_handle(const uint8_t *d, uint8_t n)
 		return;
 	}
 
-	if (d[1] == 0xB6U && n >= 2U)  /* æŸ¥è¯¢ç¦»çº¿è¯­éŸ³ï¼ˆæ•°æ®åŸŸè‡³å°‘ 10 B6ï¼Œå…è®¸å°¾éƒ¨å¡«å……ï¼‰ */
+	if (d[1] == 0xB6U && n >= 2U)  /* ²éÑ¯ÀëÏßÓïÒô£¨Êı¾İÓòÖÁÉÙ 10 B6£¬ÔÊĞíÎ²²¿Ìî³ä£© */
 	{
 		LOG_I("BLE 3.3.3: query B6 ok n=%u", (unsigned)n);
 		ble_offline_voice_send_response();
 		return;
 	}
-	if (d[1] == 0xB7U && n >= 3U)  /* 3.3.2 è®¾ç½®ç¦»çº¿è¯­éŸ³ï¼š10 B7 åºŠå‹ */
+	if (d[1] == 0xB7U && n >= 3U)  /* 3.3.2 ÉèÖÃÀëÏßÓïÒô£º10 B7 ´²ĞÍ */
 	{
 		uint8_t bed_type = d[2];
 
 		if (bed_type > 1U) {
-			LOG_I("BLE v: B7 bed_type %u invalid (0=é»˜è®¤ä¸»æ§ç›’ 1=ABåºŠ)", (unsigned)bed_type);
+			LOG_I("BLE v: B7 bed_type %u invalid (0=Ä¬ÈÏÖ÷¿ØºĞ 1=AB´²)", (unsigned)bed_type);
 		} else {
 			g_offline_voice.bed_type = bed_type;
 			LOG_I("BLE v: B7 bed_type=%u", (unsigned)bed_type);
@@ -213,7 +221,7 @@ static void ble_offline_voice_segment_handle(const uint8_t *d, uint8_t n)
 	LOG_I("BLE v: param 0x%02X n=%u", d[1], (unsigned)n);
 }
 
-/* æ•°æ®åŸŸå†…å…ˆ 0x11ï¼Œå† B6 æŸ¥è¯¢ / B7 è®¾ç½® */
+/* Êı¾İÓòÄÚÏÈ 0x11£¬ÔÙ B6 ²éÑ¯ / B7 ÉèÖÃ */
 static void ble_snore_segment_handle(const uint8_t *d, uint8_t n)
 {
 	if (n < 2U) {
@@ -225,13 +233,13 @@ static void ble_snore_segment_handle(const uint8_t *d, uint8_t n)
 		return;
 	}
 
-	if (d[1] == 0xB6U && n >= 2U)  /* æŸ¥è¯¢æ‰“é¼¾ï¼ˆ02 06 11 B6ï¼Œæ•°æ®åŸŸè‡³å°‘ 11 B6ï¼‰ */
+	if (d[1] == 0xB6U && n >= 2U)  /* ²éÑ¯´ò÷ı£¨02 06 11 B6£¬Êı¾İÓòÖÁÉÙ 11 B6£© */
 	{
 		LOG_I("BLE 3.4.3: query 11 B6 ok n=%u", (unsigned)n);
 		ble_snore_send_response();
 		return;
 	}
-	if (d[1] == 0xB7U && n == 7U)  /* è®¾ç½®æ‰“é¼¾ */
+	if (d[1] == 0xB7U && n == 7U)  /* ÉèÖÃ´ò÷ı */
 	 {
 		uint8_t intensity = d[4];
 
@@ -250,7 +258,7 @@ static void ble_snore_segment_handle(const uint8_t *d, uint8_t n)
 			SnoringInterventStateClear();
 		}
 		flash_save_snore_cfg_if_changed();
-		/* ä¸æŒ‰é”®åˆ‡æ¡£ä¸€è‡´ï¼šæ¡£ä½è“ç¯äº® 10s åç†„ç­ï¼ˆapp_led_ctrl å†… timeout_s=10ï¼‰ */
+		/* Óë°´¼üÇĞµµÒ»ÖÂ£ºµµÎ»À¶µÆÁÁ 10s ºóÏ¨Ãğ£¨app_led_ctrl ÄÚ timeout_s=10£© */
 		led_snore_level_set(g_sysparam_st.AntiSnore_intensity);
 		ble_snore_send_response();
 		return;
@@ -264,7 +272,8 @@ static void ble_testinfo_send_response(void)
 	uint8_t r[BLE_TESTINFO_TX_DATA_LEN];
 	uint16_t w = g_sysparam_st.ble_testinfo.offline_voice_wake;
 	uint16_t resp = g_sysparam_st.ble_testinfo.offline_voice_resp;
-	uint16_t sn = g_sysparam_st.ble_testinfo.snore_intervention_trig;
+	uint16_t sn_trig = g_sysparam_st.ble_testinfo.snore_intervention_trig;
+	uint16_t sn_total = g_sysparam_st.sf.snoreNub;
 
 	r[0] = BLE_SEG_TESTINFO;
 	r[1] = 0xB4U;
@@ -272,12 +281,12 @@ static void ble_testinfo_send_response(void)
 	r[3] = (uint8_t)((w >> 8) & 0xFFU);
 	r[4] = (uint8_t)(resp & 0xFFU);
 	r[5] = (uint8_t)((resp >> 8) & 0xFFU);
-	r[6] = (uint8_t)(sn & 0xFFU);
-	r[7] = (uint8_t)((sn >> 8) & 0xFFU);
+	r[6] = (uint8_t)((sn_trig > 0xFFU) ? 0xFFU : sn_trig);
+	r[7] = (uint8_t)((sn_total > 0xFFU) ? 0xFFU : sn_total);
 	r[8] = BLE_TESTINFO_PARAM_DETAIL;
 	memcpy(&r[9], g_sysparam_st.ble_testinfo.voice_detail, BLE_TESTINFO_VOICE_DETAIL_N);
 
-	LOG_I("BLE 3.5 tx: 21 06 12 B4 +6B B3 +24B");
+	LOG_I("BLE 3.5 tx: 21 06 12 B4 snore_trig=%u snore_total=%u", (unsigned)r[6], (unsigned)r[7]);
 	ble_link_send(BLE_DATA_PORT, r, (uint8_t)sizeof(r));
 }
 
@@ -304,7 +313,7 @@ static void ble_testinfo_segment_handle(const uint8_t *d, uint8_t n)
 	LOG_I("BLE testinfo: param 0x%02X n=%u", d[1], (unsigned)n);
 }
 
-/* ç«¯å£ 0x06ï¼šæŒ‰æ•°æ®åŸŸé¦–å­—èŠ‚æ®µç±»å‹å†åˆ†æ´¾ï¼ˆ0x10 ç¦»çº¿è¯­éŸ³ / 0x11 æ‰“é¼¾ / 0x12 æµ‹è¯•ä¿¡æ¯ï¼‰ */
+/* ¶Ë¿Ú 0x06£º°´Êı¾İÓòÊ××Ö½Ú¶ÎÀàĞÍÔÙ·ÖÅÉ£¨0x10 ÀëÏßÓïÒô / 0x11 ´ò÷ı / 0x12 ²âÊÔĞÅÏ¢£© */
 static void ble_data_port_dispatch(const uint8_t *payload, uint8_t length)
 {
 	if (length < 2U) {
@@ -330,13 +339,13 @@ static void ble_data_port_dispatch(const uint8_t *payload, uint8_t length)
 
 static void ble_port09_dispatch(const uint8_t *payload, uint8_t length)
 {
-	/* æœåŠ¡å¸§æš‚ä¸å¼€æ”¾ */
+	/* ·şÎñÖ¡Ô¤Áô */
 	/*(void)payload;*/
 	LOG_I("BLE 0x09 n=%u TODO", (unsigned)length);
 }
 
 /*
- * ç«¯å£ 0x01ï¼šæ•°æ®åŸŸ = é”®å€¼ 4Bï¼ˆå°ç«¯ï¼‰+ æ‰©å±• 1Bï¼ˆ5Bï¼‰ï¼›ç¼“å¯åŠ¨å† +Pwm+Tmrï¼ˆ7Bï¼‰ã€‚
+ * ¶Ë¿Ú 0x01£ºÆÕÍ¨¼ü = ¼üÖµ 4B£¨Ğ¡¶Ë£©+ ±£Áô 1B£¨5B£©£»»ºÆô¶¯¼üÖµ +Pwm+Tmr£¨7B£©¡£
  */
 static void ble_app_key_dispatch(const uint8_t *d, uint8_t n)
 {
@@ -358,7 +367,7 @@ static void ble_app_key_dispatch(const uint8_t *d, uint8_t n)
 	LOG_I("BLE key: n=%u (need data 5B / 7B per 3.1.1)", (unsigned)n);
 }
 
-/* ç«¯å£ 0x01ï¼š3.1 é”®å€¼ä¸‹å‘ä¸»æ§ + 3.2 ç»„å¸§å¹¶ä¸‹å‘ï¼ˆä¸ 0x06ã€Œæ”¶ä»¤-åº”ç­”ã€ç»“æ„ä¸€è‡´ï¼‰ */
+/* ¶Ë¿Ú 0x01£º3.1 ÆÕÍ¨/»ºÆô¶¯¼üÖµ + 3.2 Ö÷¿ØºĞÏìÓ¦£¨·Ç 0x06 Êı¾İ¶Î-¶Ë¿ÚÄ£ĞÍ£© */
 static void ble_app_port_inner_dispatch(const uint8_t *payload, uint8_t length)
 {
 	ble_app_key_dispatch(payload, length);
@@ -366,7 +375,7 @@ static void ble_app_port_inner_dispatch(const uint8_t *payload, uint8_t length)
 }
 
 /*
- * è§£æé¡ºåºï¼šâ‘  å¸§é•¿ + ç«¯å£ï¼›â‘¡ 0x01 â†’ é”®å€¼ï¼›0x06 â†’ æ•°æ®æ®µå†åˆ¤æ®µç±»å‹ä¸å‚æ•°ï¼ˆå¦‚ 06â†’10â†’B7ï¼‰ã€‚
+ * ½âÎöË³Ğò£º¢Ù Ö¡³¤ + ¶Ë¿Ú£»¢Ú 0x01 ¡ú ¼üÖµ£»0x06 ¡ú Êı¾İ¶ÎÔÙÅĞ¶ÎÀàĞÍÓë²ÎÊı£¨Èç 06¡ú10¡úB7£©¡£
  */
 void x_ble_com_handle(uint8_t *pbuff, uint8_t len)
 {
@@ -404,8 +413,8 @@ void x_ble_com_handle(uint8_t *pbuff, uint8_t len)
 }
 
 /*
- * ç»„ã€ŒAPP é”®å€¼å“åº”ã€é“¾è·¯å¸§ï¼ˆç«¯å£ 0x01 + æ•°æ®åŸŸï¼‰å¹¶ BLE Notification å‘å‡ºã€‚
- * ç”± ble_app_port_inner_dispatch åœ¨æ”¶åˆ°é”®å€¼åè°ƒç”¨ï¼›è‹¥å°†æ¥éœ€åªç»„å¸§ä¸å‘ï¼Œå¯å†æ‹†å‡½æ•°ã€‚
+ * Ïò APP Ö÷¶¯ÉÏ±¨Ö÷¿ØºĞ×´Ì¬£º¶Ë¿Ú 0x01 + Êı¾İÓò¾­ BLE Notification ·¢³ö¡£
+ * ÓÉ ble_app_port_inner_dispatch ´¦Àí¼üÖµºóÒ²»áµ÷ÓÃ£»¼üÖµ/Êı¾İ¶ÎÓ¦´ğ×ß¸÷×Ô notify¡£
  */
 void x_ble_com_txbuffFill(void)
 {
@@ -416,13 +425,13 @@ void x_ble_com_txbuffFill(void)
 	g_sysparam_st.snoreIntervention.triging = (uint8_t)(g_sysparam_st.snoreIntervention.is_intervening ? 1U : 0U);
 
 	bletxbuff[i++] = 0U;
-	bletxbuff[i++] = BLE_APP_PORT_INNER;   // ç«¯å£ï¼š0x01 = APPé”®å€¼å¸§/ä¸»æ§ç›’å“åº”å¸§
+	bletxbuff[i++] = BLE_APP_PORT_INNER;   // ¶Ë¿Ú£º0x01 = APP ¼üÖµÖ¡/Ö÷¿ØÏìÓ¦Ö¡
 	domain_len = ble_fill_app_key_data_domain(&bletxbuff[2]);
 	bletxbuff[0] = domain_len;
 	i = 2 + (int)domain_len;
 	bletxlen = (uint8_t)i;
 
-#if 1 /* è°ƒè¯•ï¼šæ‰“å° APP é”®å€¼å“åº”æ•´å¸§ï¼Œè°ƒå®Œå¯æ”¹ä¸º 0 æˆ–æ•´æ®µæ³¨é‡Š */
+#if 1 /* µ÷ÊÔ£º·Ö°ü´òÓ¡ APP Ö÷¶¯ÉÏ±¨ notify ÄÚÈİ£¨Á¿²ú¿É¸Ä 0 ¹Ø±ÕÈÕÖ¾£© */
 	{
 		unsigned j, k;
 		char line[3U * 16U + 1U];

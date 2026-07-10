@@ -3,6 +3,7 @@
 #include "g.h"
 #include "offline_voice.h"
 #include "x_control.h"
+#include "x_drive.h"
 #include <string.h>
 
 uint8_t s_tx_busy;
@@ -249,6 +250,30 @@ void x_uart3_init(void)
 	UART_Server3_Config.Init.WordLength = UART_BYTESIZE8;
 	HAL_UART_Init(&UART_Server3_Config);
 	HAL_UART_Receive_IT(&UART_Server3_Config, &rx3_t_data, 1);
+}
+
+/* 打鼾包调试：AA 55 total(LE16) cnt_1min(LE16) cnt_5min(LE16)，UART1 MFP 38400 周期发送 */
+void x_uart_snore_debug_send(uint16_t total, uint16_t cnt_1min, uint16_t cnt_5min)
+{
+	uint8_t buf[8];
+
+	buf[0] = 0xAA;
+	buf[1] = 0x55;
+	buf[2] = (uint8_t)(total & 0xFFU);
+	buf[3] = (uint8_t)((total >> 8) & 0xFFU);
+	buf[4] = (uint8_t)(cnt_1min & 0xFFU);
+	buf[5] = (uint8_t)((cnt_1min >> 8) & 0xFFU);
+	buf[6] = (uint8_t)(cnt_5min & 0xFFU);
+	buf[7] = (uint8_t)((cnt_5min >> 8) & 0xFFU);
+
+	/* 优先入队，随主控同步帧后在 mfp_tx_task 里发（RS485 半双工时隙） */
+	if (mfp_send_request(buf, sizeof(buf), 1U))
+		return;
+
+	/* 队列满时直接发，须切换 DE（与 mfp_tx_task 一致：0=发送） */
+	io_write_pin(UART_CTR, 0);
+	HAL_UART_Transmit(&UART_Server1_Config, buf, sizeof(buf), 10);
+	io_write_pin(UART_CTR, 1);
 }
 
 /* Debug/status to MFP on UART1 (blocking TX). */

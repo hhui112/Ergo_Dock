@@ -3,7 +3,7 @@
 
 #include "stdint.h"
 
-/* 首次抬升后放平间隔（g_sysparam_st.timer 单位 10ms）；量产 8*3600*100 8小时放平*/
+/* 首次抬升后放平间隔（g_sysparam_st.timer 单位 10ms）；量产 8*3600*100 = 8 小时放平 */
 #define SNORE_FLAT_DELAY_TICKS  (8U * 60U * 60U * 100U)
 
 void SnoringInterventionInit(void);
@@ -27,5 +27,8 @@ void snore_lift_process_tick(void);
 
 /* 仅清 lift_seg_end_tick / lift_seg_pwm，不动 MFP 队列、不发 stop */
 void snore_lift_reset_state(void);
+
+/* 读取打鼾包统计（供 BLE 3.4.3 应答；内部 uint16，应答时饱和至 0xFF） */
+void snore_debug_counts_get(uint16_t *total, uint16_t *cnt_1min, uint16_t *cnt_5min);
 
 #endif

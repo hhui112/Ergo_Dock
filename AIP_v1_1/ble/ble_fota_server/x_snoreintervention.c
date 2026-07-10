@@ -1,7 +1,50 @@
 #include "x_snoreintervention.h"
 #include "g.h"
 #include "mfp_queue.h"
-#include "x_uart.h"
+
+#define SNORE_DBG_WINDOW_1MIN  (60U * 100U)
+#define SNORE_DBG_WINDOW_5MIN  (5U * 60U * 100U)
+
+static uint32_t snore_dbg_1min_t0;
+static uint16_t snore_dbg_1min_base;
+static uint16_t snore_cnt_1min;
+static uint32_t snore_dbg_5min_t0;
+static uint16_t snore_dbg_5min_base;
+static uint16_t snore_cnt_5min;
+
+static void snore_debug_window_tick(void)
+{
+	uint16_t nub = g_sysparam_st.sf.snoreNub;
+	uint32_t t = g_sysparam_st.timer;
+
+	if (snore_dbg_1min_t0 == 0U) {
+		snore_dbg_1min_t0 = t;
+		snore_dbg_1min_base = nub;
+	} else if ((t - snore_dbg_1min_t0) >= SNORE_DBG_WINDOW_1MIN) {
+		snore_dbg_1min_t0 = t;
+		snore_dbg_1min_base = nub;
+	}
+	snore_cnt_1min = nub - snore_dbg_1min_base;
+
+	if (snore_dbg_5min_t0 == 0U) {
+		snore_dbg_5min_t0 = t;
+		snore_dbg_5min_base = nub;
+	} else if ((t - snore_dbg_5min_t0) >= SNORE_DBG_WINDOW_5MIN) {
+		snore_dbg_5min_t0 = t;
+		snore_dbg_5min_base = nub;
+	}
+	snore_cnt_5min = nub - snore_dbg_5min_base;
+}
+
+void snore_debug_counts_get(uint16_t *total, uint16_t *cnt_1min, uint16_t *cnt_5min)
+{
+	if (total != NULL)
+		*total = g_sysparam_st.sf.snoreNub;
+	if (cnt_1min != NULL)
+		*cnt_1min = snore_cnt_1min;
+	if (cnt_5min != NULL)
+		*cnt_5min = snore_cnt_5min;
+}
 
 /* 主控 MFP 同步帧首字节 length：协议约定仅 0x30 / 0x34 为支持缓启动(0x07)的主控盒 */
 #define MFP_SYNC_LEN_SOFTSTART_0  0x30U
@@ -183,6 +226,8 @@ void simulate_detection_period(void)
 void SnoringIntervention_run(void)
 {
 	uint8_t intensity = read_AntiSnore_intensity();
+
+	snore_debug_window_tick(); /* 仅维护计数；MFP 不发 AA55，BLE 3.4.3 查询时再上报 */
 
 	g_sysparam_st.snoreIntervention.enable = (intensity != 0);
 

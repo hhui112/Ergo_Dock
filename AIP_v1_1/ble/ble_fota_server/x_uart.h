@@ -31,6 +31,9 @@ uint8_t uart1_get_last_mfp_sync_len(void);
 /** CI1302 离线语音：按 g_offline_voice 下发 8 字节配置帧（UART2）。force=true 时强制发送（如上电）；false 时仅在关/开或 Ergo/Bed 切换时发送。 */
 void ci1302_uart2_voice_config_sync(bool force);
 
+/** 打鼾包调试帧：AA 55 total cnt_1min cnt_5min，经 UART1 MFP 38400 周期发送 */
+void x_uart_snore_debug_send(uint16_t total, uint16_t cnt_1min, uint16_t cnt_5min);
+
 extern uint8_t s_tx_busy;
 
 extern UART_HandleTypeDef UART_Server3_Config; 
