@@ -25,8 +25,8 @@
 * 硬件版本 2.2
 */
 #define BLE_APP_KEYRESP_SW_MAJOR   2U
-#define BLE_APP_KEYRESP_SW_MINOR   0U
-#define BLE_APP_KEYRESP_SW_PATCH   3U // 增加了打鼾的调试信息、优化了打鼾缓启动逻辑
+#define BLE_APP_KEYRESP_SW_MINOR   1U
+#define BLE_APP_KEYRESP_SW_PATCH   0U // 增加3个主控盒的适配
 #define BLE_APP_KEYRESP_HW_MAJOR   2U
 #define BLE_APP_KEYRESP_HW_MINOR   2U
 

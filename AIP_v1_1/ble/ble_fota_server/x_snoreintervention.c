@@ -1,6 +1,7 @@
 #include "x_snoreintervention.h"
 #include "g.h"
 #include "mfp_queue.h"
+#include "x_uart.h"
 
 #define SNORE_DBG_WINDOW_1MIN  (60U * 100U)
 #define SNORE_DBG_WINDOW_5MIN  (5U * 60U * 100U)
@@ -46,20 +47,11 @@ void snore_debug_counts_get(uint16_t *total, uint16_t *cnt_1min, uint16_t *cnt_5
 		*cnt_5min = snore_cnt_5min;
 }
 
-/* 主控 MFP 同步帧首字节 length：协议约定仅 0x30 / 0x34 为支持缓启动(0x07)的主控盒 */
-#define MFP_SYNC_LEN_SOFTSTART_0  0x30U
-#define MFP_SYNC_LEN_SOFTSTART_1  0x34U
-
-static bool mfp_mainbox_supports_snore_soft_start(void)
-{
-	uint8_t len = uart1_get_last_mfp_sync_len();
-	return (len == MFP_SYNC_LEN_SOFTSTART_0 || len == MFP_SYNC_LEN_SOFTSTART_1);
-}
-
 #define AAS_WINDOW_5MIN     (5*60*100)
 #define SI_PWM               (0x50) 		/* 80/255 */
 #define SI_TMR               (0x15) 		/* 16+2  =18s */
 #define SI_SEG_MAX            3U         	/* 分 3 段逼近约 15° */
+#define SNORE_NORMAL_SEG_SEC  2U         	/* 非缓启动主控：普通键值每段 2s */
 
 static void SnoringInterventDetectionReset(void);
 
@@ -67,7 +59,10 @@ static void snore_lift_enqueue_pulse(uint8_t pwm)
 {
 	uint32_t key = (g_offline_voice.bed_type == 1U)? (uint32_t)(KEY_M1_OUT | KEY_M2_OUT): KEY_M1_OUT;	/* AB床  M1 M2 M3头部/脚部电机一起抬起*/
 
-	prepare_mfp_SOFT_START(key, pwm, 1, 2);
+	if (mfp_mainbox_supports_soft_start())
+		prepare_mfp_SOFT_START(key, pwm, 1, 2);
+	else
+		prepare_mfp_NORMAL_KET(key, 2U);
 }
 
 /* 仅清段 tick 状态，不动 MFP 队列 */
@@ -96,8 +91,12 @@ void snore_lift_start(uint8_t pwm, uint8_t tmr_seg_sec)
 {
 	uint32_t end;
 
-	if (tmr_seg_sec == 0U) tmr_seg_sec = 1U;
-	if (pwm == 0U) pwm = SI_PWM; 		/* 默认 80/255 */
+	if (mfp_mainbox_supports_soft_start()) {
+		if (tmr_seg_sec == 0U) tmr_seg_sec = 1U;
+		if (pwm == 0U) pwm = SI_PWM; 		/* 默认 80/255 */
+	} else {
+		tmr_seg_sec = SNORE_NORMAL_SEG_SEC;
+	}
 
 	if (g_sysparam_st.snoreIntervention.lift_seg_end_tick != 0U)  snore_lift_stop_and_release(); 	/* 清段，不动队列 */
 	end = g_sysparam_st.timer + (uint32_t)tmr_seg_sec * 100U;	/* 段结束 timer(10ms) */
@@ -143,9 +142,13 @@ static void snore_try_flat_tick(void)
 		snore_lift_stop_and_release();
 
 	LOG_I("snoreIntervention Down flat tick (delay=%u ticks)\r\n", (unsigned)SNORE_FLAT_DELAY_TICKS);
-	prepare_mfp_SOFT_START(KEY_ALLFATE,
-		(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_pwm),
-		(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_tmr), 3U);
+	if (mfp_mainbox_supports_soft_start()) {
+		prepare_mfp_SOFT_START(KEY_ALLFATE,
+			(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_pwm),
+			(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_tmr), 3U);
+	} else {
+		prepare_mfp_NORMAL_KET(KEY_ALLFATE, 3U);
+	}
 	g_sysparam_st.snoreIntervention.lift_stage = 0U;
 	SnoringInterventFlatTimerClear();
 	g_sysparam_st.snoreIntervention.is_intervening = false;
@@ -236,12 +239,6 @@ void SnoringIntervention_run(void)
 
 	if (!g_sysparam_st.snoreIntervention.enable)
 		return;
-
-	if (!mfp_mainbox_supports_snore_soft_start()) {
-		g_sysparam_st.snoreIntervention.is_intervening = false;
-		g_sysparam_st.snoreIntervention.lift_stage = 0U;
-		return;
-	}
 
 	if (intensity != g_sysparam_st.last_AntiSnore_intensity) {
 		if (intensity >= 1 && intensity <= 3) {

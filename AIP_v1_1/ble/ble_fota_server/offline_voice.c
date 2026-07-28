@@ -84,12 +84,15 @@ void offline_voice_dataHandle(uint8_t cmd)
 		prepare_mfp_NORMAL_KET(KEY_MASSAGE_STOP_ALL, 1);
 		break;
 	case 0x24:
-		if (g_offline_voice.bed_type == 1)  /* AB床  M1 M2 M3头部/脚部电机一起抬起*/
+
+		if (g_offline_voice.bed_type == 1)  
 			prepare_mfp_NORMAL_KET((KEY_M1_OUT | KEY_M2_OUT | KEY_M3_OUT), 30);
 		else
 			prepare_mfp_NORMAL_KET((KEY_M1_OUT | KEY_M2_OUT), 30);
-			/* 标定：与打鼾相同 timer+M1_OUT 抬升一段（pwm/tmr 取自 Flash/BLE 配置） */
-			//snore_lift_start_from_cfg();
+
+			// mfp_tx_queue_clear();
+			// snore_lift_start_from_cfg(); // 调试触发打鼾干预一段
+
 		break;
 	case 0x25:
 		prepare_mfp_NORMAL_KET(KEY_ZEROG, 3);

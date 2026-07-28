@@ -88,10 +88,7 @@ static uint8_t ble_fill_app_key_data_domain(uint8_t *p) // APP 键值帧/主控盒响应
 	p[5] = (uint8_t)((mt >> 8) & 0xFFU);
 	p[6] = (uint8_t)((mt >> 16) & 0xFFU);
 	p[7] = (uint8_t)((mt >> 24) & 0xFFU);
-	{
-		uint8_t mfp_len = uart1_get_last_mfp_sync_len();
-		p[8] = (mfp_len == 0x30U || mfp_len == 0x34U) ? 1U : 0U;
-	}
+	p[8] = mfp_mainbox_supports_soft_start() ? 1U : 0U;
 	p[9] = 0U;
 
 	p[10] = 0xB9U;						/* 键值段类型 */

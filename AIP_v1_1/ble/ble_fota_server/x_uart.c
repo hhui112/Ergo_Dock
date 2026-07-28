@@ -41,6 +41,22 @@ uint8_t uart1_get_last_mfp_sync_len(void)
 	return s_uart1_last_mfp_raw[0];
 }
 
+bool mfp_mainbox_supports_soft_start(void)
+{
+	uint8_t len = uart1_get_last_mfp_sync_len();
+
+	switch (len) {
+	case 0x30U:
+	case 0x34U:
+	case 0x2AU:
+	case 0x40U:
+	case 0x41U:
+		return true;
+	default:
+		return false;
+	}
+}
+
 void x_uart1_dateReceiveHandle(void);
 void x_uart2_dateReceiveHandle(void);
 void x_uart3_dateReceiveHandle(void);

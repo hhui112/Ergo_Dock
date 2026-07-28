@@ -28,6 +28,9 @@ uint8_t uart1_get_last_mfp_raw(uint8_t *dst, uint8_t max_len);
 /** 最近一次 MFP 同步帧首字节 length（rx.rawData memset 后仍有效），无有效帧时返回 0。 */
 uint8_t uart1_get_last_mfp_sync_len(void);
 
+/** 主控 MFP 同步帧 length 是否支持缓启动(0x07)；用于打鼾干预与 BLE B8 能力位。 */
+bool mfp_mainbox_supports_soft_start(void);
+
 /** CI1302 离线语音：按 g_offline_voice 下发 8 字节配置帧（UART2）。force=true 时强制发送（如上电）；false 时仅在关/开或 Ergo/Bed 切换时发送。 */
 void ci1302_uart2_voice_config_sync(bool force);
 
