@@ -6,12 +6,91 @@
 #define SNORE_DBG_WINDOW_1MIN  (60U * 100U)
 #define SNORE_DBG_WINDOW_5MIN  (5U * 60U * 100U)
 
+#define SNORE_WINDOW_PROD_TICKS  (5U * 60U * 100U)  /* 5min */
+#define SNORE_WINDOW_TEST_TICKS  (60U * 100U)       /* 60s */
+
+#define SI_PWM               (0x55) 		/* 80/255     xiugai:0x50*/   
+#define SI_TMR               (0x15) 		/* 16+2  =18s */
+#define SI_SEG_MAX            3U         	/* 分 3 段逼近约 15° */
+#define SNORE_NORMAL_SEG_SEC  3U         	/* 非缓启动主控：普通键值每段 xiugai :2s */
+
 static uint32_t snore_dbg_1min_t0;
 static uint16_t snore_dbg_1min_base;
 static uint16_t snore_cnt_1min;
 static uint32_t snore_dbg_5min_t0;
 static uint16_t snore_dbg_5min_base;
 static uint16_t snore_cnt_5min;
+
+static void SnoringInterventDetectionReset(void);
+static void snore_refresh_trig_timer(void);
+uint8_t read_AntiSnore_intensity(void);
+
+uint8_t snore_run_mode_get(void)
+{
+	return (g_sysparam_st.snoreIntervention.run_mode == SNORE_RUN_MODE_TEST)
+		? SNORE_RUN_MODE_TEST : SNORE_RUN_MODE_PROD;
+}
+
+uint32_t snore_window_ticks(void)
+{
+	return (snore_run_mode_get() == SNORE_RUN_MODE_TEST)
+		? SNORE_WINDOW_TEST_TICKS : SNORE_WINDOW_PROD_TICKS;
+}
+
+uint32_t snore_flat_delay_ticks(void)
+{
+	return (snore_run_mode_get() == SNORE_RUN_MODE_TEST)
+		? SNORE_FLAT_DELAY_TICKS_TEST : SNORE_FLAT_DELAY_TICKS_PROD;
+}
+
+/* 窗内打鼾包阈值：量产 1/2/3 → 20/14/7；测试 1/2/3 → 7/5/3 (NEW 1302 4s一个打鼾包，阈值应修改为高25 中35 低45/ 总75)*/
+static uint16_t snore_period_threshold(uint8_t intensity)
+{
+	if (snore_run_mode_get() == SNORE_RUN_MODE_TEST) {
+		switch (intensity) {
+		case 3: return 5U;
+		case 2: return 6U;
+		case 1: return 7U;
+		default: return 0xFFFFU;
+		}
+	}
+	switch (intensity) {
+	case 3: return 7U;
+	case 2: return 14U;
+	case 1: return 20U;
+	default: return 0xFFFFU;
+	}
+}
+
+static void snore_refresh_trig_timer(void)
+{
+	uint8_t intensity = read_AntiSnore_intensity();
+
+	if (intensity >= 1U && intensity <= 3U)
+		g_sysparam_st.snoreIntervention.trigTimer = snore_window_ticks();
+	else
+		g_sysparam_st.snoreIntervention.trigTimer = 0U;
+}
+
+void snore_run_mode_set(uint8_t mode)
+{
+	uint8_t m = (mode == SNORE_RUN_MODE_TEST) ? SNORE_RUN_MODE_TEST : SNORE_RUN_MODE_PROD;
+
+	if (g_sysparam_st.snoreIntervention.run_mode == m) {
+		LOG_I("snore run_mode keep %u\r\n", (unsigned)m);
+		return;
+	}
+
+	g_sysparam_st.snoreIntervention.run_mode = m;
+	/* 切换：清检测窗、抬升段、周期计时，避免窗长/周期间隔串味 */
+	SnoringInterventStateClear();
+	SnoringInterventFlatTimerClear();
+	snore_refresh_trig_timer();
+	LOG_I("snore run_mode=%u win=%lu cycle=%lu\r\n",
+	      (unsigned)m,
+	      (unsigned long)snore_window_ticks(),
+	      (unsigned long)snore_flat_delay_ticks());
+}
 
 static void snore_debug_window_tick(void)
 {
@@ -47,17 +126,9 @@ void snore_debug_counts_get(uint16_t *total, uint16_t *cnt_1min, uint16_t *cnt_5
 		*cnt_5min = snore_cnt_5min;
 }
 
-#define AAS_WINDOW_5MIN     (5*60*100)
-#define SI_PWM               (0x50) 		/* 80/255 */
-#define SI_TMR               (0x15) 		/* 16+2  =18s */
-#define SI_SEG_MAX            3U         	/* 分 3 段逼近约 15° */
-#define SNORE_NORMAL_SEG_SEC  2U         	/* 非缓启动主控：普通键值每段 2s */
-
-static void SnoringInterventDetectionReset(void);
-
 static void snore_lift_enqueue_pulse(uint8_t pwm)
 {
-	uint32_t key = (g_offline_voice.bed_type == 1U)? (uint32_t)(KEY_M1_OUT | KEY_M2_OUT): KEY_M1_OUT;	/* AB床  M1 M2 M3头部/脚部电机一起抬起*/
+	uint32_t key = (g_offline_voice.bed_type == 1U)? (uint32_t)(KEY_M1_OUT | KEY_M2_OUT): KEY_M1_OUT;	/* AB床：M1、M2 头部电机一起抬起 */
 
 	if (mfp_mainbox_supports_soft_start())
 		prepare_mfp_SOFT_START(key, pwm, 1, 2);
@@ -98,7 +169,7 @@ void snore_lift_start(uint8_t pwm, uint8_t tmr_seg_sec)
 		tmr_seg_sec = SNORE_NORMAL_SEG_SEC;
 	}
 
-	if (g_sysparam_st.snoreIntervention.lift_seg_end_tick != 0U)  snore_lift_stop_and_release(); 	/* 清段，不动队列 */
+	if (g_sysparam_st.snoreIntervention.lift_seg_end_tick != 0U)  snore_lift_stop_and_release(); 	/* 上一段未结束：先停段并释放 */
 	end = g_sysparam_st.timer + (uint32_t)tmr_seg_sec * 100U;	/* 段结束 timer(10ms) */
 	g_sysparam_st.snoreIntervention.lift_seg_pwm = pwm;			/* 本段 sustain 使用的 PWM */
 	g_sysparam_st.snoreIntervention.lift_seg_end_tick = end;		/* 抬升段结束 timer(10ms) */
@@ -129,26 +200,19 @@ void snore_lift_process_tick(void)
 		snore_lift_enqueue_pulse(g_sysparam_st.snoreIntervention.lift_seg_pwm);
 }
 
-static void snore_try_flat_tick(void)
+/* 周期到期：不自动放平，清抬升段数与周期计时，允许再次触发打鼾干预 */
+static void snore_try_cycle_reset_tick(void)
 {
 	uint32_t first = g_sysparam_st.snoreIntervention.first_lift_tick;
+	uint32_t delay = snore_flat_delay_ticks();
 
 	if (first == 0U)
 		return;
-	if ((g_sysparam_st.timer - first) < SNORE_FLAT_DELAY_TICKS)
+	if ((g_sysparam_st.timer - first) < delay)
 		return;
 
-	if (g_sysparam_st.snoreIntervention.lift_seg_end_tick != 0U)
-		snore_lift_stop_and_release();
-
-	LOG_I("snoreIntervention Down flat tick (delay=%u ticks)\r\n", (unsigned)SNORE_FLAT_DELAY_TICKS);
-	if (mfp_mainbox_supports_soft_start()) {
-		prepare_mfp_SOFT_START(KEY_ALLFATE,
-			(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_pwm),
-			(uint8_t)(g_sysparam_st.snoreIntervention.snoreIntervention_tmr), 3U);
-	} else {
-		prepare_mfp_NORMAL_KET(KEY_ALLFATE, 3U);
-	}
+	LOG_I("snoreIntervention cycle reset (delay=%lu ticks mode=%u, no auto-flat)\r\n",
+	      (unsigned long)delay, (unsigned)snore_run_mode_get());
 	g_sysparam_st.snoreIntervention.lift_stage = 0U;
 	SnoringInterventFlatTimerClear();
 	g_sysparam_st.snoreIntervention.is_intervening = false;
@@ -164,12 +228,10 @@ void SnoringInterventionInit(void)
 {
 	int intensity = read_AntiSnore_intensity();
 
+	/* 上电强制量产模式（BSS 虽为 0，显式赋值更清晰） */
+	g_sysparam_st.snoreIntervention.run_mode = SNORE_RUN_MODE_PROD;
 	g_sysparam_st.last_AntiSnore_intensity = intensity;
-	if (intensity >= 1 && intensity <= 3) {
-		g_sysparam_st.snoreIntervention.trigTimer = AAS_WINDOW_5MIN;
-	} else {
-		g_sysparam_st.snoreIntervention.trigTimer = 0;
-	}
+	snore_refresh_trig_timer();
 
 	if (g_sysparam_st.snoreIntervention.snoreIntervention_pwm == 0U)
 		g_sysparam_st.snoreIntervention.snoreIntervention_pwm = SI_PWM;
@@ -184,22 +246,9 @@ void SnoringInterventionInit(void)
 void determine_intervention(void)
 {
 	uint8_t intensity = read_AntiSnore_intensity();
-	bool trig = false;
-
-	switch (intensity) {
-	case 3:
-		trig = (g_sysparam_st.sf.snoreNubperiod >= 7);
-		break;
-	case 2:
-		trig = (g_sysparam_st.sf.snoreNubperiod >= 14);
-		break;
-	case 1:
-		trig = (g_sysparam_st.sf.snoreNubperiod >= 20);
-		break;
-	default:
-		trig = false;
-		break;
-	}
+	uint16_t thr = snore_period_threshold(intensity);
+	bool trig = (thr != 0xFFFFU) &&
+		    (g_sysparam_st.sf.snoreNubperiod >= thr);
 
 	g_sysparam_st.snoreIntervention.triggered_flag = trig;
 }
@@ -217,7 +266,11 @@ void simulate_detection_period(void)
 		g_sysparam_st.snoreIntervention.trig = 1;
 		g_sysparam_st.sf.snoreNubperiod = g_sysparam_st.sf.snoreNub - g_sysparam_st.snoreIntervention.oldsnoreNub;
 
-		LOG_I("AAS intensity=%d snoreNubperiod=%d\r\n", g_sysparam_st.AntiSnore_intensity, g_sysparam_st.sf.snoreNubperiod);
+		LOG_I("AAS mode=%u intensity=%d snoreNubperiod=%d thr=%u\r\n",
+		      (unsigned)snore_run_mode_get(),
+		      g_sysparam_st.AntiSnore_intensity,
+		      g_sysparam_st.sf.snoreNubperiod,
+		      (unsigned)snore_period_threshold((uint8_t)g_sysparam_st.AntiSnore_intensity));
 
 		g_sysparam_st.sf.snorevolume_acc = 0;
 		g_sysparam_st.sf.snorevolume_cnt = 0;
@@ -234,21 +287,20 @@ void SnoringIntervention_run(void)
 
 	g_sysparam_st.snoreIntervention.enable = (intensity != 0);
 
-	snore_try_flat_tick();
+	snore_try_cycle_reset_tick();
 	snore_lift_process_tick();
 
 	if (!g_sysparam_st.snoreIntervention.enable)
 		return;
 
 	if (intensity != g_sysparam_st.last_AntiSnore_intensity) {
-		if (intensity >= 1 && intensity <= 3) {
-			g_sysparam_st.snoreIntervention.trigTimer = AAS_WINDOW_5MIN;
-		} else {
-			g_sysparam_st.snoreIntervention.trigTimer = 0;
-		}
+		snore_refresh_trig_timer();
 		SnoringInterventDetectionReset();
 		g_sysparam_st.last_AntiSnore_intensity = intensity;
-		LOG_I("Snore intensity changed to %d, trigTimer=5min (lift cycle unchanged)\r\n", intensity);
+		LOG_I("Snore intensity changed to %d, trigTimer=%lu (mode=%u)\r\n",
+		      intensity,
+		      (unsigned long)g_sysparam_st.snoreIntervention.trigTimer,
+		      (unsigned)snore_run_mode_get());
 	}
 
 	simulate_detection_period();

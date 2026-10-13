@@ -36,7 +36,7 @@ void offline_voice_wake_off(void)
 	led_voice_close_flash();
 }
 
-/* 床体位置指令：停干预检测/抬升段，8h 放平计时保留；语音放平(0x26/0x33)另取消计时 */
+/* 床体位置指令：停干预检测/抬升段，8h 周期计时保留；语音放平(0x26/0x33)另取消计时 */
 static void snore_intervention_cancel_on_voice_position(uint8_t cmd)
 {
     switch (cmd) {

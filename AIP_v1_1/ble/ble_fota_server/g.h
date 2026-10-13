@@ -26,7 +26,7 @@
 */
 #define BLE_APP_KEYRESP_SW_MAJOR   2U
 #define BLE_APP_KEYRESP_SW_MINOR   1U
-#define BLE_APP_KEYRESP_SW_PATCH   0U // 增加3个主控盒的适配
+#define BLE_APP_KEYRESP_SW_PATCH   1U // 增加3个主控盒的适配
 #define BLE_APP_KEYRESP_HW_MAJOR   2U
 #define BLE_APP_KEYRESP_HW_MINOR   2U
 
@@ -251,10 +251,11 @@ typedef struct
 	uint8_t       AntiSnore_intensity;
 	uint32_t timer_s;				// 当前计算时间
 	uint32_t oldsnoreNub;		// 当前打鼾次数
-	uint8_t lift_stage;			/* 本放平周期内已累计抬升段数 0..3（每段 TMR/3≈总 TMR/15°）；换干预强度档位不重置，仅改判定阈值 */
-	uint32_t first_lift_tick;		/* 首次抬升时 g_sysparam_st.timer（10ms tick），0=未开始；达 SNORE_FLAT_DELAY_TICKS 后放平 */
+	uint8_t lift_stage;			/* 本干预周期内已累计抬升段数 0..3（每段 TMR/3≈总 TMR/15°）；换干预强度档位不重置，仅改判定阈值 */
+	uint32_t first_lift_tick;		/* 首次抬升时 g_sysparam_st.timer（10ms tick），0=未开始；达 snore_flat_delay_ticks() 后清段数可再抬升，不自动放平 */
 	uint32_t lift_seg_end_tick;	/* 抬升段结束 timer(10ms)，0=未在 M1_OUT sustain 段内 */
 	uint8_t lift_seg_pwm;			/* 本段 sustain 使用的 PWM */
+	uint8_t run_mode;			/* 0=量产 1=测试；仅 RAM，上电为 0，不写 Flash */
 }snoreIntervention_t;	
 
 typedef struct

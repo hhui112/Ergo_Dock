@@ -18,6 +18,7 @@ uint8_t bletxlen;
  * Ergo_Dock2.0 BLE：链路层「帧长(=数据域字节数) + 端口 + 数据域」，无同步头、无链路 CRC。
  * 例 3.3.1：02 06 10 B6 → 数据域仅 10 B6（2B），帧长 02 不包含端口 06。
  * 3.5 测试信息：查询 02 06 12 B6 / 12 B7；应答 21 06 12 B4 + 唤醒/响应各 LE16 + 打鼾干预触发 1B + 打鼾包总数 1B + B3 + 24×uint8（cmd 0x21..0x38）。
+ * 3.6 打鼾调试模式：查询 02 06 13 B6；设置 03 06 13 B7 mode；应答 03 06 13 B4 mode（0=量产 1=测试，仅 RAM）。
  * 3.1 键值仅两种整帧：05 01 01 00 00 00 00（普通）；07 01 01 00 00 00 50 10（缓启动）。
  */
 
@@ -31,6 +32,7 @@ uint8_t bletxlen;
 #define BLE_RESP_SEG_END_FIXED      32U
 #define BLE_SEG_MFP_RAW             0xB7U  /* 主控原始段类型 */
 #define BLE_SEG_TESTINFO            0x12U  /* 3.5 测试信息段 */
+#define BLE_SEG_SNORE_DBGMODE       0x13U  /* 3.6 打鼾调试模式段 */
 #define BLE_TESTINFO_PARAM_DETAIL   0xB3U  /* 测试信息精确数据（紧挨 B4 汇总之后） */
 #define BLE_TESTINFO_TX_DATA_LEN    (2U + 6U + 1U + BLE_TESTINFO_VOICE_DETAIL_N) /* 12 B4 + 2×LE16 + 2×1B + B3 + detail */
 
@@ -144,13 +146,15 @@ static void ble_offline_voice_send_response(void)
 
 /*
  * 3.4.3 应答（主控器 -> APP）：数据域固定 14B（帧长 0x0E）。
- * 11 B4 | pwm | tmr | 强度 | 触发 | 剩余 LE32(10ms) | 打鼾包总数 | 1min | 5min | 预留
+ * 11 B4 | pwm | tmr | 强度 | 触发 | 剩余 LE32(10ms) | 打鼾包总数 | 1min | 5min | run_mode
+ * 剩余时间相对当前 run_mode 的干预周期（量产 8h / 测试 1min）；到期不放平，可再次抬升。
  * 示例：0E 06 11 B4 32 40 01 01 00 00 00 00 03 02 01 00
  */
 static void ble_snore_send_response(void)
 {
 	uint8_t r[14];
 	uint32_t remain_10ms = 0U;
+	uint32_t flat = snore_flat_delay_ticks();
 	uint16_t snore_total;
 	uint16_t snore_1min;
 	uint16_t snore_5min;
@@ -159,8 +163,8 @@ static void ble_snore_send_response(void)
 		uint32_t first = g_sysparam_st.snoreIntervention.first_lift_tick;
 		uint32_t elapsed = g_sysparam_st.timer - first;
 
-		if (elapsed < SNORE_FLAT_DELAY_TICKS)
-			remain_10ms = SNORE_FLAT_DELAY_TICKS - elapsed;
+		if (elapsed < flat)
+			remain_10ms = flat - elapsed;
 	}
 
 	snore_debug_counts_get(&snore_total, &snore_1min, &snore_5min);
@@ -179,8 +183,9 @@ static void ble_snore_send_response(void)
 	r[10] = (uint8_t)(snore_total > 0xFFU ? 0xFFU : snore_total);
 	r[11] = (uint8_t)(snore_1min > 0xFFU ? 0xFFU : snore_1min);
 	r[12] = (uint8_t)(snore_5min > 0xFFU ? 0xFFU : snore_5min);
-	r[13] = 0U;
-	LOG_I("BLE 3.4.3 tx: 0E 06 11 B4 snore=%u/%u/%u", (unsigned)r[10], (unsigned)r[11], (unsigned)r[12]);
+	r[13] = snore_run_mode_get(); /* 0=量产 1=测试（与 3.6 一致，便于 APP 一并确认） */
+	LOG_I("BLE 3.4.3 tx: 0E 06 11 B4 snore=%u/%u/%u mode=%u",
+	      (unsigned)r[10], (unsigned)r[11], (unsigned)r[12], (unsigned)r[13]);
 	ble_link_send(BLE_DATA_PORT, r, 14U);
 }
 
@@ -310,7 +315,51 @@ static void ble_testinfo_segment_handle(const uint8_t *d, uint8_t n)
 	LOG_I("BLE testinfo: param 0x%02X n=%u", d[1], (unsigned)n);
 }
 
-/* 端口 0x06：按数据域首字节段类型再分派（0x10 离线语音 / 0x11 打鼾 / 0x12 测试信息） */
+/* 3.6 应答：13 B4 mode */
+static void ble_snore_dbgmode_send_response(void)
+{
+	uint8_t r[3];
+
+	r[0] = BLE_SEG_SNORE_DBGMODE;
+	r[1] = 0xB4U;
+	r[2] = snore_run_mode_get();
+	LOG_I("BLE 3.6 tx: 03 06 13 B4 mode=%u", (unsigned)r[2]);
+	ble_link_send(BLE_DATA_PORT, r, 3U);
+}
+
+/* 数据域 0x13：B6 查询 / B7 设置打鼾调试模式（仅 RAM，掉电回量产） */
+static void ble_snore_dbgmode_segment_handle(const uint8_t *d, uint8_t n)
+{
+	if (n < 2U) {
+		LOG_I("BLE dbgmode: n=%u short", (unsigned)n);
+		return;
+	}
+	if (d[0] != BLE_SEG_SNORE_DBGMODE) {
+		LOG_I("BLE dbgmode: seg 0x%02X need 0x13", d[0]);
+		return;
+	}
+	if (d[1] == 0xB6U && n >= 2U) {
+		LOG_I("BLE 3.6: query 13 B6 ok n=%u", (unsigned)n);
+		ble_snore_dbgmode_send_response();
+		return;
+	}
+	if (d[1] == 0xB7U && n >= 3U) {
+		uint8_t mode = d[2];
+
+		if (mode > SNORE_RUN_MODE_TEST) {
+			LOG_I("BLE 3.6: mode %u invalid (0=prod 1=test)", (unsigned)mode);
+			ble_snore_dbgmode_send_response();
+			return;
+		}
+		snore_run_mode_set(mode);
+		LOG_I("BLE 3.6: set 13 B7 mode=%u", (unsigned)mode);
+		ble_snore_dbgmode_send_response();
+		return;
+	}
+	LOG_I("BLE dbgmode: param 0x%02X n=%u", d[1], (unsigned)n);
+}
+
+/* 端口 0x06：按数据域首字节段类型再分派（0x10 离线语音 / 0x11 打鼾 / 0x12 测试信息 / 0x13 调试模式） */
 static void ble_data_port_dispatch(const uint8_t *payload, uint8_t length)
 {
 	if (length < 2U) {
@@ -329,6 +378,10 @@ static void ble_data_port_dispatch(const uint8_t *payload, uint8_t length)
 	}
 	if (payload[0] == 0x12U) {
 		ble_testinfo_segment_handle(payload, length);
+		return;
+	}
+	if (payload[0] == BLE_SEG_SNORE_DBGMODE) {
+		ble_snore_dbgmode_segment_handle(payload, length);
 		return;
 	}
 	LOG_I("BLE 0x06: seg 0x%02X ?", payload[0]);
